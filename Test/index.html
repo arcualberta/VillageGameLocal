@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>Ukrainian Village</title>
+        
+        <link rel="stylesheet" type="text/css" href="./Resources/Styles/game_style.css">
+        
+        <script type="text/javascript" src="./src/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="./src/jquery.csv-0.71.min.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_constants.js"></script>
+        <script type="text/javascript" src="./src/village_constants.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_objects.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_dialog.js"></script>
+        <script type="text/javascript" src="./src/village_objects.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_display.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_control.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_audio.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_overlay.js"></script>
+        <script type="text/javascript" src="./src/arc_engine/arc_game.js"></script>
+        <script type="text/javascript" src="./src/village_menus.js"></script>
+        <script type="text/javascript" src="./src/village_functions.js"></script>
+        <!--<script type="text/javascript" src="../src/village_worldAdapter.js"></script>-->
+        <!--<script type="text/javascript" src="./village_worldAdapter_test.js"></script>-->
+        <script type="text/javascript" src="./src/village_map.js"></script>
+        <script type="text/javascript" src="./module_worldAdapter.js"></script>
+        <script type="text/javascript" src="./src/village_display.js"></script>
+        <script type="text/javascript" src="./src/village_game.js"></script>
+    </head>
+    <body>
+        <div class="game_window">
+            <canvas id="gamePanel" width="800" height="600" role="img"></canvas>
+        </div>
+        <span id="testText"></span>
+
+        <script type="text/javascript">
+            var game;
+            
+            $(document).ready(function(){
+                game = new VillageGame($("#gamePanel")[0], "./src", "./Resources");
+                game.characterScreens = testSpriteList;
+                game.start();
+            });
+        </script>
+    </body>
+</html>

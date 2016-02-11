@@ -1,0 +1,17 @@
+.game_dialogWindow{
+    background-image: url('../images/dialog_background.png');
+}
+
+.login_menu {
+    background-image: url('../images/login.png');
+}
+
+.login_menu > .game_dialogTitleBar {
+    display: none;
+}
+
+.login_menu > .game_dialogBody {
+    position: absolute;
+    left: 35px;
+    bottom: 20px;
+}

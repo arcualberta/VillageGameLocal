@@ -1,0 +1,45 @@
+.game_dialogWindow{
+    background-image: url('../images/dialog_background.png');
+}
+
+.login_menu {
+    background-image: url('../images/login.png');
+}
+
+.login_menu > .game_dialogTitleBar {
+    display: none;
+}
+
+.login_menu > .game_dialogBody {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+}
+
+.login_menu > .game_dialogBody > .passcode_title {
+    display: none;
+}
+
+.login_menu > .game_dialogBody > .passcode_input {
+    border-width: 0px;
+    width: 176px;
+    height: 34px;
+    margin-bottom: -5px;
+}
+
+.login_menu > .game_dialogBody > .login_button {
+    margin-right: 0;
+    height: 33px;
+    width: 158px;
+    background-color: transparent;
+    font-size: 0;
+    border: none;
+}
+
+.login_menu > .game_dialogBody > .login_button:hover {
+    cursor: pointer;
+}
+
+.login_menu > .game_dialogBody > .login_button:active {
+    border: #F00 groove 2px;
+}

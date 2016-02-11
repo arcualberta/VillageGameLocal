@@ -1,0 +1,7 @@
+NAME,LINE_NUMBER,CHARACTER_NAME,MESSAGE,VARIABLE,SET_VARIABLE_VALUE,NEXT_LINE,OPTION_1,OPTION_1_LINE,OPTION_2,OPTION_2_LINE,OPTION_3,OPTION_3_LINE
+MAYOR_SIGN,1,,Mayor's House,,,,,,,,,
+MAYOR_1,1,Mayor,Hi! I'm the mayor of this village.,,,2,,,,,,
+MAYOR_1,2,Mayor,How are you?,,,,Good,3,Bad ,4,Meh,5
+MAYOR_1,3,Mayor,Great!,speaker.emotion,GOOD,,,,,,,
+MAYOR_1,4,Mayor,That’s too bad.,speaker.emotion,BAD,,,,,,,
+MAYOR_1,5,Mayor,"Yea, I know what you mean.",speaker.emotion,MEH,,,,,,,

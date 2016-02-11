@@ -1,0 +1,152 @@
+{
+    "animations": {
+        "animation_16x24": {
+            "stand_down": [{
+                    "x": 0,
+                    "y": 0,
+                    "width": 16,
+                    "height": 24,
+                    "time": 1000
+                }],
+            "stand_up": [{
+                    "x": 0,
+                    "y": 24,
+                    "width": 16,
+                    "height": 24,
+                    "time": 1000
+                }],
+            "stand_left": [{
+                    "x": 0,
+                    "y": 48,
+                    "width": 16,
+                    "height": 24,
+                    "time": 1000
+                }],
+            "stand_right": [{
+                    "x": 0,
+                    "y": 72,
+                    "width": 16,
+                    "height": 24,
+                    "time": 1000
+                }],
+            "walk_down": [{
+                    "x": 0,
+                    "y": 0,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 16,
+                    "y": 0,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 0,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 0,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }],
+            "walk_up": [{
+                    "x": 0,
+                    "y": 24,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 16,
+                    "y": 24,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 24,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 24,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }],
+            "walk_left": [{
+                    "x": 0,
+                    "y": 48,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 16,
+                    "y": 48,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 48,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 48,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }],
+            "walk_right": [{
+                    "x": 0,
+                    "y": 72,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 16,
+                    "y": 72,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 72,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 72,
+                    "width": 16,
+                    "height": 24,
+                    "time": 250
+                }]
+        }
+    },
+    "sprites": {
+        "dancer_male_palette": {
+            "image": "dancer_male_palette.png",
+            "animation": "animation_16x24"
+        },
+        "base_female_large": {
+            "image": "base_female_large.png",
+            "animation": "animation_16x24"
+        },
+        "dancer_male_large2": {
+            "image": "dancer_male_large2.png",
+            "animation": "animation_16x24"
+        }
+    },
+    "selectable_sprites": [
+        "dancer_male_palette",
+        "base_female_large"
+    ]
+}
