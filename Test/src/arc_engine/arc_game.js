@@ -8,25 +8,25 @@ window.arcRequestAnimFrame = (function () {
             };
 })();
 
-function arcGetParameter(paramName){
+function arcGetParameter(paramName) {
     var pageUrl = window.location.search.substring(1);
     var pageVar = pageUrl.split('&');
-    for(var i = 0; i < pageVar.length; ++i){
+    for (var i = 0; i < pageVar.length; ++i) {
         var param = pageVar[i].split('=');
-        if(param[0].toLowerCase() === paramName.toLowerCase()){
+        if (param[0].toLowerCase() === paramName.toLowerCase()) {
             return param[1];
         }
     }
-    
+
     return false;
 }
 
 var ArcGame = ArcBaseObject();
 ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audioAdapter, fpsCap, useGL) {
-    if(fpsCap === undefined){
+    if (fpsCap === undefined) {
         fpsCap = 60;
     }
-    
+
     // Setup Adapters
     if (!displayAdapter || displayAdapter === null) {
         displayAdapter = arcGetDisplayAdapter(canvas, useGL);
@@ -47,7 +47,7 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
     this.loopListeners = [];
     this.onResize = function (width, height) {
     };
-    
+
     var __this = this;
 
     // Variables used for animation.
@@ -58,21 +58,21 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
     var lastTimestamp = startTime;
     var lastFps = startTime;
     var playTime = 0;
-    
+
     this.animate = function () {
         var timestamp = Date.now();
         ++frameCount;
-
-        if (timestamp - lastFps >= 1000) {
-            framesPerSecond = frameCount;
-            frameCount = 0;
-            lastFps = timestamp;
-        }
 
         playTime = timestamp - startTime;
         var frameTime = timestamp - lastTimestamp;
 
         if (frameTime >= fpsScale) {
+            if (timestamp - lastFps >= 1000) {
+                framesPerSecond = frameCount;
+                frameCount = 0;
+                lastFps = timestamp;
+            }
+
             lastTimestamp = timestamp;
             return frameTime;
         }
@@ -93,32 +93,34 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
         return framesPerSecond;
     };
 
-    var resizeFunction = function(){
+    var resizeFunction = function () {
         displayAdapter.resize(canvas.width, canvas.height);
         if (__this.onResize && __this.onResize !== null) {
             __this.onResize(canvas.width, canvas.height);
         }
     };
-    
+
     $(window).resize(function (event) {
         resizeFunction();
     });
 
     resizeFunction();
 };
-ArcGame.prototype.start = function(){
+ArcGame.prototype.start = function () {
     var __this = this;
-    
+
     // Main Game Loop
     var loopGame = function () {
         arcRequestAnimFrame(loopGame);
 
         var time = __this.animate();
-        __this.display.update(time);
-        for (var index = 0; index < __this.loopListeners.length; ++index) {
-            __this.loopListeners[index](__this, time);
+        if (time > 0.0) {
+            __this.display.update(time);
+            for (var index = 0; index < __this.loopListeners.length; ++index) {
+                __this.loopListeners[index](__this, time);
+            }
         }
     };
-    
+
     loopGame();
 };
