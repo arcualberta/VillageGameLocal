@@ -51,30 +51,24 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
     var __this = this;
 
     // Variables used for animation.
-    var framesPerSecond = 0;
-    var frameCount = 0;
     var fpsScale = 1000.0 / fpsCap;
     var startTime = Date.now() - fpsScale;
     var lastTimestamp = startTime;
-    var lastFps = startTime;
     var playTime = 0;
+    var delta = 0;
+    var timestamp = 0;
+    var deltaRemainder = 0;
 
     this.animate = function () {
-        var timestamp = Date.now();
-        ++frameCount;
+        timestamp = Date.now();
 
         playTime = timestamp - startTime;
-        var frameTime = timestamp - lastTimestamp;
+        delta = timestamp - lastTimestamp;
 
-        if (frameTime >= fpsScale) {
-            if (timestamp - lastFps >= 1000) {
-                framesPerSecond = frameCount;
-                frameCount = 0;
-                lastFps = timestamp;
-            }
-
-            lastTimestamp = timestamp;
-            return frameTime;
+        if (delta > fpsScale) {
+            deltaRemainder = (delta % fpsScale);
+            lastTimestamp = timestamp - deltaRemainder;
+            return delta - deltaRemainder;
         }
 
         return 0.0;
@@ -87,10 +81,6 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
     // Useful functions
     this.getPlayTime = function () {
         return playTime;
-    };
-
-    this.getFramesPerSecond = function () {
-        return framesPerSecond;
     };
 
     var resizeFunction = function () {

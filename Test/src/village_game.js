@@ -1,7 +1,7 @@
 var VillageGame = ArcBaseObject();
 VillageGame.prototype = Object.create(ArcGame.prototype);
 VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
-    ArcGame.prototype.init.call(this, canvas, null, null, null, 60, true);
+    ArcGame.prototype.init.call(this, canvas, null, null, null, 30, true);
     var __this = this;
 
     __this.timestamp = -1;
@@ -122,7 +122,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             displayAdapter.drawTileLayer(highLayers[index]);
         }
 
-        displayAdapter.drawToDisplay(__this.getFramesPerSecond());
+        displayAdapter.drawToDisplay('UNKNOWN');
 
         /*__this.display.camera.setOffset(offsetX, offsetY);
          
