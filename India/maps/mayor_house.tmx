@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="30" height="13" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="HouseTiles" tilewidth="16" tileheight="16">
+  <image source="../tiles/village.gif" width="144" height="128"/>
+  <tile id="9">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="10">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="11">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="12">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="13">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="33">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="34">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="35">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="42">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="43">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="44">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="51">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="52">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="53">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="69">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="70">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="71">
+   <properties>
+    <property name="walkable" value="false"/>
+   </properties>
+   <animation>
+    <frame tileid="69" duration="325"/>
+    <frame tileid="70" duration="200"/>
+    <frame tileid="69" duration="250"/>
+    <frame tileid="70" duration="200"/>
+    <frame tileid="71" duration="100"/>
+    <frame tileid="70" duration="300"/>
+    <frame tileid="69" duration="450"/>
+    <frame tileid="70" duration="220"/>
+    <frame tileid="69" duration="300"/>
+    <frame tileid="70" duration="200"/>
+    <frame tileid="71" duration="100"/>
+    <frame tileid="70" duration="400"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="73" name="Mayor" tilewidth="16" tileheight="24">
+  <image source="../sprites/dancer_male_large2.png" width="48" height="96"/>
+  <tile id="0">
+   <properties>
+    <property name="Spritesheet" value="dancer_male_large2"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="85" name="light" tilewidth="16" tileheight="16">
+  <image source="../tiles/light_and_shadows.png" width="128" height="128"/>
+  <tile id="10">
+   <animation>
+    <frame tileid="12" duration="325"/>
+    <frame tileid="11" duration="200"/>
+    <frame tileid="12" duration="250"/>
+    <frame tileid="11" duration="200"/>
+    <frame tileid="10" duration="100"/>
+    <frame tileid="11" duration="300"/>
+    <frame tileid="12" duration="450"/>
+    <frame tileid="11" duration="220"/>
+    <frame tileid="12" duration="300"/>
+    <frame tileid="11" duration="200"/>
+    <frame tileid="10" duration="100"/>
+    <frame tileid="11" duration="400"/>
+   </animation>
+  </tile>
+ </tileset>
+ <layer name="lower" width="30" height="13">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,26,26,26,26,26,26,26,26,26,26,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,14,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,61,61,61,61,61,61,61,59,61,61,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,26,26,26,26,26,26,26,26,26,26,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,26,26,26,26,26,26,26,16,26,26,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer name="middle" width="30" height="13">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,34,35,35,35,35,35,35,35,35,36,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,10,10,10,10,10,10,11,10,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,10,11,14,10,10,14,10,11,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,0,0,0,72,0,0,0,0,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,0,0,0,95,0,0,0,0,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,45,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,52,35,43,35,43,35,53,0,44,54,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,10,10,14,10,14,10,10,15,10,10,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,12,13,13,12,12,12,12,16,12,13,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup name="objects">
+  <object name="Mayor" type="NPC" gid="73" x="206.667" y="97.667">
+   <properties>
+    <property name="Movement" value="wander"/>
+   </properties>
+  </object>
+  <object name="MainStart" type="PlayerStart" x="272.545" y="121.364" width="14" height="16"/>
+ </objectgroup>
+ <objectgroup name="triggers">
+  <object name="MayorDoor" type="ChangeMap" x="272.719" y="141.556" width="14.409" height="56.5531">
+   <properties>
+    <property name="Map" value="village_small"/>
+    <property name="Start" value="MayorStart"/>
+   </properties>
+  </object>
+  <object name="MayorTrigger" type="ClickRead" x="207.208" y="73.5" width="15.6667" height="25">
+   <properties>
+    <property name="Follow" value="Mayor"/>
+    <property name="Message" value="MAYOR_1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="upper" width="30" height="13">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,85,0,0,63,0,0,0,86,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,87,85,0,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,87,87,93,0,85,93,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,87,87,0,0,86,85,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,87,87,0,0,0,86,85,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,87,87,0,0,0,0,86,85,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,87,87,0,0,0,0,0,86,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,86,87,87,87,87,87,87,87,87,87,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,86,87,87,87,87,87,87,87,87,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

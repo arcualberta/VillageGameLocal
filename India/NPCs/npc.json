@@ -1,0 +1,8 @@
+[
+    {
+        "id" : "mayor",
+        "name" : "Mayor",
+        "sprieSheet" : "dancer_male_large2",
+        "faceImage" : "mayor.png"
+    }
+]
