@@ -132,6 +132,14 @@
         }
     },
     "sprites": {
+		"abhaya": {
+            "image": "Abhaya.png",
+            "animation": "animation_16x24"
+        },
+		"sahil": {
+            "image": "Sahil.png",
+            "animation": "animation_16x24"
+        },
         "dancer_male_palette": {
             "image": "dancer_male_palette.png",
             "animation": "animation_16x24"
@@ -146,6 +154,8 @@
         }
     },
     "selectable_sprites": [
+		"abahaya",
+		"sahil",
         "dancer_male_palette",
         "base_female_large"
     ]
