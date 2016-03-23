@@ -1,5 +1,135 @@
 {
     "animations": {
+        "animation_32x48": {
+            "stand_down": [{
+                    "x": 0,
+                    "y": 0,
+                    "width": 32,
+                    "height": 48,
+                    "time": 1000
+                }],
+            "stand_up": [{
+                    "x": 0,
+                    "y": 48,
+                    "width": 32,
+                    "height": 48,
+                    "time": 1000
+                }],
+            "stand_left": [{
+                    "x": 0,
+                    "y": 96,
+                    "width": 32,
+                    "height": 48,
+                    "time": 1000
+                }],
+            "stand_right": [{
+                    "x": 0,
+                    "y": 144,
+                    "width": 32,
+                    "height": 48,
+                    "time": 1000
+                }],
+            "walk_down": [{
+                    "x": 0,
+                    "y": 0,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 0,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 0,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 64,
+                    "y": 0,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }],
+            "walk_up": [{
+                    "x": 0,
+                    "y": 48,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 48,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 48,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 64,
+                    "y": 48,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }],
+            "walk_left": [{
+                    "x": 0,
+                    "y": 96,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 96,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 96,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 64,
+                    "y": 96,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }],
+            "walk_right": [{
+                    "x": 0,
+                    "y": 144,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 32,
+                    "y": 144,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 0,
+                    "y": 144,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }, {
+                    "x": 64,
+                    "y": 144,
+                    "width": 32,
+                    "height": 48,
+                    "time": 250
+                }]
+        },
         "animation_16x24": {
             "stand_down": [{
                     "x": 0,
@@ -140,6 +270,10 @@
             "image": "Sahil.png",
             "animation": "animation_16x24"
         },
+		"sana": {
+            "image": "Sana.png",
+            "animation": "animation_16x24"
+        },
         "dancer_male_palette": {
             "image": "dancer_male_palette.png",
             "animation": "animation_16x24"
@@ -155,6 +289,7 @@
     },
     "selectable_sprites": [
 		"abahaya",
+                "sana",
 		"sahil",
         "dancer_male_palette",
         "base_female_large"
