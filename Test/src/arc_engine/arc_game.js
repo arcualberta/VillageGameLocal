@@ -22,6 +22,9 @@ function arcGetParameter(paramName) {
 }
 
 var ArcGame = ArcBaseObject();
+// Static functions
+ArcGame.Current = null;
+// Public functions
 ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audioAdapter, fpsCap, useGL) {
     if (fpsCap === undefined) {
         fpsCap = 60;
@@ -58,6 +61,8 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
     var delta = 0;
     var timestamp = 0;
     var deltaRemainder = 0;
+    
+    ArcGame.Current = this;
 
     this.animate = function () {
         timestamp = Date.now();

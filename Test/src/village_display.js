@@ -3,7 +3,10 @@ function villageSortOutputTiles(o1, o2){
 }
 
 var VillageDisplay = ArcBaseObject();
+VillageGame.prototype = Object.create(ArcRenderableObject.prototype);
 VillageDisplay.prototype.init = function (game, worldAdapter, workerPath, drawWorldFunction) {
+    VillageGame.prototype.init.call(true, true);
+    
     var _this = this;
 
     this.playerStart = [0, 0];

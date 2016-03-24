@@ -14,7 +14,34 @@ function ArcBaseObject() {
         }
     };
 }
-;
+
+var ArcRenderableObject = new ArcBaseObject();
+ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
+    this.children = {};
+    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
+    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+};
+ArcRenderableObject.prototype.attachChild = function(child, name){
+    this.children[name] = child;
+};
+ArcRenderableObject.prototype.detachChild = function(name){
+    delete this.children[i];
+};
+ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height, zoom){ // For now lets assume zoom is 1
+    for (let child of this.children){
+        if(child.drawEnabled){
+            child.draw(displayContext, xOffset, yOffset, width, height, zoom);
+        }
+    }
+};
+ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
+    for (let child of this.children){
+        if(child.tickEnabled){
+            child.tick(deltaMilliseconds);
+        }
+    }
+};
+
 // ARC Generate TileMap from TiledCode
 function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {
     var output = {
