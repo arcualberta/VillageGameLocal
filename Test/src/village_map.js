@@ -219,6 +219,18 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
     ];
     
     this.setChild(new CharacterList(), "players");
+    this.setChild(new Waypoint(), "waypoint");
+};
+VillageMap.prototype.setWaypointLocation = function(location){
+    let waypoint = this.getChild("waypoint");
+    
+    if(location === null){
+        waypoint.isVisible = true;
+        waypoint.location[0] = location[0];
+        waypoint.location[1] = location[1];
+    }else{
+        waypoint.isVisible = false;
+    }
 };
 VillageMap.prototype.unload = function () {
     // Removes the map from memory  
@@ -580,6 +592,55 @@ VillageMap.prototype.update = function(timeSinceLast){
     
     // Update all triggers
 };
+VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    let buffer = VillageMap.Buffers.layer;
+    let index = 0;
+    let i = 0;
+    let drawObject = null;
+    
+    // Handle the lower layers first
+    let layer = this.lowLayers;
+    buffer.length = 0;
+    
+    for(index = 0; index < layer.length; ++index){
+        layer[index].data.getObjects(xOffset, yOffset, width, height, buffer);
+        buffer.sort(villageSortOutputTiles);
+        
+        displayContext.drawTileLayer(buffer);
+    }
+    
+    // Draw the objects
+    if(this.objects){
+        buffer.length = 0;
+        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
+        
+        for (index = 0; index < buffer.length; ++index) {
+            drawObject = buffer[index];
+            displayContext.drawTileById(drawObject.tileId, drawObject.position[0] - xOffset, drawObject.position[1] - yOffset, drawObject.size[0], drawObject.size[1]);
+        }
+    }
+    
+    // Draw the waypoint
+    this.getChild("waypoint").draw(displayContext, xOffset, yOffset, width, height);
+    
+    // Draw the characters
+    this.getChild("players").draw(displayContext, xOffset, yOffset, width, height);
+    
+    // Handle the higher levels
+    layer = this.highLayers;
+    buffer.length = 0;
+    
+    for(index = 0; index < layer.length; ++index){
+        layer[index].data.getObjects(xOffset, yOffset, width, height, buffer);
+        buffer.sort(villageSortOutputTiles);
+        
+        displayContext.drawTileLayer(buffer);
+    }
+};
+VillageMap.Buffers = {
+    layer: [],
+};
+
 var VillageModule = ArcBaseObject();
 VillageModule.prototype.init = function (path, initialMap, onLoaded, onMapChange) {
     this.path = path;

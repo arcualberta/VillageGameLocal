@@ -1,7 +1,3 @@
-function villageSortOutputTiles(o1, o2){
-    return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
-}
-
 var VillageDisplay = ArcBaseObject();
 VillageDisplay.prototype.init = function (game, worldAdapter, workerPath, drawWorldFunction) {
     var _this = this;
@@ -70,37 +66,9 @@ VillageDisplay.prototype.clearLayerGroup = function(layers, groupCount){
     
     return layers;
 };
-VillageDisplay.prototype.calculateVisibleWorld = function (lowLayers, highLayers, objects, offset, tileWidth, tileHeight, width, height, tiles) {
-    var inLowLayers = this.world.lowLayers;
-    var inHighLayers = this.world.highLayers;
-    var index = 0;
-
-    var xTileOffset = offset[0] / tileWidth;
-    var yTileOffset = offset[1] / tileHeight;
-    var x = Math.floor(xTileOffset);
-    var y = Math.floor(yTileOffset);
-    xTileOffset = -(xTileOffset - x) * tileWidth;
-    yTileOffset = -(yTileOffset - y) * tileHeight;
-
-    // Get Objects
-    if(this.world.objects){
-        this.world.objects.getObjects(offset[0], offset[1], this.dimension[0], this.dimension[1], objects);
-    }
-    
-    // Get Tiles
-    for(index = 0; index < lowLayers.length; ++index){
-        inLowLayers[index].data.getObjects(offset[0], offset[1], this.dimension[0], this.dimension[1], lowLayers[index]);
-        lowLayers[index].sort(villageSortOutputTiles);
-    }
-    
-    for(index = 0; index < highLayers.length; ++index){
-        inHighLayers[index].data.getObjects(offset[0], offset[1], this.dimension[0], this.dimension[1], highLayers[index]);
-        highLayers[index].sort(villageSortOutputTiles);
-    }
-};
-VillageDisplay.prototype.triggerDraw = function (lowLayers, highLayers, objects, playerLoc, waypointLoc, offset) {
+VillageDisplay.prototype.triggerDraw = function (playerLoc, offset) {
     if (this.world !== null && offset) {
-        this.drawWorldFunction(lowLayers, highLayers, objects, this.world.getChild("players"), offset[0], offset[1], waypointLoc, playerLoc);
+        this.drawWorldFunction(playerLoc, offset[0], offset[1], this.world);
     }
 };
 VillageDisplay.prototype.handleActions = function (actions) {
@@ -133,6 +101,11 @@ VillageDisplay.prototype.updateWorld = function (time, actionList, cameraOffset)
 
     if (player !== null && player.user) {
         player.update(this.worldAdapter, this.world, time);
+        if(player.showWaypoint){
+            this.world.setWaypointLocation(player.waypointLoc);
+        }else{
+            this.world.setWaypointLocation(null);
+        }
     }
     
     // Update the layers
@@ -167,8 +140,6 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
     var player = this.player;
     var isPlayerSet = typeof player === 'number';
     var world = this.world;
-    var waypointLoc = null;
-
 
     if (isPlayerSet) {
         isPlayerSet = false;
@@ -212,10 +183,6 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
 
         offset[0] = p.location[0] - dimension[0];
         offset[1] = p.location[1] - dimension[1];
-
-        if (player.showWaypoint) {
-            waypointLoc = player.waypointLoc;
-        }
     } else if (cameraOffset) {
         offset[0] = cameraOffset[0];
         offset[1] = cameraOffset[1];
@@ -241,17 +208,7 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
     var outHigh = this.clearLayerGroup(this.drawHigh, this.world.highLayers.length);
     this.drawObjects.length = 0;
 
-    // TODO: Send call to server to calculate the world
-    if (world !== null) {
-        this.calculateVisibleWorld(
-                outLow, outHigh, this.drawObjects, offset,
-                world.tileWidth, world.tileHeight,
-                world.width, world.height,
-                world.tiles,
-                waypointLoc);
-    }
-
-    this.triggerDraw(outLow, outHigh, this.drawObjects, p === null ? offset : p.location, waypointLoc, offset);
+    this.triggerDraw(p === null ? offset : p.location, offset);
 };
 VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
     var i;

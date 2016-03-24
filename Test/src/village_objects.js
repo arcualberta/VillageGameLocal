@@ -1,7 +1,25 @@
+function villageSortOutputTiles(o1, o2){
+    return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
+}
+
 var CharacterList = ArcBaseObject();
 CharacterList.prototype = Object.create(ArcRenderableObject.prototype);
 CharacterList.prototype.init = function(){
     ArcRenderableObject.prototype.init.call(this, true, true);
+};
+
+// Character waypoints
+var Waypoint = ArcBaseObject();
+Waypoint.prototype = Object.create(ArcRenderableObject.prototype);
+Waypoint.prototype.init = function(){
+    ArcRenderableObject.prototype.init.call(this, false, true);
+    this.location = [0, 0];
+    this.isVisible = false;
+};
+Waypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    if(this.isVisible){
+        displayContext.drawWaypoint(this.location);
+    }
 };
 
 var Character = ArcBaseObject();
