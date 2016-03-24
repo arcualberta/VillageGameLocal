@@ -193,10 +193,11 @@ ClickReadTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
 
 // Map Objects
 var VillageMap = ArcBaseObject();
+VillageMap.prototype = Object.create(ArcRenderableObject.prototype);
 VillageMap.prototype.init = function (parent, mapName, studentList) {
+    ArcRenderableObject.prototype.init.call(this, true, true);
     this.parent = parent;
     this.name = mapName;
-    this.players = {};
     this.tileSheets = {};
     this.width = 100;
     this.height = 100;
@@ -216,6 +217,8 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
             name: "Demo Student"
         }
     ];
+    
+    this.setChild(new CharacterList(), "players");
 };
 VillageMap.prototype.unload = function () {
     // Removes the map from memory  

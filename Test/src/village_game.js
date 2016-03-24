@@ -116,7 +116,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             displayAdapter.drawWaypoint(waypointLoc);
         }
 
-        displayAdapter.drawUsers(users);
+        users.draw(displayAdapter, offsetX, offsetY, displayAdapter.size[0], displayAdapter.size[1]);
 
         for (index = 0; index < highLayers.length; ++index) {
             displayAdapter.drawTileLayer(highLayers[index]);

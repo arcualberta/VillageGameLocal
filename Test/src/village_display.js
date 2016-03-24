@@ -3,10 +3,7 @@ function villageSortOutputTiles(o1, o2){
 }
 
 var VillageDisplay = ArcBaseObject();
-VillageGame.prototype = Object.create(ArcRenderableObject.prototype);
 VillageDisplay.prototype.init = function (game, worldAdapter, workerPath, drawWorldFunction) {
-    VillageGame.prototype.init.call(true, true);
-    
     var _this = this;
 
     this.playerStart = [0, 0];
@@ -103,7 +100,7 @@ VillageDisplay.prototype.calculateVisibleWorld = function (lowLayers, highLayers
 };
 VillageDisplay.prototype.triggerDraw = function (lowLayers, highLayers, objects, playerLoc, waypointLoc, offset) {
     if (this.world !== null && offset) {
-        this.drawWorldFunction(lowLayers, highLayers, objects, this.world.players, offset[0], offset[1], waypointLoc, playerLoc);
+        this.drawWorldFunction(lowLayers, highLayers, objects, this.world.getChild("players"), offset[0], offset[1], waypointLoc, playerLoc);
     }
 };
 VillageDisplay.prototype.handleActions = function (actions) {
@@ -178,9 +175,10 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
 
         //Find the player
         //console.log(JSON.stringify(world.players));
-        for (var key in world.players) {
+        let players = world.getChild("players");
+        for (var key in players.children) { // tODO: Change to function
             if (key == player) {
-                this.player = new Player(world.players[key]);
+                this.player = new Player(players.getChild(key));
                 player = this.player;
                 //player.user.location[0] = this.playerStart[0];
                 //player.user.location[1] = this.playerStart[1];
@@ -265,8 +263,9 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
     this.maxOffset[1] = (world.height * world.tileHeight) - 1;
 
     // Players should already be added
-    for (i = 0; i < world.players.length; ++i) {
-        var user = world.players[i];
+    let players = world.getChild("players");
+    for (i = 0; i < players.children.length; ++i) {
+        var user = players.children[i];
 
         addUser(user.id, user.name, user.location, user.spriteSheet.id, user.spriteSheet.palette, user.spriteSheet.animations);
     }
@@ -277,7 +276,7 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
         this.player.waypointLoc[0] = this.playerStart[0];
         this.player.waypointLoc[1] = this.playerStart[1];
 
-        world.players[this.player.user.id] = this.player.user;
+        players.setChild(this.player.user, this.player.user.id);
     }
 
     // Set the tilesheet
@@ -290,7 +289,7 @@ VillageDisplay.prototype.handleModifyMap = function (map) {
     //TODO  
 };
 VillageDisplay.prototype.handleMoveUser = function (message) {
-    var user = world.players[message.id];
+    var user = world.getChild("players").getChild(message.id);
 
     if (user) {
         user.location[0] = message.location[0];
@@ -329,9 +328,10 @@ VillageDisplay.prototype.isPlayer = function (id) {
     return this.player.user.id === id;
 };
 VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, palette, animations) {
-    var user;
-    if (this.world.players[id]) {
-        user = this.world.players[id];
+    let players = this.world.getChild("players");
+    let user = players.getChild(id);
+    if (user) {
+        //completed
     } else {
         user = new User(id, name);
     }
@@ -349,15 +349,16 @@ VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, 
     this.display.addSpriteSheet(spriteSheet.id, spriteSheet.baseImage.src, spriteSheet.animations, palette);
 
     user.spriteSheet = spriteSheet;
-    this.world.players[id] = user;
+    players.setChild(user, id);
 
     return user;
 };
 VillageDisplay.prototype.updateUserAnimations = function (time) {
     var world = this.world;
     if (world !== null) {
-        for (var key in world.players) {
-            world.players[key].update(time);
+        let players = world.getChild("players");
+        for (var key in players.children) {
+            players.getChild(key).update(time);
         }
     }
 };

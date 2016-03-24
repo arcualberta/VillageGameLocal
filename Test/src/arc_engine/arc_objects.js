@@ -15,22 +15,28 @@ function ArcBaseObject() {
     };
 }
 
+// All objects that are renderable to the scene
 var ArcRenderableObject = new ArcBaseObject();
 ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.children = {};
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
 };
-ArcRenderableObject.prototype.attachChild = function(child, name){
+ArcRenderableObject.prototype.setChild = function(child, name){
     this.children[name] = child;
 };
-ArcRenderableObject.prototype.detachChild = function(name){
-    delete this.children[i];
+ArcRenderableObject.prototype.getChild = function(name){
+  return this.children[name];  
 };
-ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height, zoom){ // For now lets assume zoom is 1
-    for (let child of this.children){
+ArcRenderableObject.prototype.removeChild = function(name){
+    //delete this.children[i];
+    this.children[i] = null; //TODO: Find out the better method
+};
+ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
+    for (let key in this.children){
+        let child = this.children[key];
         if(child.drawEnabled){
-            child.draw(displayContext, xOffset, yOffset, width, height, zoom);
+            child.draw(displayContext, xOffset, yOffset, width, height);
         }
     }
 };
@@ -40,6 +46,19 @@ ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
             child.tick(deltaMilliseconds);
         }
     }
+};
+
+// Basic text renderable
+var ArcRenderableText = ArcBaseObject();
+ArcRenderableText.prototype = Object.create(ArcRenderableObject.prototype);
+ArcRenderableText.prototype.init = function(text, fontInfo){
+    ArcRenderableObject.prototype.init.call(this, false, true);
+    this.text = text;
+    this.fontInfo = fontInfo;
+    this.offset = [0, 0];
+};
+ArcRenderableText.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    displayContext.drawMessage(this.text, xOffset + this.offset[0], yOffset + this.offset[1], this.fontInfo);
 };
 
 // ARC Generate TileMap from TiledCode

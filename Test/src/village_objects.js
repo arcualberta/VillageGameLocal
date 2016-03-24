@@ -1,5 +1,14 @@
+var CharacterList = ArcBaseObject();
+CharacterList.prototype = Object.create(ArcRenderableObject.prototype);
+CharacterList.prototype.init = function(){
+    ArcRenderableObject.prototype.init.call(this, true, true);
+};
+
 var Character = ArcBaseObject();
+Character.prototype = Object.create(ArcRenderableObject.prototype);
 Character.prototype.init = function (id, name) {
+    ArcRenderableObject.prototype.init.call(this, true, true);
+    
     this.id = id;
     this.name = name;
     this.location = [-100, -100];
@@ -8,6 +17,14 @@ Character.prototype.init = function (id, name) {
     this.frameTime = 0;
     this.spriteSheet = null;
     this.lastCollisionBox = [0, 0, 0, 0];
+    
+    let text = new ArcRenderableText(name, {
+        font: "bold 12px sans-serif",
+        fillStyle: "yellow",
+        textAlign: "center"
+    });
+    text.offset[1] = -12;
+    this.setChild(text, "name");
 };
 Character.prototype.collisionBox = function () {
     // TODO: Make it based on frame size;
@@ -114,6 +131,20 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
     output[2] = isChanged;
 
     return output;
+};
+Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
+    var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
+    
+    var frameCenter = this.location[0] - xOffset;
+    var frameTop = this.location[1] - frame.hHalf - yOffset;
+    
+    displayContext.drawImage(spriteSheet.image,
+            frame.x, frame.y, frame.width, frame.height,
+            frameCenter - frame.wHalf, frameTop,
+            frame.drawWidth, frame.drawHeight);
+            
+    this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
 };
 
 // A non playable character
