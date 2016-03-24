@@ -1,4 +1,8 @@
-// NOTE: Prototype methods were used for frequently used functions in order to speed up creation
+function arcSortOutputTiles(o1, o2){
+    return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
+}
+
+// // NOTE: Prototype methods were used for frequently used functions in order to speed up creation
 // Object Base Creator. Code inspired from: http://ejohn.org/blog/simple-class-instantiation/#postcomment
 function ArcBaseObject() {
     return function (args) {

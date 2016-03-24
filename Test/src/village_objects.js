@@ -1,7 +1,3 @@
-function villageSortOutputTiles(o1, o2){
-    return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
-}
-
 var CharacterList = ArcBaseObject();
 CharacterList.prototype = Object.create(ArcRenderableObject.prototype);
 CharacterList.prototype.init = function(){

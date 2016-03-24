@@ -224,7 +224,7 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
 VillageMap.prototype.setWaypointLocation = function(location){
     let waypoint = this.getChild("waypoint");
     
-    if(location === null){
+    if(location !== null){
         waypoint.isVisible = true;
         waypoint.location[0] = location[0];
         waypoint.location[1] = location[1];
@@ -600,11 +600,11 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     
     // Handle the lower layers first
     let layer = this.lowLayers;
-    buffer.length = 0;
     
     for(index = 0; index < layer.length; ++index){
+        buffer.length = 0;
         layer[index].data.getObjects(xOffset, yOffset, width, height, buffer);
-        buffer.sort(villageSortOutputTiles);
+        buffer.sort(arcSortOutputTiles);
         
         displayContext.drawTileLayer(buffer);
     }
@@ -631,8 +631,9 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     buffer.length = 0;
     
     for(index = 0; index < layer.length; ++index){
+        buffer.length = 0;
         layer[index].data.getObjects(xOffset, yOffset, width, height, buffer);
-        buffer.sort(villageSortOutputTiles);
+        buffer.sort(arcSortOutputTiles);
         
         displayContext.drawTileLayer(buffer);
     }
