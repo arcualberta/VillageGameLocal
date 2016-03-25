@@ -17,40 +17,6 @@ VillageDisplay.prototype.init = function (game, worldAdapter, workerPath, drawWo
     this.drawLow = [];
     this.drawHigh = [];
     this.drawObjects = [];
-
-    // Create the background task which makes server calls and calculates what to draw.
-    // Create the worker
-//    var worker = new Worker(workerPath);
-//    worker.onerror = function (e) {
-//        console.log(e.message + " (" + e.filename + ":" + e.lineno + ")");
-//    };
-//    worker.onmessage = function (e) {
-//        var data = e.data;
-//
-//        switch (data[0]) {
-//            case WORKER_DRAW_SCENE: //Input lower, mid, upper, users, offsetX, offsetY, wapointLoc
-//                _this.triggerDraw(data[1], data[2], data[3], data[4], data[5]);
-//                break;
-//
-//                /*case WORKER_SET_TILESHEET: //Input name, url
-//                 displayAdapter.addTileSheet(data[1], data[2], []);
-//                 break;
-//                 
-//                 case WORKER_SET_SPRITESHEET:
-//                 var spriteSheet = worldAdapter.getSpriteSheet(data[2]).copy();
-//                 spriteSheet.id += data[1];
-//                 displayAdapter.addSpriteSheet(spriteSheet.id, spriteSheet.baseImage.src, spriteSheet.animations, data[3]);
-//                 break;
-//                 
-//                 case WORKER_PASS_ACTION:
-//                 worldAdapter.postWorldActions([data[1]]);
-//                 break;
-//                 
-//                 case WORKER_TRIGGER_TASK:
-//                 __this.loadTask(data[1], resourcesPath + "/Tasks/" + data[2]);*/
-//        }
-//    };
-//    this.worker = worker;
 };
 VillageDisplay.prototype.clearLayerGroup = function(layers, groupCount){
     if(layers.length === groupCount){
@@ -109,19 +75,7 @@ VillageDisplay.prototype.updateWorld = function (time, actionList, cameraOffset)
     }
     
     // Update the layers
-    var i = 0;
-    var layers = this.world.lowLayers;
-    for(; i < layers.length; ++i){
-        layers[i].data.update(time);
-    }
-    
-    layers = this.world.highLayers;
-    for(i = 0; i < layers.length; ++i){
-        layers[i].data.update(time);
-    }
-
-
-    this.updateUserAnimations(time);
+    this.world.tick(time);
 };
 VillageDisplay.prototype.resize = function (width, height) {
     this.dimension[0] = width;
@@ -203,10 +157,6 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
     } else if (offset[1] > this.maxOffset[1] - dimension[1]) {
         offset[1] = this.maxOffset[1] - dimension[1];
     }
-
-    var outLow = this.clearLayerGroup(this.drawLow, this.world.lowLayers.length);
-    var outHigh = this.clearLayerGroup(this.drawHigh, this.world.highLayers.length);
-    this.drawObjects.length = 0;
 
     this.triggerDraw(p === null ? offset : p.location, offset);
 };
@@ -309,13 +259,4 @@ VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, 
     players.setChild(user, id);
 
     return user;
-};
-VillageDisplay.prototype.updateUserAnimations = function (time) {
-    var world = this.world;
-    if (world !== null) {
-        let players = world.getChild("players");
-        for (var key in players.children) {
-            players.getChild(key).update(time);
-        }
-    }
 };

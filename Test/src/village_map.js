@@ -218,8 +218,8 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
         }
     ];
     
-    this.setChild(new CharacterList(), "players");
-    this.setChild(new Waypoint(), "waypoint");
+    this.setChild(new ArcRenderableObjectCollection(true, true), "players");
+    this.setChild(new ArcWaypoint(), "waypoint");
 };
 VillageMap.prototype.setWaypointLocation = function(location){
     let waypoint = this.getChild("waypoint");
@@ -583,17 +583,24 @@ VillageMap.prototype.checkTriggers = function (x, y, width, height, activateWalk
         }
     }
 };
-VillageMap.prototype.update = function(timeSinceLast){
-    var updateObjectFuction = function(object){
-        
-    };
+VillageMap.prototype.tick = function(deltaMilliseconds){
+    ArcRenderableObject.prototype.tick.call(this, deltaMilliseconds);
     
-    // Update all objects
+    // Update the layers
+    let i = 0;
+    let layers = this.lowLayers;
     
-    // Update all triggers
+    for(; i < layers.length; ++i){
+        layers[i].tick(deltaMilliseconds);
+    }
+    
+    layers = this.highLayers;
+    for(i = 0; i < layers.length; ++i){
+        layers[i].tick(deltaMilliseconds);
+    }
 };
 VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    let buffer = VillageMap.Buffers.layer;
+    let buffer = QuadTree.ArrayBuffer;
     let index = 0;
     let i = 0;
     let drawObject = null;
@@ -602,11 +609,7 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     let layer = this.lowLayers;
     
     for(index = 0; index < layer.length; ++index){
-        buffer.length = 0;
-        layer[index].data.getObjects(xOffset, yOffset, width, height, buffer);
-        buffer.sort(arcSortOutputTiles);
-        
-        displayContext.drawTileLayer(buffer);
+        layer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
     
     // Draw the objects
@@ -631,15 +634,8 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     buffer.length = 0;
     
     for(index = 0; index < layer.length; ++index){
-        buffer.length = 0;
-        layer[index].data.getObjects(xOffset, yOffset, width, height, buffer);
-        buffer.sort(arcSortOutputTiles);
-        
-        displayContext.drawTileLayer(buffer);
+        layer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
-};
-VillageMap.Buffers = {
-    layer: [],
 };
 
 var VillageModule = ArcBaseObject();

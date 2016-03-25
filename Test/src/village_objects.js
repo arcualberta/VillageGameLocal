@@ -1,36 +1,9 @@
-var CharacterList = ArcBaseObject();
-CharacterList.prototype = Object.create(ArcRenderableObject.prototype);
-CharacterList.prototype.init = function(){
-    ArcRenderableObject.prototype.init.call(this, true, true);
-};
-
-// Character waypoints
-var Waypoint = ArcBaseObject();
-Waypoint.prototype = Object.create(ArcRenderableObject.prototype);
-Waypoint.prototype.init = function(){
-    ArcRenderableObject.prototype.init.call(this, false, true);
-    this.location = [0, 0];
-    this.isVisible = false;
-};
-Waypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    if(this.isVisible){
-        displayContext.drawWaypoint(this.location);
-    }
-};
-
 var Character = ArcBaseObject();
-Character.prototype = Object.create(ArcRenderableObject.prototype);
+Character.prototype = Object.create(ArcCharacter.prototype);
 Character.prototype.init = function (id, name) {
-    ArcRenderableObject.prototype.init.call(this, true, true);
-    
+    ArcCharacter.prototype.init.call(this);
     this.id = id;
     this.name = name;
-    this.location = [-100, -100];
-    this.animation = "stand_down";
-    this.frame = 0;
-    this.frameTime = 0;
-    this.spriteSheet = null;
-    this.lastCollisionBox = [0, 0, 0, 0];
     
     let text = new ArcRenderableText(name, {
         font: "bold 12px sans-serif",
@@ -40,56 +13,8 @@ Character.prototype.init = function (id, name) {
     text.offset[1] = -12;
     this.setChild(text, "name");
 };
-Character.prototype.collisionBox = function () {
-    // TODO: Make it based on frame size;
-    var cb = this.lastCollisionBox;
-
-
-    var frame = false;
-
-    try {
-        frame = this.spriteSheet.getAnimation(this.animation).frames[this.frame];
-    } catch (ex) {
-        console.log(ex);
-    }
-
-    if (frame) {
-        var tileWidth = frame.width;
-        var tileHalfWidth = (tileWidth >> 1) - 1;
-        var tileHalfHeight = frame.height;
-
-        cb[0] = this.location[0] - tileHalfWidth;
-        cb[1] = this.location[1];
-        cb[2] = tileWidth;
-        cb[3] = tileHalfHeight;
-    }
-
-    return cb;
-};
-Character.prototype.animateFrame = function (timeSinceLastFrame) {
-    var frames = this.spriteSheet.getAnimation(this.animation).frames;
-    var frame = frames[this.frame];
-    this.frameTime += timeSinceLastFrame;
-
-    while (this.frameTime > frame.frameTime) {
-        ++this.frame;
-        if (this.frame >= frames.length) {
-            this.frame = 0;
-        }
-
-        this.frameTime -= this.frameTime;
-        frame = frames[this.frame];
-    }
-};
 Character.prototype.update = function (timeSinceLastFrame) {
-    this.animateFrame(timeSinceLastFrame);
-};
-Character.prototype.setAnimation = function (animationName) {
-    if (this.animation !== animationName) {
-        this.animation = animationName;
-        this.frame = 0;
-        this.frameTime = 0;
-    }
+    ArcCharacter.prototype.tick.call(this, timeSinceLastFrame);
 };
 Character.prototype.calculateNextStep = function (village, speed, time, goal, output) {
     var start = village.getClosestTileCoord(this.location[0], this.location[1]);
