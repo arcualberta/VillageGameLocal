@@ -141,12 +141,14 @@ ArcGraphicsAdapter.prototype.addExistingSpriteSheet = function (id, spriteSheet)
     this.spriteSheets[id] = spriteSheet;
 };
 ArcGraphicsAdapter.prototype.drawTileLayer = function (tiles) {
-    var index = 0;
-    var offset = this.camera.offset;
-    for (; index < tiles.length; ++index) {
-        var tile = tiles[index];
+    let index = 0;
+    let offset = this.camera.offset;
+    let length = tiles.length;
+    let tile, tileSheet;
+    for (; index < length; ++index) {
+        tile = tiles[index];
 
-        var tileSheet = this.tileSheets[tile.tileSheet];
+        tileSheet = this.tileSheets[tile.tileSheet];
         if (tileSheet) {
             this.drawTile(tileSheet, tile.tile, tile.x - offset[0], tile.y - offset[1], tile.width, tile.height);
         }

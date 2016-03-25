@@ -368,12 +368,14 @@ QuadTree.prototype.split = function () {
     this.nodes[3] = new QuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
 };
 QuadTree.prototype.getIndex = function (x, y, width, height) {
-    var bounds = this.bounds;
-    var hMid = bounds[0] + bounds[4];
-    var vMid = bounds[1] + bounds[5];
+    let bounds = this.bounds;
+    let hMid = bounds[0] + bounds[4];
+    let vMid = bounds[1] + bounds[5];
+    
     // Check if the object fits in the top and bottom quadtrants
-    var fitNorth = (y + height) < vMid;
-    var fitSouth = y >= vMid;
+    let fitNorth = (y + height) < vMid;
+    let fitSouth = y >= vMid;
+    
     // Check if the object fits on the left or right sides
     if ((x + width) < hMid) {
         if (fitNorth) {
@@ -545,10 +547,11 @@ ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, of
      }*/
 };
 ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, offset, repeat) {
-    var nodeStack = this.searchStack;
+    let nodeStack = this.searchStack;
     nodeStack.push(this);
-    var node = null;
-    var object = null;
+    
+    let node = null;
+    let object = null;
 
     while ((node = nodeStack.pop()) != null) {
         if (offset && offset !== null) {
@@ -594,14 +597,7 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
         var nodes = node.nodes;
         if (nodes[0] !== null) {
             var index = node.getIndex(x + node.offset[0], y + node.offset[1], width, height);
-//            if (index > -1) {
-//                returnObjects = returnObjects.concat(nodes[index].getObjects(x, y, width, height, returnObjects, this.offset, repeat));
-//            } else {
-//                nodes[0].getObjects(x, y, width, height, returnObjects, this.offset, repeat);
-//                nodes[1].getObjects(x, y, width, height, returnObjects, this.offset, repeat);
-//                nodes[2].getObjects(x, y, width, height, returnObjects, this.offset, repeat);
-//                nodes[3].getObjects(x, y, width, height, returnObjects, this.offset, repeat);
-//            }
+            
             if (index > -1) {
                 nodeStack.push(nodes[index]);
             }else{
