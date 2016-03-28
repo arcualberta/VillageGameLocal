@@ -1,4 +1,54 @@
+function arcVerticalMergeOutputTiles(o1, o2){
+    if(o1 == null || o2 == null){
+        return 0;
+    };
+    
+    if(o1.tileSheet == o2.tileSheet && o1.x == o2.x && o1.width == o2.width){
+        if(o2.y < o1.y && o1.tile.y == o2.tile.y + o2.tile.height){
+            o2.height += o1.height;
+            o2.tile.height += o1.tile.height;
+            o1 = null;
+            
+            return -1;
+        }else if(o2.x > o1.x && o2.tile.x == o1.tile.x + o1.tile.height){
+            o1.height += o2.height;
+            o1.tile.height += o2.tile.height;
+            o2 = null;
+            
+            return 1;
+        }
+    }
+    
+    return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
+}
+function arcHorizontalMergeOutputTiles(o1, o2){
+    if(o1.tileSheet == null || o2.tileSheet == null){
+        return 0;
+    };
+    
+    if(o1.tileSheet == o2.tileSheet && o1.y == o2.y && o1.height == o2.height){
+        if(o2.x < o1.x && o1.tile.x == o2.tile.x + o2.tile.width){
+            o2.width += o1.width;
+            o2.tile.width += o1.tile.width;
+            o1.tileSheet = null;
+            
+            return -1;
+        }else if(o2.x > o1.x && o2.tile.x == o1.tile.x + o1.tile.width){
+            o1.width += o2.width;
+            o1.tile.width += o2.tile.width;
+            o2.tileSheet = null;
+            
+            return 1;
+        }
+    }
+    
+    //return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
+}
 function arcSortOutputTiles(o1, o2){
+    if(o1 == null || o2 == null){
+        return 0;
+    };
+    
     return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
 }
 
@@ -468,6 +518,7 @@ QuadTree.prototype.getByName = function (name) {
     return null;
 };
 QuadTree.ArrayBuffer = [];
+QuadTree.StackBuffer = [];
 
 // Special Quadtree for tiles
 var ArcTileQuadTree = ArcBaseObject();
@@ -671,6 +722,10 @@ ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, widt
     buffer.length = 0;
     
     this.getObjects(xOffset, yOffset, width, height, buffer);
+    
+    // Optimize drawing calls for the objects.
+    //buffer.sort(arcHorizontalMergeOutputTiles);
+    //buffer.sort(arcVerticalMergeOutputTiles);
     buffer.sort(arcSortOutputTiles);
     
     displayContext.drawTileLayer(buffer);
