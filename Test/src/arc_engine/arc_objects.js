@@ -1,3 +1,118 @@
+var sortOutputTiles = (function(){ // TODO
+    function horizontalMerge(array, i1, i2){
+        let o1 = array[i1];
+        let o2 = array[i2];
+        
+        if (o1 == null){
+            return -1;
+        }else if(o2 == null){
+            return 1;
+        }
+        
+        if (o1.tileSheet == o2.tileSheet && o1.y == o2.y && o1.height == o2.height){
+            if (o1.x == o2.x + o2.width && o1.tile.x == o2.tile.x + o2.tile.width){
+                o2.width += o1.width;
+                o2.tile.width += o1.tile.width;
+                array[i1] = null;
+                return -1;
+            } else if (o2.x == o1.x + o1.width && o2.tile.x == o1.tile.x + o1.tile.width){
+                o1.width += o2.width;
+                o1.tile.width += o2.tile.width;
+                array[i2] = o1;
+                array[i1] = null;
+                return -1;
+            }
+        }
+
+        return o1.x - o2.x;// o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
+    }
+    
+    function verticalMerge(array, i1, i2){
+        let o1 = array[i1];
+        let o2 = array[i2];
+        
+        if (o1 == null){
+            return -1;
+        }else if(o2 == null){
+            return 1;
+        }
+        
+        if (o1.tileSheet == o2.tileSheet && o1.x == o2.x && o1.width == o2.width){
+            if (o1.y == o2.y + o2.height && o1.tile.y == o2.tile.y + o2.tile.height){
+                o2.height += o1.height;
+                o2.tile.height += o1.tile.height;
+                array[i1] = null;
+                return -1;
+            } else if (o2.y == o1.y + o1.height && o2.tile.y == o1.tile.y + o1.tile.height){
+                o1.height += o2.height;
+                o1.tile.height += o2.tile.height;
+                array[i2] = null;
+                return 1;
+            }
+        }
+
+        return o1.y - o2.y;// o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
+    }
+    
+    function partition(array, left, right, compareFunc){
+        let compare = right - 1;
+        let minEnd = left;
+        let maxEnd, result;
+        
+        for(maxEnd = left; maxEnd < compare; ++maxEnd){
+            result = compareFunc(array, maxEnd, compare);
+            if(result < 0){
+                swap(array, maxEnd, minEnd);
+                ++minEnd;
+            }
+        }
+        swap(array, minEnd, compare);
+        return minEnd;
+    }
+    
+    function swap(array, i, j){
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+        return array;
+    }
+    
+    function quickSort(array, left, right, compareFunc){
+        let p = null;
+        
+        if(left < right){
+            p = partition(array, left, right, compareFunc);
+            quickSort(array, left, p, compareFunc);
+            quickSort(array, p + 1, right, compareFunc);
+        }
+        
+        return array;
+    }
+    
+    function removeNulls(array){
+        let index = 0;
+        let count = 0;
+        
+        for(index = 0; index < array.length; ++index){
+            if(array[index] == null){
+                ++count;
+            }else{
+                if(count > 0){
+                    array.splice(0, count);
+                }
+                return;
+            }
+        }
+    }
+    
+    return function(array){
+        quickSort(array, 0, array.length, horizontalMerge);
+//        removeNulls(array);
+        
+        return array;
+    }
+}());
+
 function arcVerticalMergeOutputTiles(o1, o2){
     if(o1 == null || o2 == null){
         return 0;
@@ -21,29 +136,7 @@ function arcVerticalMergeOutputTiles(o1, o2){
     
     return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
 }
-function arcHorizontalMergeOutputTiles(o1, o2){
-    if(o1.tileSheet == null || o2.tileSheet == null){
-        return 0;
-    };
-    
-    if(o1.tileSheet == o2.tileSheet && o1.y == o2.y && o1.height == o2.height){
-        if(o2.x < o1.x && o1.tile.x == o2.tile.x + o2.tile.width){
-            o2.width += o1.width;
-            o2.tile.width += o1.tile.width;
-            o1.tileSheet = null;
-            
-            return -1;
-        }else if(o2.x > o1.x && o2.tile.x == o1.tile.x + o1.tile.width){
-            o1.width += o2.width;
-            o1.tile.width += o2.tile.width;
-            o2.tileSheet = null;
-            
-            return 1;
-        }
-    }
-    
-    //return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
-}
+
 function arcSortOutputTiles(o1, o2){
     if(o1 == null || o2 == null){
         return 0;
@@ -724,8 +817,7 @@ ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, widt
     this.getObjects(xOffset, yOffset, width, height, buffer);
     
     // Optimize drawing calls for the objects.
-    //buffer.sort(arcHorizontalMergeOutputTiles);
-    //buffer.sort(arcVerticalMergeOutputTiles);
+    //sortOutputTiles(buffer);
     buffer.sort(arcSortOutputTiles);
     
     displayContext.drawTileLayer(buffer);
