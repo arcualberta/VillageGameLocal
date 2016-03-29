@@ -110,7 +110,10 @@ HousingSection.prototype.addHouse = function (map, userId, userHouse) {
 };
 // Village Objects
 var VillageObject = ArcBaseObject();
+VillageObject.prototype = Object.create(ArcActor.prototype)
 VillageObject.prototype.init = function (name, type, position, size, rotation, tileId) {
+    ArcActor.prototype.init.call(this, true, true, false);
+    
     this.name = name;
     this.properties = {};
     this.position = [position[0], position[1], position[0] + size[0], position[1] + size[1]];
@@ -119,6 +122,9 @@ VillageObject.prototype.init = function (name, type, position, size, rotation, t
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.rotation = rotation;
     this.type = type;
+};
+VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    displayContext.drawTileById(this.tileId, this.position[0] - xOffset, this.position[1] - yOffset, this.size[0], this.size[1]);
 };
 
 // Trigger Objects
@@ -613,15 +619,18 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     }
     
     // Draw the objects
-    if(this.objects){
-        buffer.length = 0;
-        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
-        
-        for (index = 0; index < buffer.length; ++index) {
-            drawObject = buffer[index];
-            displayContext.drawTileById(drawObject.tileId, drawObject.position[0] - xOffset, drawObject.position[1] - yOffset, drawObject.size[0], drawObject.size[1]);
-        }
+    if(this.objects !== null){
+        this.objects.draw(displayContext, xOffset, yOffset, width, height);
     }
+//    if(this.objects){
+//        buffer.length = 0;
+//        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
+//        
+//        for (index = 0; index < buffer.length; ++index) {
+//            drawObject = buffer[index];
+//            displayContext.drawTileById(drawObject.tileId, drawObject.position[0] - xOffset, drawObject.position[1] - yOffset, drawObject.size[0], drawObject.size[1]);
+//        }
+//    }
     
     // Draw the waypoint
     this.getChild("waypoint").draw(displayContext, xOffset, yOffset, width, height);

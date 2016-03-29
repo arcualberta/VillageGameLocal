@@ -1,4 +1,4 @@
-var sortOutputTiles = (function(){ // TODO
+var sortOutputTiles = (function(){ // NOTE: This currently does not work because it requires overwriting the check value.
     function horizontalMerge(array, i1, i2){
         let o1 = array[i1];
         let o2 = array[i2];
@@ -463,12 +463,35 @@ function arcUpscaleImage(amount, image, gridX, gridY) {
     return canvasOut;
 }
 
+// We are using actor to define any noun object on a quad tree.
+var ArcActor = ArcBaseObject();
+ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
+ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
+    if(useChildren){
+        this.children = {}
+    }
+    
+    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
+    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+};
+ArcActor.prototype.tick = function (timeSinceLastFrame) {
+    if(this.children){
+        ArcRenderableObject.prototype.tick.call(this, timeSinceLastFrame);
+    }
+};
+ArcActor.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    if(this.children){
+        ArcRenderableObject.prototype.draw.call(this, displayContext, xOffset, yOffset, width, height);
+    }
+};
+
+
 // Defining the quadtree class
 // Tutorial from: http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 var QuadTree = ArcBaseObject();
 QuadTree.prototype = Object.create(ArcRenderableObject.prototype);
 QuadTree.prototype.init = function (x, y, width, height, level) {
-    // We don't use the parent init because we donot wish to create more arrays
+    // We don't use the parent init because we do not wish to create more arrays
     this.tickEnabled = true;
     this.drawEnabled = true;
     
@@ -609,6 +632,19 @@ QuadTree.prototype.getByName = function (name) {
     }
 
     return null;
+};
+QuadTree.prototype.tick = function (timeSinceLastFrame) {
+};
+QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    let buffer= QuadTree.ArrayBuffer;
+    let index;
+    buffer.length = 0;
+    
+    this.getObjects(xOffset, yOffset, width, height, buffer);
+   
+    for(index = 0; index < buffer.length; ++index){
+        buffer[index].draw(displayContext, xOffset, yOffset, width, height);
+    }
 };
 QuadTree.ArrayBuffer = [];
 QuadTree.StackBuffer = [];
