@@ -201,6 +201,19 @@ ArcRenderableObjectCollection.prototype = Object.create(ArcRenderableObject.prot
 ArcRenderableObjectCollection.prototype.init = function(tickEnabled, drawEnabled){
     ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
 };
+ArcRenderableObjectCollection.prototype.sort = function(sortFunction){
+    this.children.sort(sortFunction);
+};
+ArcRenderableObjectCollection.prototype.drawWhile = function(drawFunction){
+    let child = null;
+    let index = 0;
+    while(index < this.children.length && drawFunction(child = this.children[index])){
+       ++index;
+    }
+    
+    return child(index - 1);
+}
+
 
 // Basic text renderable
 var ArcRenderableText = ArcBaseObject();

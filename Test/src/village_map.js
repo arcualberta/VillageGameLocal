@@ -610,6 +610,7 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     let index = 0;
     let i = 0;
     let drawObject = null;
+    let players = this.getChild("players");
     
     // Handle the lower layers first
     let layer = this.lowLayers;
@@ -618,10 +619,32 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
         layer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
     
+    
+    
     // Draw the objects
     if(this.objects !== null){
-        this.objects.draw(displayContext, xOffset, yOffset, width, height);
+        buffer.length = 0;
+        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
+//        buffer.sort(function(o1, o2){
+//            return o1.position[1] - o2.position[1];
+//        });
+        
+        for(index = 0; index< buffer.length; ++index){
+            drawObject = buffer[index];
+            
+            // TODO: mix players into the list.
+            
+            
+            drawObject.draw(displayContext, xOffset, yOffset, width, height);
+        }
+        
     }
+    
+    // Draw the waypoint
+    this.getChild("waypoint").draw(displayContext, xOffset, yOffset, width, height);
+    
+    players.draw(displayContext, xOffset, yOffset, width, height);
+    
 //    if(this.objects){
 //        buffer.length = 0;
 //        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
@@ -632,11 +655,8 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
 //        }
 //    }
     
-    // Draw the waypoint
-    this.getChild("waypoint").draw(displayContext, xOffset, yOffset, width, height);
-    
     // Draw the characters
-    this.getChild("players").draw(displayContext, xOffset, yOffset, width, height);
+    
     
     // Handle the higher levels
     layer = this.highLayers;
