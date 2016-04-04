@@ -110,7 +110,10 @@ HousingSection.prototype.addHouse = function (map, userId, userHouse) {
 };
 // Village Objects
 var VillageObject = ArcBaseObject();
+VillageObject.prototype = Object.create(ArcActor.prototype)
 VillageObject.prototype.init = function (name, type, position, size, rotation, tileId) {
+    ArcActor.prototype.init.call(this, true, true, false);
+    
     this.name = name;
     this.properties = {};
     this.position = [position[0], position[1], position[0] + size[0], position[1] + size[1]];
@@ -119,6 +122,9 @@ VillageObject.prototype.init = function (name, type, position, size, rotation, t
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.rotation = rotation;
     this.type = type;
+};
+VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    displayContext.drawTileById(this.tileId, this.position[0] - xOffset, this.position[1] - yOffset, this.size[0], this.size[1]);
 };
 
 // Trigger Objects
@@ -193,10 +199,11 @@ ClickReadTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
 
 // Map Objects
 var VillageMap = ArcBaseObject();
+VillageMap.prototype = Object.create(ArcRenderableObject.prototype);
 VillageMap.prototype.init = function (parent, mapName, studentList) {
+    ArcRenderableObject.prototype.init.call(this, true, true);
     this.parent = parent;
     this.name = mapName;
-    this.players = {};
     this.tileSheets = {};
     this.width = 100;
     this.height = 100;
@@ -216,6 +223,20 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
             name: "Demo Student"
         }
     ];
+    
+    this.setChild(new ArcRenderableObjectCollection(true, true), "players");
+    this.setChild(new ArcWaypoint(), "waypoint");
+};
+VillageMap.prototype.setWaypointLocation = function(location){
+    let waypoint = this.getChild("waypoint");
+    
+    if(location !== null){
+        waypoint.isVisible = true;
+        waypoint.location[0] = location[0];
+        waypoint.location[1] = location[1];
+    }else{
+        waypoint.isVisible = false;
+    }
 };
 VillageMap.prototype.unload = function () {
     // Removes the map from memory  
@@ -568,15 +589,84 @@ VillageMap.prototype.checkTriggers = function (x, y, width, height, activateWalk
         }
     }
 };
-VillageMap.prototype.update = function(timeSinceLast){
-    var updateObjectFuction = function(object){
-        
-    };
+VillageMap.prototype.tick = function(deltaMilliseconds){
+    ArcRenderableObject.prototype.tick.call(this, deltaMilliseconds);
     
-    // Update all objects
+    // Update the layers
+    let i = 0;
+    let layers = this.lowLayers;
     
-    // Update all triggers
+    for(; i < layers.length; ++i){
+        layers[i].tick(deltaMilliseconds);
+    }
+    
+    layers = this.highLayers;
+    for(i = 0; i < layers.length; ++i){
+        layers[i].tick(deltaMilliseconds);
+    }
 };
+VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    let buffer = QuadTree.ArrayBuffer;
+    let index = 0;
+    let i = 0;
+    let drawObject = null;
+    let players = this.getChild("players");
+    
+    // Handle the lower layers first
+    let layer = this.lowLayers;
+    
+    for(index = 0; index < layer.length; ++index){
+        layer[index].draw(displayContext, xOffset, yOffset, width, height);
+    }
+    
+    
+    
+    // Draw the objects
+    if(this.objects !== null){
+        buffer.length = 0;
+        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
+//        buffer.sort(function(o1, o2){
+//            return o1.position[1] - o2.position[1];
+//        });
+        
+        for(index = 0; index< buffer.length; ++index){
+            drawObject = buffer[index];
+            
+            // TODO: mix players into the list.
+            
+            
+            drawObject.draw(displayContext, xOffset, yOffset, width, height);
+        }
+        
+    }
+    
+    // Draw the waypoint
+    this.getChild("waypoint").draw(displayContext, xOffset, yOffset, width, height);
+    
+    players.draw(displayContext, xOffset, yOffset, width, height);
+    
+//    if(this.objects){
+//        buffer.length = 0;
+//        this.objects.getObjects(xOffset, yOffset, width, height, buffer);
+//        
+//        for (index = 0; index < buffer.length; ++index) {
+//            drawObject = buffer[index];
+//            displayContext.drawTileById(drawObject.tileId, drawObject.position[0] - xOffset, drawObject.position[1] - yOffset, drawObject.size[0], drawObject.size[1]);
+//        }
+//    }
+    
+    // Draw the characters
+    
+    
+    // Handle the higher levels
+    layer = this.highLayers;
+    buffer.length = 0;
+    
+    for(index = 0; index < layer.length; ++index){
+        layer[index].draw(displayContext, xOffset, yOffset, width, height);
+    }
+};
+
 var VillageModule = ArcBaseObject();
 VillageModule.prototype.init = function (path, initialMap, onLoaded, onMapChange) {
     this.path = path;

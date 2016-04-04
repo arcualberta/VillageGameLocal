@@ -141,12 +141,14 @@ ArcGraphicsAdapter.prototype.addExistingSpriteSheet = function (id, spriteSheet)
     this.spriteSheets[id] = spriteSheet;
 };
 ArcGraphicsAdapter.prototype.drawTileLayer = function (tiles) {
-    var index = 0;
-    var offset = this.camera.offset;
-    for (; index < tiles.length; ++index) {
-        var tile = tiles[index];
+    let index = 0;
+    let offset = this.camera.offset;
+    let length = tiles.length;
+    let tile, tileSheet;
+    for (; index < length; ++index) {
+        tile = tiles[index];
 
-        var tileSheet = this.tileSheets[tile.tileSheet];
+        tileSheet = this.tileSheets[tile.tileSheet];
         if (tileSheet) {
             this.drawTile(tileSheet, tile.tile, tile.x - offset[0], tile.y - offset[1], tile.width, tile.height);
         }
@@ -202,35 +204,35 @@ ArcGraphicsAdapter.prototype.drawTileLayerWithOffset = function (layer, loopX, l
         }
     }
 };
-ArcGraphicsAdapter.prototype.drawUser = function (user, fontInfo) {
-    var offset = this.camera.offset;
-    var spriteSheet = this.spriteSheets[user.spriteSheet.id];
-    var frame = spriteSheet.getAnimation(user.animation).frames[user.frame];
-
-    var frameCenter = user.location[0] - offset[0];
-    var frameTop = user.location[1] - frame.hHalf - offset[1];
-
-    this.drawImage(spriteSheet.image,
-            frame.x, frame.y, frame.width, frame.height,
-            frameCenter - frame.wHalf, frameTop,
-            frame.drawWidth, frame.drawHeight);
-
-    this.drawMessage(user.name, frameCenter, frameTop - 12, fontInfo);
-};
-ArcGraphicsAdapter.prototype.drawUsers = function (userList) {
-    var index = 0;
-    var context = this.context;
-
-    var fontInfo = {
-        font: "bold 12px sans-serif",
-        fillStyle: "yellow",
-        textAlign: "center"
-    };
-
-    for (var index in userList) {
-        this.drawUser(userList[index], fontInfo);
-    }
-};
+//ArcGraphicsAdapter.prototype.drawUser = function (user, fontInfo) {
+//    var offset = this.camera.offset;
+//    var spriteSheet = this.spriteSheets[user.spriteSheet.id];
+//    var frame = spriteSheet.getAnimation(user.animation).frames[user.frame];
+//
+//    var frameCenter = user.location[0] - offset[0];
+//    var frameTop = user.location[1] - frame.hHalf - offset[1];
+//
+//    this.drawImage(spriteSheet.image,
+//            frame.x, frame.y, frame.width, frame.height,
+//            frameCenter - frame.wHalf, frameTop,
+//            frame.drawWidth, frame.drawHeight);
+//
+//    this.drawMessage(user.name, frameCenter, frameTop - 12, fontInfo);
+//};
+//ArcGraphicsAdapter.prototype.drawUsers = function (userList) {
+//    var index = 0;
+//    var context = this.context;
+//
+//    var fontInfo = {
+//        font: "bold 12px sans-serif",
+//        fillStyle: "yellow",
+//        textAlign: "center"
+//    };
+//
+//    for (var index in userList) {
+//        this.drawUser(userList[index], fontInfo);
+//    }
+//};
 ArcGraphicsAdapter.prototype.update = function (timeSinceLast) {
     this.camera.update(timeSinceLast);
 

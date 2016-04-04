@@ -5,3 +5,4 @@ MAYOR_1,2,Mayor,How are you?,,,,Good,3,Bad ,4,Meh,5
 MAYOR_1,3,Mayor,Great!,speaker.emotion,GOOD,,,,,,,
 MAYOR_1,4,Mayor,That’s too bad.,speaker.emotion,BAD,,,,,,,
 MAYOR_1,5,Mayor,"Yea, I know what you mean.",speaker.emotion,MEH,,,,,,,
+COW,1,Cow,Moo!,,,,,,,,,

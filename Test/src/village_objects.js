@@ -1,64 +1,20 @@
 var Character = ArcBaseObject();
+Character.prototype = Object.create(ArcCharacter.prototype);
 Character.prototype.init = function (id, name) {
+    ArcCharacter.prototype.init.call(this);
     this.id = id;
     this.name = name;
-    this.location = [-100, -100];
-    this.animation = "stand_down";
-    this.frame = 0;
-    this.frameTime = 0;
-    this.spriteSheet = null;
-    this.lastCollisionBox = [0, 0, 0, 0];
-};
-Character.prototype.collisionBox = function () {
-    // TODO: Make it based on frame size;
-    var cb = this.lastCollisionBox;
-
-
-    var frame = false;
-
-    try {
-        frame = this.spriteSheet.getAnimation(this.animation).frames[this.frame];
-    } catch (ex) {
-        console.log(ex);
-    }
-
-    if (frame) {
-        var tileWidth = frame.width;
-        var tileHalfWidth = (tileWidth >> 1) - 1;
-        var tileHalfHeight = frame.height;
-
-        cb[0] = this.location[0] - tileHalfWidth;
-        cb[1] = this.location[1];
-        cb[2] = tileWidth;
-        cb[3] = tileHalfHeight;
-    }
-
-    return cb;
-};
-Character.prototype.animateFrame = function (timeSinceLastFrame) {
-    var frames = this.spriteSheet.getAnimation(this.animation).frames;
-    var frame = frames[this.frame];
-    this.frameTime += timeSinceLastFrame;
-
-    while (this.frameTime > frame.frameTime) {
-        ++this.frame;
-        if (this.frame >= frames.length) {
-            this.frame = 0;
-        }
-
-        this.frameTime -= this.frameTime;
-        frame = frames[this.frame];
-    }
+    
+    let text = new ArcRenderableText(name, {
+        font: "bold 12px sans-serif",
+        fillStyle: "yellow",
+        textAlign: "center"
+    });
+    text.offset[1] = -12;
+    this.setChild(text, "name");
 };
 Character.prototype.update = function (timeSinceLastFrame) {
-    this.animateFrame(timeSinceLastFrame);
-};
-Character.prototype.setAnimation = function (animationName) {
-    if (this.animation !== animationName) {
-        this.animation = animationName;
-        this.frame = 0;
-        this.frameTime = 0;
-    }
+    ArcCharacter.prototype.tick.call(this, timeSinceLastFrame);
 };
 Character.prototype.calculateNextStep = function (village, speed, time, goal, output) {
     var start = village.getClosestTileCoord(this.location[0], this.location[1]);
@@ -114,6 +70,20 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
     output[2] = isChanged;
 
     return output;
+};
+Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
+    var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
+    
+    var frameCenter = this.location[0] - xOffset;
+    var frameTop = this.location[1] - frame.hHalf - yOffset;
+    
+    displayContext.drawImage(spriteSheet.image,
+            frame.x, frame.y, frame.width, frame.height,
+            frameCenter - frame.wHalf, frameTop,
+            frame.drawWidth, frame.drawHeight);
+            
+    this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
 };
 
 // A non playable character

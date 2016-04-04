@@ -93,7 +93,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 //        }
 //    };
 
-    var setDrawScene = function (lowLayers, highLayers, objects, users, offsetX, offsetY, waypointLoc, playerLoc) {
+    var setDrawScene = function (playerLoc, offsetX, offsetY, renderable) {
         var displayAdapter = __this.display;
         displayAdapter.camera.setOffset(offsetX, offsetY);
 
@@ -103,23 +103,9 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         displayAdapter.clear();
 
-        for (index = 0; index < lowLayers.length; ++index) {
-            displayAdapter.drawTileLayer(lowLayers[index]);
-        }
-
-        for (index = 0; index < objects.length; ++index) {
-            drawObject = objects[index];
-            displayAdapter.drawTileById(drawObject.tileId, drawObject.position[0] - offsetX, drawObject.position[1] - offsetY, drawObject.size[0], drawObject.size[1]);
-        }
-		
-		if (waypointLoc !== null) {
-            displayAdapter.drawWaypoint(waypointLoc);
-        }
-
-        displayAdapter.drawUsers(users);
-
-        for (index = 0; index < highLayers.length; ++index) {
-            displayAdapter.drawTileLayer(highLayers[index]);
+        if(renderable != null){
+            let size = displayAdapter.size;
+            renderable.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
         }
 
         displayAdapter.drawToDisplay('UNKNOWN');
