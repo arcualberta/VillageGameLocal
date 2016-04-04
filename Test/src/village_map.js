@@ -514,8 +514,8 @@ VillageMap.prototype.load = function (onload, startName) {
                             var tileSheet = _this.getTileSheetForTile(objectTileId);
                             if (tileSheet !== null) {
                                 var tile = addTile(tileSheet, objectTileId, tileSheet.imageWidth, tileSheet.tileWidth * scale, tileSheet.tileHeight * scale).drawable();
-                                objectWidth = tile.width * scale;
-                                objectHeight = tile.height * scale;
+                                objectWidth = Math.round(objectWidth == 0 ? tile.width * scale : objectWidth);
+                                objectHeight = Math.round(objectWidth == 0 ? tile.height * scale : objectHeight);
 
                                 objectY -= objectHeight;
                             }
