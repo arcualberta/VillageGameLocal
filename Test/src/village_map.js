@@ -396,10 +396,25 @@ VillageMap.prototype.load = function (onload, startName) {
             var tileSheet = new ArcTileSheet($tileset.attr("name"),
                     modulePath + "/maps/" + $image.attr("source"), tiles, false,
                     start, tileWidth, tileHeight, false, imageWidth, parseInt($image.attr("height")));
+            var firstGid = tileSheet.firstGid;
+            _this.tileSheets[tileSheet.name] = tileSheet;
+            
             // Create any special tiles
             $tileset.find("tile").each(function () {
                 var $tile = $(this);
-                var tileId = parseInt($tile.attr("id")) + tileSheet.firstGid;
+                var tileId = parseInt($tile.attr("id")) + firstGid;
+                
+                $image = $tile.find("image");
+                if ($image[0]){
+                imageWidth = parseInt($image.attr("width"));
+                        tileWidth = imageWidth;
+                        tileHeight = parseInt($image.attr("height"));
+                        tileSheet = new ArcTileSheet($tileset.attr("name") + tileId,
+                                modulePath + "/maps/" + $image.attr("source"), tiles, false,
+                                tileId, imageWidth, tileHeight, false, imageWidth, tileHeight);
+                        _this.tileSheets[tileSheet.name] = tileSheet;
+                }
+                
                 var tile;
                 // First check if this is a normal tile or an animated one
                 var $animation = $tile.find("animation");
@@ -420,7 +435,7 @@ VillageMap.prototype.load = function (onload, startName) {
                     }
                 });
             });
-            _this.tileSheets[tileSheet.name] = tileSheet;
+            
         });
         // Layers
         var workingLowerLevels = true;
