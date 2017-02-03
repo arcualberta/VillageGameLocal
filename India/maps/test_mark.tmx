@@ -767,7 +767,7 @@
   <object id="2" name="HouseStart" type="PlayerStart" x="360.667" y="407.333"/>
   <object id="3" name="Cow1" type="NPC" gid="257" x="349" y="509" width="69" height="44"/>
   <object id="4" name="Cow2" type="NPC" gid="257" x="115" y="532" width="69" height="44"/>
-  <object id="5" name="Cow3" type="NPC" gid="258" x="316.848" y="385" width="24.652" height="27"/>
+  <object id="5" name="Cow3" type="NPC" gid="258" x="383" y="500.5" width="89.5" height="96"/>
  </objectgroup>
  <objectgroup name="triggers">
   <object id="6" name="House1" type="ChangeMap" x="340.667" y="352" width="38.6667" height="38.6667">
@@ -787,7 +787,7 @@
     <property name="Message" value="COW"/>
    </properties>
   </object>
-  <object id="9" name="Moo3" type="ClickRead" x="316.167" y="352" width="23.333" height="35">
+  <object id="9" name="Moo3" type="ClickRead" x="403.667" y="415.5" width="65.833" height="81">
    <properties>
     <property name="Follow" value="Cow3"/>
     <property name="Message" value="COW"/>

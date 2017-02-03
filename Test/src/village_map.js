@@ -518,6 +518,14 @@ VillageMap.prototype.load = function (onload, startName) {
                         var objectProperties = {};
                         var object = null;
 
+                        if(Number.isNaN(objectWidth)){
+                            objectWidth = 0;
+                        }
+
+                        if(Number.isNaN(objectHeight)){
+                            objectHeight = 0;
+                        }
+
                         // Load the properties
                         $object.find("properties > property").each(function () {
                             objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value");
@@ -530,7 +538,7 @@ VillageMap.prototype.load = function (onload, startName) {
                             if (tileSheet !== null) {
                                 var tile = addTile(tileSheet, objectTileId, tileSheet.imageWidth, tileSheet.tileWidth * scale, tileSheet.tileHeight * scale).drawable();
                                 objectWidth = Math.round(objectWidth == 0 ? tile.width * scale : objectWidth);
-                                objectHeight = Math.round(objectWidth == 0 ? tile.height * scale : objectHeight);
+                                objectHeight = Math.round(objectHeight == 0 ? tile.height * scale : objectHeight);
 
                                 objectY -= objectHeight;
                             }
