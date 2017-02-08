@@ -5,6 +5,9 @@ ArcBaseAudioAdapter.prototype.init = function () {
 ArcBaseAudioAdapter.prototype.setVolume = function (value) {
 
 };
+ArcBaseAudioAdapter.prototype.getVolume = function () {
+
+};
 ArcBaseAudioAdapter.prototype.loadSound = function (sound, play, onError) {
 
 };
@@ -42,6 +45,9 @@ ArcAudioAdapter.prototype.init = function () {
 };
 ArcAudioAdapter.prototype.setVolume = function (value) {
     this.gainNode.gain.value = value;
+};
+ArcAudioAdapter.prototype.getVolume = function () {
+    return this.gainNode.gain.value;
 };
 ArcAudioAdapter.prototype.loadSound = function (sound, play, onError) {
     var buffers = this.buffers;

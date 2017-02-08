@@ -201,7 +201,20 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     var createIcons = function (panel) {
 
         // Create the sound icon
-        var soundIcon = new Image();
+        var optionsIcon = new Image();
+        optionsIcon.src = resourcesPath + '/Icons/options.gif';
+        $(optionsIcon).click(function(){
+            if(!(menu)){
+                menu = SettingsWindow(game);
+                menu.closeComplete = function(){
+                    menu = null;
+                };
+                menu.show(canvas);
+            }
+        });
+        panel.append(optionsIcon);
+
+        /*var soundIcon = new Image();
         soundIcon.volume = 1.0;
         soundIcon.src = resourcesPath + '/Icons/Status-audio-volume-high-icon.png';
         $(soundIcon).click(function () {
@@ -215,7 +228,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
             __this.setVolume(soundIcon.volume);
         });
-        panel.append(soundIcon);
+        panel.append(soundIcon);*/
     };
 
     this.worldMetaData = {

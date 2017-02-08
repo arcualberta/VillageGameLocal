@@ -346,6 +346,104 @@ function CharacterSelectMenu(spriteSheets) {
 
     return menu;
 }
+
+// Window to set the settings for the game
+// States: 0 - main menu, 1 - General, 2 - Sound, 3 - Video
+function SettingsWindow(game){
+    var result = new GameMenu("", 500, 200);
+
+    //Setup components
+    var dialogSection = $("<div class='dialog_menu'></div>");
+    result.body.append(dialogSection);
+
+    // Component functions
+    var addMenuItem = function(parent, name, content){
+        var section = $("<li></li>");
+        section.append($("<span class='menu-label'></span>").text(name));
+        section.append($("<span class='menu-content'></span>").append(content));
+
+        parent.append(section);
+    };
+
+    var addMenuSlider = function(parent, name, value, min, max, step, onchange){
+        var slider = $("<input></input>");
+        slider.attr("type", "range");
+        slider.attr("min", min);
+        slider.attr("max", max);
+        slider.attr("step", step);
+        slider.attr("value", value);
+
+        slider.bind("change", onchange);
+
+        addMenuItem(parent, name, slider);
+    }
+
+    var addMenuChange = function(parent, name, menu){
+        var li = $("<li></li>").text(name);
+        li.click(function(){
+            setMenu(menu);
+        });
+
+        parent.append(li);
+    }
+
+    var addMenuButtons = function(parent, names, functions){
+        var button;
+        var div = $("<div class='game_center' style='width: 320px; float: left;'></div>");
+
+        for(var i = 0; i < names.length; ++i){
+            button = $("<button></button>");
+            button.text(names[i]);
+            button.click(functions[i]);
+
+            div.append(button);
+        }
+
+        parent.append(div)
+    };
+
+    var setMenu = function(state){
+        dialogSection.empty();
+        var menu = $("<ul></ul>");
+
+        switch(state){
+            case 1:
+                result.titleBar.text("General Settings");
+                addMenuButtons(dialogSection, ["Back"], [function(){ setMenu(0); }]);
+                break;
+            case 2:
+                result.titleBar.text("Sound Settings");
+                addMenuSlider(menu, "Volume", game.audio.getVolume() * 100, 0, 100, 1, 
+                    function(){ 
+                        game.audio.setVolume(this.value / 100);
+                        console.log(game.audio.getVolume());
+                    });
+                addMenuButtons(dialogSection, ["Back"], [function(){ setMenu(0); }]);
+                break;
+            case 3:
+                result.titleBar.text("Video Settings");
+                addMenuButtons(dialogSection, ["Back"], [function(){ setMenu(0); }]);
+                break;
+            default:
+                result.titleBar.text("Settings");
+                addMenuChange(menu, "General", 1);
+                addMenuChange(menu, "Sound", 2);
+                addMenuChange(menu, "Video", 3);
+                addMenuButtons(dialogSection, ["Close"], [
+                    function(){ 
+                        result.close();
+                    }
+                ]);
+        }
+
+        dialogSection.append(menu);
+    };
+
+    setMenu(0);
+
+    return result;
+}
+
 // Window for dialogs
 function DialogMenu(dialog, name, lineNumber) {
     var menu = new GameMenu("", 500, 200);
