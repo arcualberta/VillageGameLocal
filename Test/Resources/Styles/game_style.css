@@ -30,6 +30,7 @@
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
+
 .game_dialogWindow h3, .game_dialogWindow input, .game_dialogWindow button {
     font-size: 1.2em;
 }
@@ -136,5 +137,20 @@
 
 .dialog_option:hover{
     color: lawngreen;
+    cursor: pointer;
+}
+
+.dialog_menu > ul {
+    list-style-type: none;
+    color: #2e2c27;
+    font-weight: bold;
+}
+
+.dialog_menu > ul > li {
+
+}
+
+.dialog_menu > ul > li:hover {
+    color: #1f942a;
     cursor: pointer;
 }

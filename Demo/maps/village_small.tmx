@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="100" tilewidth="16" tileheight="16">
- <tileset firstgid="1" name="VillageSheet" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="11">
+ <tileset firstgid="1" name="VillageSheet" tilewidth="16" tileheight="16" tilecount="256" columns="16">
   <image source="../tiles/tileset.png" width="256" height="256"/>
   <tile id="5">
    <animation>
@@ -273,7 +273,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="257" name="Clouds" tilewidth="200" tileheight="200">
+ <tileset firstgid="257" name="Clouds" tilewidth="200" tileheight="200" tilecount="3" columns="3">
   <image source="../tiles/cloud.png" width="600" height="200"/>
  </tileset>
  <layer name="lower" width="100" height="100">
@@ -588,36 +588,43 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup name="objects" visible="0">
-  <object name="MayorSign" type="Object" gid="148" x="352" y="112"/>
-  <object name="StudentHouses" type="StudentHouse" x="222" y="257" width="511" height="463">
+ <objectgroup name="objects">
+  <object id="1" name="MayorSign" type="Object" gid="148" x="352" y="112" width="16" height="16"/>
+  <object id="2" name="StudentHouses" type="StudentHouse" x="222" y="257" width="511" height="463">
    <properties>
     <property name="Maps" value="house_one"/>
    </properties>
   </object>
-  <object name="CabinSign" type="ClickMessage" gid="148" x="475.904" y="98.4841" rotation="-1.09024">
+  <object id="3" name="CabinSign" type="ClickMessage" gid="148" x="475.904" y="98.4841" width="16" height="16" rotation="-1.09024">
    <properties>
     <property name="message" value="Shed"/>
    </properties>
   </object>
-  <object name="MainStart" type="PlayerStart" x="97" y="462" width="14" height="16"/>
-  <object name="MayorStart" type="PlayerStart" x="336.25" y="112" width="14" height="16"/>
+  <object id="4" name="MainStart" type="PlayerStart" x="97" y="462" width="14" height="16"/>
+  <object id="5" name="MayorStart" type="PlayerStart" x="336.25" y="112" width="14" height="16"/>
+  <object id="10" name="TaskSign" type="Object" gid="164" x="127.5" y="577.5" width="16" height="16"/>
  </objectgroup>
  <objectgroup name="triggers">
-  <object name="MayorDoor" type="ChangeMap" x="336.682" y="65.5909" width="14.5" height="32.25">
+  <object id="6" name="MayorDoor" type="ChangeMap" x="336.682" y="65.5909" width="14.5" height="32.25">
    <properties>
     <property name="Map" value="mayor_house"/>
    </properties>
   </object>
-  <object name="MayorSignTrigger" type="ClickRead" x="352.75" y="96" width="14.75" height="13.5">
+  <object id="7" name="MayorSignTrigger" type="ClickRead" x="352.75" y="96" width="14.75" height="13.5">
    <properties>
     <property name="Message" value="MAYOR_SIGN"/>
     <property name="Object" value="MayorSign"/>
    </properties>
   </object>
-  <object name="Example1" type="SceneTrigger" x="60" y="823" width="95" height="51">
+  <object id="8" name="Example1" type="SceneTrigger" x="60" y="823" width="95" height="51">
    <properties>
     <property name="onWalk" value="village_small_example1"/>
+   </properties>
+  </object>
+  <object id="9" name="TestEggTask" type="ClickTask" x="125" y="555" width="21.5" height="22.5">
+   <properties>
+    <property name="task" value="egg"/>
+    <property name="title" value="Egg Paint"/>
    </properties>
   </object>
  </objectgroup>

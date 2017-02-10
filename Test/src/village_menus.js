@@ -350,7 +350,7 @@ function CharacterSelectMenu(spriteSheets) {
 // Window to set the settings for the game
 // States: 0 - main menu, 1 - General, 2 - Sound, 3 - Video
 function SettingsWindow(game){
-    var result = new GameMenu("", 500, 200);
+    var result = new GameMenu("", 300, 200);
 
     //Setup components
     var dialogSection = $("<div class='dialog_menu'></div>");
@@ -404,7 +404,8 @@ function SettingsWindow(game){
 
     var setMenu = function(state){
         dialogSection.empty();
-        var menu = $("<ul></ul>");
+        var menu = $("<ul class='game_center'></ul>");
+        dialogSection.append(menu);
 
         switch(state){
             case 1:
@@ -435,8 +436,6 @@ function SettingsWindow(game){
                     }
                 ]);
         }
-
-        dialogSection.append(menu);
     };
 
     setMenu(0);

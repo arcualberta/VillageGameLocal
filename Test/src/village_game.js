@@ -147,11 +147,19 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         }
     };
 
-    this.loadTask = function (title, url) {
+    this.loadTask = function (title, url, onclose) {
         menu = new TaskMenu(title, canvas.width - 50, canvas.height - 50);
 
         __this.currentTask = new TaskScript(menu.canvas, title, url, resourcesPath, __this.taskWorker);
         menu.task = __this.currentTask;
+
+        menu.closeComplete = function(){
+            if(onclose){
+                onlcose(menu);
+            }
+
+            menu = null;
+        }
 
         menu.show(canvas);
     };
@@ -289,6 +297,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             };
             menu.show(canvas);
         });
+        worldAdapter.loadTask = __this.loadTask;
 
         __this.villageDisplay = new VillageDisplay(__this, worldAdapter, javascriptPath + "/village_worker.js", setDrawScene);
         __this.villageDisplay.resize(canvas.width, canvas.height);

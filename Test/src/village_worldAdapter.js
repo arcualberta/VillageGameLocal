@@ -24,3 +24,6 @@ WorldAdapter.prototype.getSpriteSheet = function (id) {
 WorldAdapter.prototype.getSpriteSheetList = function () {
 
 };
+WorldAdapter.prototype.getTaskScript = function(taskScript) {
+
+};

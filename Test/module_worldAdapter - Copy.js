@@ -298,3 +298,6 @@ WorldAdapter.prototype.init = function (stateResponseFunction) {
 WorldAdapter.prototype.getSpriteSheetList = function () {
     return this.module.spriteSheets;
 };
+WorldAdapter.prototype.getResource = function(path){
+    
+}

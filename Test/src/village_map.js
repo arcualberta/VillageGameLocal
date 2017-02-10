@@ -191,7 +191,31 @@ ClickReadTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
     if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
         this.activated = true;
 
-        worldAdapter.showMessage(this.message, false, function () {
+        worldAdapter.loadTask(this.message, false, function () {
+            _this.activated = false;
+        });
+    }
+};
+
+var ClickTaskTrigger = ArcBaseObject();
+ClickTaskTrigger.prototype = Object.create(Trigger.prototype);
+ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation, title, task){
+    Trigger.prototype.init.call(this, name, type, position, size, rotation);
+    this.task = task;
+    this.title = title;
+    this.activated = false;
+}
+ClickTaskTrigger.prototype.clickTrigger = function (map, worldAdapter, player) {
+    player.showWaypoint = false;
+    player.waypointLoc[0] = this.centre[0];
+    player.waypointLoc[1] = this.centre[1];
+};
+ClickTaskTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
+    var _this = this;
+    if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
+        this.activated = true;
+
+        worldAdapter.loadTask(this.task, worldAdapter.getTaskScript(this.task), function (model) {
             _this.activated = false;
         });
     }
@@ -295,7 +319,9 @@ VillageMap.prototype.addTrigger = function ($trigger, scale) {
         trigger = new ChangeMapTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, this.parent, triggerProperties["map"], triggerProperties["start"]);
     } else if (triggerType === "clickread") {
         trigger = new ClickReadTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["message"], triggerProperties["object"]);
-    } else {
+    } else if(triggerType === "clicktask"){
+        trigger = new ClickTaskTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["title"], triggerProperties["task"]);
+    }else {
         trigger = new Trigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
     }
     

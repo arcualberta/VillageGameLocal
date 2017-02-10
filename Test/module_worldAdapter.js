@@ -302,3 +302,6 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction) 
 WorldAdapter.prototype.getSpriteSheetList = function () {
     return this.module.spriteSheets;
 };
+WorldAdapter.prototype.getTaskScript = function(taskScript) {
+    return this.path + "/tasks/" + taskScript + ".js";
+};
