@@ -303,5 +303,5 @@ WorldAdapter.prototype.getSpriteSheetList = function () {
     return this.module.spriteSheets;
 };
 WorldAdapter.prototype.getTaskScript = function(taskScript) {
-    return this.path + "/tasks/" + taskScript + ".js";
+    return this.module.path + "/tasks/" + taskScript + ".js";
 };

@@ -191,7 +191,7 @@ ClickReadTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
     if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
         this.activated = true;
 
-        worldAdapter.loadTask(this.message, false, function () {
+         worldAdapter.showMessage(this.message, false, function () {
             _this.activated = false;
         });
     }

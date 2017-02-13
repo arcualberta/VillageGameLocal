@@ -623,7 +623,7 @@
   </object>
   <object id="9" name="TestEggTask" type="ClickTask" x="125" y="555" width="21.5" height="22.5">
    <properties>
-    <property name="task" value="egg"/>
+    <property name="task" value="EggTask"/>
     <property name="title" value="Egg Paint"/>
    </properties>
   </object>
