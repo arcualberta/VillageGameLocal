@@ -150,7 +150,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     this.loadTask = function (title, url, onclose) {
         menu = new TaskMenu(title, canvas.width - 50, canvas.height - 50);
 
-        __this.currentTask = new TaskScript(menu.canvas, title, url, resourcesPath, __this.taskWorker);
+        __this.currentTask = new TaskScript(menu.canvas, title, url, worldAdapter.module.path, __this.taskWorker);
         menu.task = __this.currentTask;
 
         menu.closeComplete = function(){

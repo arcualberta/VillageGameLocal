@@ -91,7 +91,7 @@ ArcGraphicsAdapter.prototype.clear = function () {
 };
 ArcGraphicsAdapter.prototype.drawWaypoint = function (waypointLoc, xOffset, yOffset) {
 };
-ArcGraphicsAdapter.prototype.drawToDisplay = function (fps) {
+ArcGraphicsAdapter.prototype.drawToDisplay = function (clearSwap) {
 };
 ArcGraphicsAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
 };
@@ -278,7 +278,11 @@ ArcCanvasAdapter.prototype.init = function (canvas) {
         }
     };
 
-    this.drawToDisplay = function (fps) {
+    this.drawToDisplay = function (clearSwap) {
+        if(clearSwap){
+            swapContext.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
         swapContext.drawImage(backgroundCanvas, 0, 0);
 
         /*if(fps){
@@ -887,7 +891,7 @@ ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fi
 
     textContext.fillText(message, x, y);
 };
-ArcGLCanvasAdapter.prototype.drawToDisplay = function (fps) {
+ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
     var gl = this.context;
     var __this = this;
     var postProgram = this.postProgram;

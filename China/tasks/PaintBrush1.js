@@ -1,4 +1,8 @@
 (function(){
+	var distance = function(start, end){
+		return Math.sqrt(Math.pow(start[0] - end[0], 2.0) + Math.pow(start[1] - end[1], 2.0));
+	};
+
 	var result = {
 		draw: function(display, model, drawModel){
 			if(model.brushUrl && !(display.brushImage)){
@@ -6,20 +10,20 @@
 				display.brushImage.scale = function(amount){
 					display.brushImage.scaleWidth = Math.ceil(display.brushImage.width * amount);
 					display.brushImage.scaleHeight = Math.ceil(display.brushImage.height * amount);
-					display.brushImage.halfWidth = display.brushImage.width >> 1;
-					display.brushImage.halfHeight = display.brushImage.height >> 1;
+					display.brushImage.halfWidth = display.brushImage.scaleWidth >> 1;
+					display.brushImage.halfHeight = display.brushImage.scaleHeight >> 1;
 				}
 				display.brushImage.onload = function(){
-					display.brushImage.scale(1.0);
+					display.brushImage.scale(0.15);
 				}
 				display.brushImage.src = model.brushUrl;
 			}
 
-			if(display.brushImage.complete){
+			if(display.brushImage && display.brushImage.complete){
 				var line = model.line;
 				if(line && line.time > 0){
 					//DRAW the line
-					var dotCount = Math.ceil(line.time * model.dotsPerMilisecond);
+					var dotCount = Math.max(1, Math.ceil(distance(line.start, line.end) / model.brushSpacing));
 					var dotStep = 1 / dotCount;
 					var loc = 0;
 					var locDif = 1.0;
@@ -37,6 +41,8 @@
 					}
 				}
 			}
+
+			display.drawToDisplay(true);
 		},
 		update: function(params){
 			var time = params.time;
@@ -52,34 +58,38 @@
             			end: [0, 0],
             			time: 0
             		};
-            		model.dotsPerMilisecond = 60 / 1000;
-            		model.brushUrl = params.resoursePath + "/tasks/Brush.png";
+            		model.brushSpacing = 2;
+            		model.state = 1;
             		break;
             	case 1:
+            		var line = model.line;
             		// Reset the values
 					line.start[0] = line.end[0];
 					line.start[1] = line.end[1];
 					line.time = 0;
 
             		// Update the task
-            		for(var i = params.actions; i < params.actions.length; ++i){
+            		for(var i in params.actions){
             			var action = params.actions[i];
 
-            			if(model.isDrawing){
+            			if(line.isDrawing){
 	            			switch(action.id){
 	            				case CONTROL_MOUSE1_UP:
-	            					model.isDrawing = false;
+	            					line.isDrawing = false;
 	            				case CONTROL_MOUSE1_DRAG:
-	            					model.end[0] = action.x;
-	            					model.end[1] = action.y;
-	            					model.time = time;
+	            					line.end[0] = action.data.x;
+	            					line.end[1] = action.data.y;
+	            					line.time = time;
 	            			}
             			}else {
             				switch(action.id){
             					case CONTROL_MOUSE1_DOWN:
-            						model.line.isDrawing = true;
-            						model.line.start[0] = action.x;
-            						model.line.start[1] = action.y;
+            						line.isDrawing = true;
+            						line.start[0] = action.data.x;
+            						line.start[1] = action.data.y;
+            						line.end[0] = action.data.x;
+            						line.end[1] = action.data.y;
+            						line.time = time;
             				}
             			}
             		}
@@ -87,6 +97,7 @@
 
             	default:
             		if(!(model.state)){
+            			model.brushUrl = params.resourcePath + "/tasks/Brush.png";
             			model.state = 0;
             		};
             }
