@@ -17,6 +17,21 @@
 					display.brushImage.scale(0.15);
 				}
 				display.brushImage.src = model.brushUrl;
+
+				drawModel.bottom = display.size[1] - 20 - 96;
+				drawModel.buttonAccept = [10, display.size[1] - 10 - 96, 96, 96];
+
+				display.acceptImage = new Image();
+				display.acceptImage.onload = function(){
+					display.drawImage(display.acceptImage, 0, 0, display.acceptImage.width, display.acceptImage.height, 
+						drawModel.buttonAccept[0], drawModel.buttonAccept[1], drawModel.buttonAccept[2], drawModel.buttonAccept[3]);
+
+					drawModel.buttonAccept[2] += drawModel.buttonAccept[0];
+					drawModel.buttonAccept[3] += drawModel.buttonAccept[1];
+				}
+				
+
+				display.acceptImage.src = model.acceptUrl;
 			}
 
 			if(display.brushImage && display.brushImage.complete){
@@ -78,18 +93,27 @@
 	            					line.isDrawing = false;
 	            				case CONTROL_MOUSE1_DRAG:
 	            					line.end[0] = action.data.x;
-	            					line.end[1] = action.data.y;
+	            					line.end[1] = Math.min(action.data.y, drawModel.bottom);
 	            					line.time = time;
 	            			}
             			}else {
             				switch(action.id){
             					case CONTROL_MOUSE1_DOWN:
-            						line.isDrawing = true;
-            						line.start[0] = action.data.x;
-            						line.start[1] = action.data.y;
-            						line.end[0] = action.data.x;
-            						line.end[1] = action.data.y;
-            						line.time = time;
+            						if(action.data.y < drawModel.bottom){
+	            						line.isDrawing = true;
+	            						line.start[0] = action.data.x;
+	            						line.start[1] = action.data.y;
+	            						line.end[0] = action.data.x;
+	            						line.end[1] = action.data.y;
+            						}
+            						break;
+
+            					case CONTROL_MOUSE1_UP:
+            						if(!(action.data.x < drawModel.buttonAccept[0] || action.data.x > drawModel.buttonAccept[2]
+            							|| action.data.y < drawModel.buttonAccept[1] || action.data.y > drawModel.buttonAccept[3])){
+            							self.postMessage([WORKER_CLOSE_TASK_FUNCTION, model]);
+            						}
+            						break;
             				}
             			}
             		}
@@ -98,6 +122,7 @@
             	default:
             		if(!(model.state)){
             			model.brushUrl = params.resourcePath + "/tasks/Brush.png";
+            			model.acceptUrl = params.resourcePath + "/images/accept.png";
             			model.state = 0;
             		};
             }
@@ -105,7 +130,8 @@
             self.postMessage([WORKER_DRAW_SCENE, model]);
 		},
 		done: function(display, model, drawMode){
-
+			console.log("Closing Task!");
+            return true;
 		},
 		reward: function(display, model, drawmodel){
 

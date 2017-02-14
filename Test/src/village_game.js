@@ -155,7 +155,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         menu.closeComplete = function(){
             if(onclose){
-                onlcose(menu);
+                onclose(menu);
             }
 
             menu = null;
