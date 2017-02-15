@@ -18,8 +18,8 @@
 				}
 				display.brushImage.src = model.brushUrl;
 
-				drawModel.bottom = display.size[1] - 20 - 96;
-				drawModel.buttonAccept = [10, display.size[1] - 10 - 96, 96, 96];
+				drawModel.bottom = display.size[1] - 20 - 32;
+				drawModel.buttonAccept = [10, display.size[1] - 10 - 32, 32, 32];
 
 				display.acceptImage = new Image();
 				display.acceptImage.onload = function(){
