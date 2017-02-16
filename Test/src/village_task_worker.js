@@ -2,6 +2,7 @@
 importScripts("arc_engine/arc_constants.js");
 importScripts("arc_engine/arc_objects.js");
 importScripts("village_constants.js");
+importScripts("village_script_functions.js");
 importScripts("village_objects.js");
 importScripts("village_functions.js");
 

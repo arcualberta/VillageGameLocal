@@ -111,9 +111,8 @@ HousingSection.prototype.addHouse = function (map, userId, userHouse) {
 // Village Objects
 var VillageObject = ArcBaseObject();
 VillageObject.prototype = Object.create(ArcActor.prototype)
-VillageObject.prototype.init = function (name, type, position, size, rotation, tileId) {
-    ArcActor.prototype.init.call(this, true, true, false);
-    
+VillageObject.prototype.init = function (name, type, position, size, rotation, tileId, parameters) {
+    ArcActor.prototype.init.call(this, true, true, false);  
     this.name = name;
     this.properties = {};
     this.position = [position[0], position[1], position[0] + size[0], position[1] + size[1]];
@@ -122,6 +121,7 @@ VillageObject.prototype.init = function (name, type, position, size, rotation, t
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.rotation = rotation;
     this.type = type;
+    this.parameters = parameters;
 };
 VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     displayContext.drawTileById(this.tileId, this.position[0] - xOffset, this.position[1] - yOffset, this.size[0], this.size[1]);
@@ -571,13 +571,17 @@ VillageMap.prototype.load = function (onload, startName) {
                         }
 
                         if (objectType === "playerstart") {
-                            object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId);
+                            object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
                             _this.objects.insert(object);
                         } else if (objectType === "studenthouse") {
-                            _this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps']));
+                            _this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps'], objectProperties));
                         } else if (objectType === "none") {
-                        } else {
-                            object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId);
+
+                        } /*else if (objectType === "npc"){
+                             object = new NPC(objectName, "idle", objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
+                             _this.objects.insert(object);
+                        } */else {
+                            object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
                             _this.objects.insert(object);
                         }
                     });

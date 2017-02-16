@@ -162,6 +162,15 @@ function ArcBaseObject() {
     };
 }
 
+// An object used to attach multiple scripting funcitons to a class.
+var ArcScriptObject = new ArcBaseObject();
+ArcScriptObject.prototype.init = function(attachObject){
+	this.attachObject = attachObject;
+};
+ArcScriptObject.prototype.AttachFunction = function(func){
+	this.attachObject[func] = this[func];
+};
+
 // All objects that are renderable to the scene
 var ArcRenderableObject = new ArcBaseObject();
 ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){

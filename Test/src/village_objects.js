@@ -1,5 +1,6 @@
 var Character = ArcBaseObject();
 Character.prototype = Object.create(ArcCharacter.prototype);
+new CharacterScripts(Character.prototype);
 Character.prototype.init = function (id, name) {
     ArcCharacter.prototype.init.call(this);
     this.id = id;
@@ -88,17 +89,20 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
 
 // A non playable character
 var NPC = ArcBaseObject();
-NPC.ACTIONS = {
-    "none": 0, // The character does not move
-    "wander": 1, // randomly walk around
+NPC.STATE = {
+    "idle": 0, // The character does not move
+    "talk": 1, // randomly walk around
     "path": 2, // The character follows a given path
 }
 NPC.prototype = Object.create(Character.prototype);
-NPC.prototype.init = function (id, name, action, properties) {
+NPC.prototype.init = function (id, name, state, location, properties) {
     Character.prototype.init.call(this, id, name);
     this.action = action;
     this.waypoint = [0, 0];
     this.properties = properties;
+
+    this.location[0] = location[0];
+    this.location[1] = location[1];
 };
 NPC.prototype.update = function (timeSinceLastFrame) {
     this.animateFrame(timeSinceLastFrame);
