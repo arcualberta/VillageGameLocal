@@ -577,7 +577,7 @@ VillageMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
 // Checks if a rectangular area is blocked.
 VillageMap.prototype.isBlocked = function (x, y, width, height) {
     var checkVal = null;
-    for(var i = 0; i < this.waypointIndex; ++i){
+    for(var i = this.waypointIndex - 1; i > -1; --i){
         checkVal = this.children[i].isBlocked(x, y, width, height);
         if(checkVal !== null){
             return checkVal;

@@ -183,7 +183,7 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
         this.player.waypointLoc[0] = this.playerStart[0];
         this.player.waypointLoc[1] = this.playerStart[1];
 
-        players.setChild(this.player.user, this.player.user.id);
+        players.addChild(this.player.user, this.player.user.id);
     }
 
     // Set the tilesheet
