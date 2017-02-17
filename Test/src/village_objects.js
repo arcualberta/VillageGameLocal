@@ -49,7 +49,11 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
     //}
 
     if (!isChanged) {
-        return this.location;
+        output[0] = this.location[0];
+        output[1] = this.location[1];
+        output[2] = false;
+
+        return output;
     }
 
     // TODO: Define an acutal bounding box variable
@@ -97,18 +101,17 @@ NPC.STATE = {
 NPC.prototype = Object.create(Character.prototype);
 NPC.prototype.init = function (id, name, state, location, properties) {
     Character.prototype.init.call(this, id, name);
-    this.action = action;
+    this.state = state;
     this.waypoint = [0, 0];
     this.properties = properties;
 
-    this.location[0] = location[0];
-    this.location[1] = location[1];
+    this.updateLocation(location[0], location[1]);
 };
 NPC.prototype.update = function (timeSinceLastFrame) {
     this.animateFrame(timeSinceLastFrame);
 };
 NPC.prototype.calculateWaypoint = function (map) {
-    switch (this.action) {
+    switch (this.state) {
         case NPC.ACTIONS.wander:
             if (Math.random() < 0.01) {// TODO: Change to a math defined value
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="80" height="50" tilewidth="30" tileheight="30" nextobjectid="6">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="80" height="50" tilewidth="30" tileheight="30" nextobjectid="11">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="64" columns="8">
   <image source="../tiles/tileset.png" width="240" height="240"/>
   <tile id="9">
@@ -236,14 +236,14 @@
  </layer>
  <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="393" y="428" width="20" height="19"/>
-  <object id="2" name="Wukong" type="NPC" gid="78" x="2010" y="255.5" width="30" height="50">
+  <object id="2" name="Wukong" type="Object" gid="78" x="2010" y="255.5" width="30" height="50">
    <properties>
-    <property name="onIdle">this.WalkRandom();
+    <property name="onIdle">this.WalkRandom(time);
 </property>
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <properties>
    <property name="Follow" value="Wukong"/>
    <property name="Message" value="DIALOGUE_4"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="11">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="12">
  <tileset firstgid="1" name="VillageSheet" tilewidth="16" tileheight="16" tilecount="256" columns="16">
   <image source="../tiles/tileset.png" width="256" height="256"/>
   <tile id="5">
@@ -603,8 +603,14 @@
   <object id="4" name="MainStart" type="PlayerStart" x="97" y="462" width="14" height="16"/>
   <object id="5" name="MayorStart" type="PlayerStart" x="336.25" y="112" width="14" height="16"/>
   <object id="10" name="TaskSign" type="Object" gid="164" x="127.5" y="577.5" width="16" height="16"/>
+  <object id="11" name="villager_1" type="NPC" gid="164" x="315" y="226" width="16" height="16">
+   <properties>
+    <property name="onidle" value="this.WalkRandom(time);"/>
+    <property name="spritesheet" value="dancer_male_large2"/>
+   </properties>
+  </object>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="6" name="MayorDoor" type="ChangeMap" x="336.682" y="65.5909" width="14.5" height="32.25">
    <properties>
     <property name="Map" value="mayor_house"/>

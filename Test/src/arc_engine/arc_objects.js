@@ -178,6 +178,15 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
     this.name = null;
+    this.location = [-100, -100, -100, -100];
+    this.size = [0, 0];
+};
+ArcRenderableObject.prototype.updateLocation = function(x, y){
+    let loc = this.location;
+    loc[0] = x;
+    loc[1] = y;
+    loc[2] = x + this.size[0];
+    loc[3] = y + this.size[1];
 };
 ArcRenderableObject.prototype.addChild = function(child, name, index){
     var c = this.indexOfChild(name);
@@ -273,7 +282,6 @@ var ArcWaypoint = ArcBaseObject();
 ArcWaypoint.prototype = Object.create(ArcRenderableObject.prototype);
 ArcWaypoint.prototype.init = function(){
     ArcRenderableObject.prototype.init.call(this, false, true);
-    this.location = [0, 0];
     this.isVisible = false;
 };
 ArcWaypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
@@ -287,8 +295,6 @@ var ArcCharacter = ArcBaseObject();
 ArcCharacter.prototype = Object.create(ArcRenderableObject.prototype);
 ArcCharacter.prototype.init = function(){
     ArcRenderableObject.prototype.init.call(this, true, true);
-    
-    this.location = [-100, -100];
     this.animation = "stand_down";
     this.frame = 0;
     this.frameTime = 0;
@@ -520,9 +526,7 @@ function arcUpscaleImage(amount, image, gridX, gridY) {
 var ArcActor = ArcBaseObject();
 ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
 ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
-    if(useChildren){
-        this.children = {}
-    }
+    ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
     
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
@@ -544,15 +548,20 @@ ArcActor.prototype.draw = function(displayContext, xOffset, yOffset, width, heig
 var QuadTree = ArcBaseObject();
 QuadTree.prototype = Object.create(ArcRenderableObject.prototype);
 QuadTree.prototype.init = function (x, y, width, height, level) {
+    ArcRenderableObject.prototype.init.call(this, true, true);
     // We don't use the parent init because we do not wish to create more arrays
     this.tickEnabled = true;
     this.drawEnabled = true;
     
     this.level = level ? level : 0;
-    this.bounds = [x, y, width, height, width / 2, height / 2];
     this.nodes = [null, null, null, null]; //Northwest, Northeast, Southeast, Southwest
     this.objects = []; // Objects fully contained in this area
+    this.halfSize = [width / 2, height / 2];
 
+    this.size[0] = width;
+    this.size[1] = height;
+
+    this.updateLocation(x, y)
 };
 QuadTree.prototype.unload = function(){
     this.clear();
@@ -579,10 +588,10 @@ QuadTree.prototype.clear = function (onObjectClear) {
     }
 };
 QuadTree.prototype.split = function () {
-    var halfWidth = this.bounds[4];
-    var halfHeight = this.bounds[5];
-    var x = this.bounds[0];
-    var y = this.bounds[1];
+    var halfWidth = this.halfSize[0];
+    var halfHeight = this.halfSize[1];
+    var x = this.location[0];
+    var y = this.location[1];
     var level = this.level + 1;
     this.nodes[0] = new QuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
     this.nodes[1] = new QuadTree(x, y, halfWidth, halfHeight, level);
@@ -590,9 +599,9 @@ QuadTree.prototype.split = function () {
     this.nodes[3] = new QuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
 };
 QuadTree.prototype.getIndex = function (x, y, width, height) {
-    let bounds = this.bounds;
-    let hMid = bounds[0] + bounds[4];
-    let vMid = bounds[1] + bounds[5];
+    let bounds = this.location;
+    let hMid = bounds[0] + this.halfSize[0];
+    let vMid = bounds[1] + this.halfSize[1];
     
     // Check if the object fits in the top and bottom quadtrants
     let fitNorth = (y + height) < vMid;
@@ -618,7 +627,7 @@ QuadTree.prototype.getIndex = function (x, y, width, height) {
 QuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
     if (nodes[0] !== null) {
-        var index = this.getIndex(value.position[0], value.position[1], value.size[0], value.size[1]);
+        var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
         if (index > -1) {
             nodes[index].insert(value);
             return;
@@ -632,11 +641,9 @@ QuadTree.prototype.insert = function (value) {
         }
 
         var i = 0;
-        alert(i);
         while (i < this.objects.length) {
             var o = this.objects[i];
-            var index = this.getIndex(o.position[0], o.position[1], o.size[0], o.size[1]);
-            alert(index);
+            var index = this.getIndex(o.location[0], o.location[1], o.size[0], o.size[1]);
             if (index > -1) {
                 this.objects.splice(i, 1);
                 this.nodes[index].insert(o);
@@ -724,10 +731,10 @@ ArcTileQuadTree.prototype.SPLIT_CHECK = {
     ySplits: []
 };
 ArcTileQuadTree.prototype.split = function () {
-    var halfWidth = this.bounds[4];
-    var halfHeight = this.bounds[5];
-    var x = this.bounds[0];
-    var y = this.bounds[1];
+    var halfWidth = this.halfSize[0];
+    var halfHeight = this.halfSize[1];
+    var x = this.location[0];
+    var y = this.location[1];
     var level = this.level + 1;
 
     this.nodes[0] = new ArcTileQuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
@@ -743,7 +750,7 @@ ArcTileQuadTree.prototype.split = function () {
 };
 ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeight) {
     this.insert({
-        position: [x, y, x + tileWidth, y + tileHeight],
+        location: [x, y, x + tileWidth, y + tileHeight],
         size: [tileWidth, tileHeight],
         tile: tile
     });
@@ -751,7 +758,7 @@ ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeig
 ArcTileQuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
     if (nodes[0] !== null) {
-        var index = this.getIndex(value.position[0], value.position[1], value.size[0], value.size[1]);
+        var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
         if (index > -1) {
             nodes[index].insert(value);
             return;
@@ -799,20 +806,20 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
 
         // If this repeatable, split it up as needed
         if (repeat) {
-            var bounds = node.bounds;
+            var bounds = node.location;
             var xCheck = x + node.offset[0];
             var yCheck = y + node.offset[1];
 
             if (xCheck < bounds[0]) {
-                x += node.bounds[2];
-            } else if (xCheck > node.bounds[0] + node.bounds[2]) {
-                x -= node.bounds[2];
+                x += node.size[0];
+            } else if (xCheck > node.location[2]) {
+                x -= node.size[0];
             }
 
             if (yCheck < bounds[1]) {
-                y += node.bounds[3];
-            } else if (yCheck > node.bounds[1] + node.bounds[3]) {
-                y -= node.bounds[3];
+                y += node.size[1];
+            } else if (yCheck > node.location[3]) {
+                y -= node.size[1];
             }
         }
 
@@ -820,8 +827,8 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
             object = node.objects[i];
             if (object.tile.isDrawable) {
                 returnObjects.push({
-                    x: object.position[0] - node.offset[0],
-                    y: object.position[1] - node.offset[1],
+                    x: object.location[0] - node.offset[0],
+                    y: object.location[1] - node.offset[1],
                     width: object.size[0],
                     height: object.size[1],
                     tile: object.tile.drawable(),
@@ -853,8 +860,8 @@ ArcTileQuadTree.prototype.isBlocked = function (x, y, width, height) {
     for (; i < this.objects.length; ++i) {
         checkObject = this.objects[i];
         if (!checkObject.tile.walkable) { //If not walkable, check if we overlap with it.
-            if (x > checkObject.position[2] || (x + width) < checkObject.position[0]
-                    || y > checkObject.position[3] || (y + height) < checkObject.position[1]) {
+            if (x > checkObject.location[2] || (x + width) < checkObject.location[0]
+                    || y > checkObject.location[3] || (y + height) < checkObject.location[1]) {
                 // Does not overlap
             } else {
                 return true;
@@ -880,8 +887,8 @@ ArcTileQuadTree.prototype.isBlocked = function (x, y, width, height) {
 };
 ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
     if (this.scroll !== null) {
-        let width = this.bounds[2];
-        let height = this.bounds[3];
+        let width = this.size[0];
+        let height = this.size[1];
         let offset = this.offset;
         let seconds = timeSinceLastFrame / 1000.0;
         offset[0] += (seconds * this.scroll[0]);
