@@ -12,7 +12,7 @@ Character.prototype.init = function (id, name) {
         textAlign: "center"
     });
     text.offset[1] = -12;
-    this.setChild(text, "name");
+    this.addChild(text, "name");
 };
 Character.prototype.update = function (timeSinceLastFrame) {
     ArcCharacter.prototype.tick.call(this, timeSinceLastFrame);

@@ -223,23 +223,10 @@ ClickTaskTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
 
 // Map Objects
 var VillageMap = ArcBaseObject();
-VillageMap.prototype = Object.create(ArcRenderableObject.prototype);
+VillageMap.prototype = Object.create(ArcMap.prototype);
 VillageMap.prototype.init = function (parent, mapName, studentList) {
-    ArcRenderableObject.prototype.init.call(this, true, true);
-    this.parent = parent;
-    this.name = mapName;
-    this.tileSheets = {};
-    this.width = 100;
-    this.height = 100;
-    this.tileWidth = 16;
-    this.tileHeight = 16;
-    this.highLayers = []; // Maps that appear above the character.
-    this.lowLayers = [];
-    this.triggers = null;
-    this.objects = null;
-    this.tiles = [];
+    ArcMap.prototype.init.call(this, parent, mapName);
     this.housingSections = [];
-    this.loaded = false;
     this.studentList = [
         //Temp students
         {
@@ -247,12 +234,15 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
             name: "Demo Student"
         }
     ];
+    this.waypointIndex = 0;
     
-    this.setChild(new ArcRenderableObjectCollection(true, true), "players");
-    this.setChild(new ArcWaypoint(), "waypoint");
+    this.players = new ArcRenderableObjectCollection(true, true); //TODO: Add after objects.
+    this.waypoint = new ArcWaypoint(); // TODO: add before objects
+    this.triggers = null;
+    this.objects = null;
 };
 VillageMap.prototype.setWaypointLocation = function(location){
-    let waypoint = this.getChild("waypoint");
+    let waypoint = this.waypoint;
     
     if(location !== null){
         waypoint.isVisible = true;
@@ -261,23 +251,6 @@ VillageMap.prototype.setWaypointLocation = function(location){
     }else{
         waypoint.isVisible = false;
     }
-};
-VillageMap.prototype.unload = function () {
-    // Removes the map from memory  
-    this.loaded = false;
-
-    // Unload layers
-    this.highLayers.length = 0;
-    this.lowLayers.length = 0;
-
-    // Unload Triggers
-    this.triggers.clear();
-
-    // Unload Objects
-    this.objects.clear();
-
-    // Unload Tiles
-    this.tiles.length = 0;
 };
 VillageMap.prototype.cast = function () {
     var map = new VillageMap(this.name);
@@ -288,18 +261,7 @@ VillageMap.prototype.cast = function () {
 
     return map;
 };
-VillageMap.prototype.getTileSheetForTile = function (index) {
-    var currentTilesheet = null;
-    for (var i in this.tileSheets) {
-        var tileSheet = this.tileSheets[i];
-        if (tileSheet.firstGid <= index && (currentTilesheet == null || currentTilesheet.firstGid < tileSheet.firstGid)) {
-            currentTilesheet = tileSheet;
-        }
-    }
-
-    return currentTilesheet;
-};
-VillageMap.prototype.addTrigger = function ($trigger, scale) {
+VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree) {
     var triggerName = $trigger.attr("name");
     var triggerType = $trigger.attr("type").toLowerCase();
     var triggerX = Number($trigger.attr("x")) * scale; // Double the size for now since we double the map size
@@ -329,7 +291,7 @@ VillageMap.prototype.addTrigger = function ($trigger, scale) {
         trigger.followObject = triggerProperties['follow'];
     }
 
-    this.triggers.insert(trigger);
+    triggerTree.insert(trigger);
 };
 VillageMap.prototype.load = function (onload, startName) {
     // Check if the map is already loaded
@@ -366,10 +328,6 @@ VillageMap.prototype.load = function (onload, startName) {
         _this.height = parseInt(tiledFile.attr("height"));
         _this.tileWidth = parseInt(tiledFile.attr("tilewidth")) * scale;
         _this.tileHeight = parseInt(tiledFile.attr("tileheight")) * scale;
-
-        // Setup quadtrees
-        _this.triggers = new QuadTree(0, 0, _this.width * _this.tileWidth, _this.height * _this.tileHeight);
-        _this.objects = new QuadTree(0, 0, _this.width * _this.tileWidth, _this.height * _this.tileHeight);
 
         // Setup tiles
         var tiles = _this.tiles;
@@ -516,18 +474,23 @@ VillageMap.prototype.load = function (onload, startName) {
                 }
 
                 // Add the layer to the appropriate section
-                if (workingLowerLevels) {
-                    _this.lowLayers.push(mapLayer);
-                } else {
-                    _this.highLayers.push(mapLayer);
-                }
+                _this.addChild(mapLayer, name);
             } else if (type === "objectgroup") {
+                let tree = new QuadTree(0, 0, _this.width * _this.tileWidth, _this.height * _this.tileHeight);
+
                 if (name === "triggers") {
+                    _this.triggers  = tree;
+                    tree.drawEnabled = false;
+                    tree.tickEnabled = false;
                     // Handle map triggers
                     $(this).find("object").each(function () {
-                        _this.addTrigger($(this), scale);
+                        _this.addTrigger($(this), scale, tree);
                     });
+                    _this.addChild(tree, name);
                 } else if (name === "objects") {
+                    _this.objects = tree;
+                    _this.waypointIndex = _this.children.length;
+                    _this.addChild(_this.waypoint, "waypoint");
                     // Handle map objects
                     workingLowerLevels = false;
 
@@ -572,9 +535,9 @@ VillageMap.prototype.load = function (onload, startName) {
 
                         if (objectType === "playerstart") {
                             object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
-                            _this.objects.insert(object);
+                            tree.insert(object);
                         } else if (objectType === "studenthouse") {
-                            _this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps'], objectProperties));
+                            //_this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps'], objectProperties));
                         } else if (objectType === "none") {
 
                         } /*else if (objectType === "npc"){
@@ -582,16 +545,19 @@ VillageMap.prototype.load = function (onload, startName) {
                              _this.objects.insert(object);
                         } */else {
                             object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
-                            _this.objects.insert(object);
+                            tree.insert(object);
                         }
                     });
+
+                    _this.addChild(tree, name);
+                    _this.addChild(_this.players, "players");
                 }
             }
         });
 
         var startLocation = [0, 0];
         if (startName) {
-            var startObject = _this.objects.getByName(startName);
+            var startObject = _this.getChild("objects").getByName(startName);
             if (startObject !== null) {
                 startLocation[0] = startObject.centre[0];
                 startLocation[1] = startObject.centre[1];
@@ -611,12 +577,10 @@ VillageMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
 // Checks if a rectangular area is blocked.
 VillageMap.prototype.isBlocked = function (x, y, width, height) {
     var checkVal = null;
-    if (this.lowLayers.length > 0) {
-        for (var i = this.lowLayers.length - 1; i >= 0; --i) {
-            checkVal = this.lowLayers[i].isBlocked(x, y, width, height)
-            if (checkVal !== null) {
-                return checkVal;
-            }
+    for(var i = 0; i < this.waypointIndex; ++i){
+        checkVal = this.children[i].isBlocked(x, y, width, height);
+        if(checkVal !== null){
+            return checkVal;
         }
     }
 
@@ -642,23 +606,7 @@ VillageMap.prototype.checkTriggers = function (x, y, width, height, activateWalk
         }
     }
 };
-VillageMap.prototype.tick = function(deltaMilliseconds){
-    ArcRenderableObject.prototype.tick.call(this, deltaMilliseconds);
-    
-    // Update the layers
-    let i = 0;
-    let layers = this.lowLayers;
-    
-    for(; i < layers.length; ++i){
-        layers[i].tick(deltaMilliseconds);
-    }
-    
-    layers = this.highLayers;
-    for(i = 0; i < layers.length; ++i){
-        layers[i].tick(deltaMilliseconds);
-    }
-};
-VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+/*VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer = QuadTree.ArrayBuffer;
     let index = 0;
     let i = 0;
@@ -718,7 +666,7 @@ VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     for(index = 0; index < layer.length; ++index){
         layer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
-};
+};*/
 
 var VillageModule = ArcBaseObject();
 VillageModule.prototype.init = function (path, initialMap, onLoaded, onMapChange) {

@@ -174,19 +174,50 @@ ArcScriptObject.prototype.AttachFunction = function(func){
 // All objects that are renderable to the scene
 var ArcRenderableObject = new ArcBaseObject();
 ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
-    this.children = {};
+    this.children = [];
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+    this.name = null;
 };
-ArcRenderableObject.prototype.setChild = function(child, name){
-    this.children[name] = child;
+ArcRenderableObject.prototype.addChild = function(child, name, index){
+    var c = this.indexOfChild(name);
+    child.name = name;
+
+    if(c < 0){
+        this.children.push(child);
+    }else{
+        this.children[c] = child;
+    }
+};
+ArcRenderableObject.prototype.indexOfChild = function(name){
+    for(var i in this.children){
+        if(this.children[i].name === name){
+            return i;
+        }
+    }
+
+    return -1;
 };
 ArcRenderableObject.prototype.getChild = function(name){
-  return this.children[name];  
+    for(var i in this.children){
+        if(this.children[i].name === name){
+            return this.children[i];
+        }
+    }
+
+    return null;
 };
 ArcRenderableObject.prototype.removeChild = function(name){
     //delete this.children[i];
     this.children[i] = null; //TODO: Find out the better method
+};
+ArcRenderableObject.prototype.unload = function(){
+    for (let key in this.children){
+        let child = this.children[key];
+        if(child.drawEnabled){
+            child.unload();
+        }
+    }
 };
 ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
     for (let key in this.children){
@@ -221,7 +252,7 @@ ArcRenderableObjectCollection.prototype.drawWhile = function(drawFunction){
     }
     
     return child(index - 1);
-}
+};
 
 
 // Basic text renderable
@@ -523,6 +554,9 @@ QuadTree.prototype.init = function (x, y, width, height, level) {
     this.objects = []; // Objects fully contained in this area
 
 };
+QuadTree.prototype.unload = function(){
+    this.clear();
+}
 QuadTree.prototype.MAX_OBJECTS = 5;
 QuadTree.prototype.MAX_LEVELS = 10;
 QuadTree.prototype.clear = function (onObjectClear) {
@@ -1197,3 +1231,38 @@ ArcTileMap.prototype.tick = function(deltaMilliseconds){
  
  return false; //[ex, ey];
  };*/
+
+// Basic map stucture to have a single actor treevar 
+var ArcMap = ArcBaseObject();
+ArcMap.prototype = Object.create(ArcRenderableObject.prototype);
+ArcMap.prototype.init = function(parent, mapName){
+    ArcRenderableObject.prototype.init.call(this, true, true);
+    this.parent = parent;
+    this.name = mapName;
+    this.tileSheets = {};
+    this.width = 100;
+    this.height = 100;
+    this.tileWidth = 16;
+    this.tileHeight = 16;
+    this.tiles = [];
+    this.loaded = false;
+
+    // TODO: Use the children object to render the map as a single tree.
+};
+ArcMap.prototype.unload = function(){
+    this.loaded = false;
+    ArcRenderableObject.prototype.unload.call(this);
+
+    this.tiles.length = 0;
+};
+ArcMap.prototype.getTileSheetForTile = function (index) {
+    var currentTilesheet = null;
+    for (var i in this.tileSheets) {
+        var tileSheet = this.tileSheets[i];
+        if (tileSheet.firstGid <= index && (currentTilesheet == null || currentTilesheet.firstGid < tileSheet.firstGid)) {
+            currentTilesheet = tileSheet;
+        }
+    }
+
+    return currentTilesheet;
+};

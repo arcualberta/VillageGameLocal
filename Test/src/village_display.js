@@ -100,10 +100,10 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
 
         //Find the player
         //console.log(JSON.stringify(world.players));
-        let players = world.getChild("players");
-        for (var key in players.children) { // tODO: Change to function
-            if (key == player) {
-                this.player = new Player(players.getChild(key));
+        let players = world.players;
+        for (var i in players.children) { // tODO: Change to function
+            if (players.children[i].id == player) {
+                this.player = new Player(players.children[i]);
                 player = this.player;
                 //player.user.location[0] = this.playerStart[0];
                 //player.user.location[1] = this.playerStart[1];
@@ -170,11 +170,11 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
     this.maxOffset[1] = (world.height * world.tileHeight) - 1;
 
     // Players should already be added
-    let players = world.getChild("players");
+    let players = world.players;
     for (i = 0; i < players.children.length; ++i) {
         var user = players.children[i];
 
-        addUser(user.id, user.name, user.location, user.spriteSheet.id, user.spriteSheet.palette, user.spriteSheet.animations);
+        //this.addUser(user.id, user.name, user.location, user.spriteSheet.id, user.spriteSheet.palette, user.spriteSheet.animations);
     }
 
     if (this.player !== null && this.player.user) {
@@ -256,7 +256,7 @@ VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, 
     this.display.addSpriteSheet(spriteSheet.id, spriteSheet.baseImage.src, spriteSheet.animations, palette);
 
     user.spriteSheet = spriteSheet;
-    players.setChild(user, id);
+    players.addChild(user, id);
 
     return user;
 };
