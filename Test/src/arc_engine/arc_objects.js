@@ -240,7 +240,7 @@ ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
     for (let key in this.children){
         let child = this.children[key];
         if(child.tickEnabled){
-            child.tick(deltaMilliseconds);
+            child.tick.apply(child, arguments);
         }
     }
 };
@@ -363,7 +363,7 @@ ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, 
 ArcCharacter.prototype.tick = function(deltaMilliseconds){
     this.animateFrame(deltaMilliseconds);
     
-    ArcRenderableObject.prototype.tick.call(this, deltaMilliseconds);
+    ArcRenderableObject.prototype.tick.apply(this, arguments);
 };
 
 // ARC Generate TileMap from TiledCode
@@ -470,6 +470,10 @@ function arcGetPixel(input, x, y, outsideX, outsideY) {
     ];
 }
 
+function arcDistance(loc1, loc2){
+    return Math.sqrt(Math.pow(loc1[0] - loc2[0], 2.0) + Math.pow(loc1[1] - loc2[1], 2.0));
+}
+
 function arcScale2(input, output, x, y, width, height) {
     var outsideX = x + width;
     var outsideY = y + height;
@@ -530,16 +534,6 @@ ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
     
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
-};
-ArcActor.prototype.tick = function (timeSinceLastFrame) {
-    if(this.children){
-        ArcRenderableObject.prototype.tick.call(this, timeSinceLastFrame);
-    }
-};
-ArcActor.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    if(this.children){
-        ArcRenderableObject.prototype.draw.call(this, displayContext, xOffset, yOffset, width, height);
-    }
 };
 
 
@@ -697,6 +691,22 @@ QuadTree.prototype.getByName = function (name) {
     return null;
 };
 QuadTree.prototype.tick = function (timeSinceLastFrame) {
+    let index;
+    let node;
+
+    if(this.nodes){
+        for(index = 0; index < 4; ++index){
+            node = this.nodes[index];
+            if(node){
+                node.tick.apply(node, arguments);
+            }
+        }
+    }
+
+    for(index = 0; index < this.objects.length; ++index){
+        node = this.objects[index];
+        node.tick.apply(node, arguments);
+    }
 };
 QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer= QuadTree.ArrayBuffer;
@@ -1206,7 +1216,9 @@ ArcTileMap.prototype.draw = function(displayContext, xOffset, yOffset, width, he
     this.data.draw(displayContext, xOffset, yOffset, width, height);
 }
 ArcTileMap.prototype.tick = function(deltaMilliseconds){
-    this.data.tick(deltaMilliseconds);
+    if(this.data){
+        this.data.tick.apply(this.data, arguments);
+    }
 }
 /*ArcTileMap.prototype.isBlocked = function (x, y, w, h) {
  var tileSheet = this.tileSheet;

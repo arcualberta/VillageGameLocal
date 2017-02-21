@@ -65,17 +65,18 @@ VillageDisplay.prototype.updateWorld = function (time, actionList, cameraOffset)
     this.readWorldState(actionList, cameraOffset);
     var player = this.player;
 
+    // Update player
     if (player !== null && player.user) {
-        player.update(this.worldAdapter, this.world, time);
+        this.player.tick(time, this.worldAdapter, this.world);
         if(player.showWaypoint){
             this.world.setWaypointLocation(player.waypointLoc);
         }else{
             this.world.setWaypointLocation(null);
         }
     }
-    
+
     // Update the layers
-    this.world.tick(time);
+    this.world.tick(time, this.worldAdapter, this.world);
 };
 VillageDisplay.prototype.resize = function (width, height) {
     this.dimension[0] = width;
@@ -233,6 +234,9 @@ VillageDisplay.prototype.isPlayer = function (id) {
     }
 
     return this.player.user.id === id;
+};
+VillageDisplay.prototype.addSpriteSheet = function(spriteSheet){
+    this.display.addSpriteSheet(spriteSheet.id, spriteSheet.baseImage.src, spriteSheet.animations, palette);
 };
 VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, palette, animations) {
     let players = this.world.getChild("players");

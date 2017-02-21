@@ -262,6 +262,9 @@ VillageMap.prototype.cast = function () {
 
     return map;
 };
+VillageMap.prototype.getSpriteSheet = function(name){
+    return this.parent.getSpriteSheet(name);
+};
 VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree) {
     var triggerName = $trigger.attr("name");
     var triggerType = $trigger.attr("type").toLowerCase();
@@ -541,11 +544,11 @@ VillageMap.prototype.load = function (onload, startName) {
                             //_this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps'], objectProperties));
                         } else if (objectType === "none") {
 
-                        } /*else if (objectType === "npc"){
-                             object = new NPC(objectName, objectName, "idle", objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
-                             object.spriteSheet = objectProperties["spritesheet"];
+                        } else if (objectType === "npc"){
+                             object = new NPC(objectName, objectName, "idle", [objectX, objectY], objectProperties);
+                             object.spriteSheet = _this.getSpriteSheet(objectProperties["spritesheet"]);
                              _this.objects.insert(object);
-                        }*/ else {
+                        } else {
                             object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
                             tree.insert(object);
                         }
@@ -741,6 +744,9 @@ VillageModule.prototype.loadSpritesheets = function (path) {
         }
     });
 };
+VillageModule.prototype.getSpriteSheet = function(name){
+    return this.spriteSheets[name];
+}
 VillageModule.prototype.load = function (mapName, startName) {
     var _this = this;
     var map = this.maps[mapName];

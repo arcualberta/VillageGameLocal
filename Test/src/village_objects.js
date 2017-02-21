@@ -13,10 +13,15 @@ Character.prototype.init = function (id, name) {
     });
     text.offset[1] = -12;
     this.addChild(text, "name");
+
+    this.lastStep = [0, 0, false];
+    this.waypoint = [0, 0];
+    this.speed = 0.05;
+    this.action = 0;
+    this.direction = 0;
 };
-Character.prototype.update = function (timeSinceLastFrame) {
-    ArcCharacter.prototype.tick.call(this, timeSinceLastFrame);
-};
+Character.directions = ["down", "left", "up", "right"];
+Character.actions = ["stand", "walk"];
 Character.prototype.calculateNextStep = function (village, speed, time, goal, output) {
     var start = village.getClosestTileCoord(this.location[0], this.location[1]);
     var end = village.getClosestTileCoord(goal[0], goal[1]);
@@ -76,48 +81,111 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
 
     return output;
 };
-Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
-    var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
-    
-    var frameCenter = this.location[0] - xOffset;
-    var frameTop = this.location[1] - frame.hHalf - yOffset;
-    
-    displayContext.drawImage(spriteSheet.image,
-            frame.x, frame.y, frame.width, frame.height,
-            frameCenter - frame.wHalf, frameTop,
-            frame.drawWidth, frame.drawHeight);
-            
-    this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
+Character.prototype.getSpriteSheet = function(displayContext){
+    var spriteSheet = null;
+
+    if (!(spriteSheet = displayContext.spriteSheets[this.spriteSheet.id])){
+        displayContext.addSpriteSheet(this.spriteSheet.id, this.spriteSheet.baseImage.src, this.spriteSheet.animations);
+    }
+
+    return spriteSheet;
 };
+Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    var spriteSheet = this.getSpriteSheet(displayContext);
+
+    if(spriteSheet){
+        var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
+        
+        var frameCenter = this.location[0] - xOffset;
+        var frameTop = this.location[1] - frame.hHalf - yOffset;
+        
+        displayContext.drawImage(spriteSheet.image,
+                frame.x, frame.y, frame.width, frame.height,
+                frameCenter - frame.wHalf, frameTop,
+                frame.drawWidth, frame.drawHeight);
+                
+        this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
+    }
+};
+Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
+    var newLoc = this.calculateNextStep(village, this.speed, timeSinceLast, this.waypoint, this.lastStep);
+
+    var isChanged = newLoc[2];
+
+    if (isChanged) {
+        // Set the new action
+        this.action = 1;
+
+        // Set the new direciton
+        var xDif = this.location[0] - newLoc[0];
+        var yDif = this.location[1] - newLoc[1];
+
+        if (xDif < 0.0) {
+            this.direction = 3;
+        } else if (xDif > 0.0) {
+            this.direction = 1;
+        }
+
+        if (yDif < 0.0) {
+            this.direction = 0;
+        } else if (yDif > 0.0) {
+            this.direction = 2;
+        }
+
+        // Set the new location
+        this.updateLocation(newLoc[0], newLoc[1]);
+    } else {
+        if (this.action === 1) {
+            this.action = 0;
+            isChanged = true;
+        }
+    }
+
+    if (isChanged) {
+        this.setAnimation(Character.actions[this.action] + "_" + Character.directions[this.direction]);
+    } else {
+        this.showWaypoint = false;
+    }
+
+    this.updateLocation(newLoc[0], newLoc[1]);
+
+    this.animateFrame(timeSinceLast);
+}
 
 // A non playable character
 var NPC = ArcBaseObject();
-NPC.STATE = {
-    "idle": 0, // The character does not move
-    "talk": 1, // randomly walk around
-    "path": 2, // The character follows a given path
-}
+NPC.STATE = [
+    "idle", // The character does not move
+    "talk", // randomly walk around
+    "path", // The character follows a given path
+];
 NPC.prototype = Object.create(Character.prototype);
 NPC.prototype.init = function (id, name, state, location, properties) {
     Character.prototype.init.call(this, id, name);
-    this.state = state;
-    this.waypoint = [0, 0];
     this.properties = properties;
+    this.setState(state);
+
+    for(var key in properties){
+        var test = key.substring(0, 2);
+        var state = 0;
+        if(test === "on"){
+            this[key] = Function("time", properties[key]);
+        }
+    }
 
     this.updateLocation(location[0], location[1]);
+    this.waypoint[0] = location[0];
+    this.waypoint[1] = location[1];
 };
-NPC.prototype.update = function (timeSinceLastFrame) {
-    this.animateFrame(timeSinceLastFrame);
-};
-NPC.prototype.calculateWaypoint = function (map) {
-    switch (this.state) {
-        case NPC.ACTIONS.wander:
-            if (Math.random() < 0.01) {// TODO: Change to a math defined value
+NPC.prototype.setState = function(state){
+    this.state = "on" + state;
+}
+NPC.prototype.tick = function (timeSinceLast, worldAdapter, village) {
+    var f = this[this.state];
 
-            }
-            break;
-    }
+    if(f){ f.call(this, timeSinceLast); }
+
+    Character.prototype.tick.apply(this, arguments);
 };
 
 // An idividual on the screen controlled by a human
@@ -125,6 +193,9 @@ var User = ArcBaseObject();
 User.prototype = Object.create(Character.prototype);
 User.prototype.init = function (id, name) {
     Character.prototype.init.call(this, id, name);
+};
+User.prototype.tick = function(timeSinceLast){
+    this.animateFrame(timeSinceLast);
 };
 
 // The individule running the class
@@ -212,9 +283,7 @@ Player.prototype.init = function (user) {
     this.action = 0;
     this.lastStep = [0, 0, false];
 };
-Player.directions = ["down", "left", "up", "right"];
-Player.actions = ["stand", "walk"];
-Player.prototype.update = function (worldAdapter, village, timeSinceLast) {
+Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     var user = this.user;
 
     var newLoc = user.calculateNextStep(village, this.speed, timeSinceLast, this.waypointLoc, this.lastStep);
@@ -242,8 +311,7 @@ Player.prototype.update = function (worldAdapter, village, timeSinceLast) {
         }
 
         // Set the new location
-        user.location[0] = newLoc[0];
-        user.location[1] = newLoc[1];
+        user.updateLocation(newLoc[0], newLoc[1]);
 
         // Check if we walked on a trigger and activate the triggers
         var collisionBox = user.collisionBox();
@@ -256,7 +324,7 @@ Player.prototype.update = function (worldAdapter, village, timeSinceLast) {
     }
 
     if (isChanged) {
-        user.setAnimation(Player.actions[this.action] + "_" + Player.directions[this.direction]);
+        user.setAnimation(Character.actions[this.action] + "_" + Character.directions[this.direction]);
 
         // Send update to the server
         worldAdapter.postWorldActions({

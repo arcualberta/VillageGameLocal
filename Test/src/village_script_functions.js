@@ -5,10 +5,31 @@ CharacterScripts.prototype.init = function(parent){
 	
 	this.AttachFunction("WalkRandom");
 }
-CharacterScripts.prototype.WalkRandom = function(){
-	if(Math.random > 0.8){
+CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
+	let waypoint = this.waypoint;
+	let location = this.location;
+
+	if(Math.random() < frequency){
 		// Set direction
-		var direction = Math.floor(Math.random() * 4);
-		console.log("Direction: " + direction);
+		let direction = Math.floor(Math.random() * 4);
+
+		switch(direction){
+			case 0:
+				waypoint[0] = location[0];
+				waypoint[1] = location[1] + amount;
+				break;
+			case 1:
+				waypoint[0] = location[0] + amount;
+				waypoint[1] = location[1];
+				break;
+			case 2:
+				waypoint[0] = location[0];
+				waypoint[1] = location[1] - amount;
+				break;
+			case 3:
+				waypoint[0] = location[0] - amount;
+				waypoint[1] = location[1];
+				break;
+		}
 	}
 }
