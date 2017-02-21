@@ -4,7 +4,8 @@ CharacterScripts.prototype.init = function(parent){
 	ArcScriptObject.prototype.init.call(this, parent);
 	
 	this.AttachFunction("WalkRandom");
-}
+	this.AttachFunction("WalkArea");
+};
 CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 	let waypoint = this.waypoint;
 	let location = this.location;
@@ -32,4 +33,13 @@ CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 				break;
 		}
 	}
-}
+};
+CharacterScripts.prototype.WalkArea = function(x1, y1, x2, y2){
+	let waypoint = this.waypoint;
+	let location = this.location;
+
+	if(!this.lastStep[2]){
+		waypoint[0] = (Math.random() * (x2 - x1)) + x1;
+		waypoint[1] = (Math.random() * (y2 - y1)) + y1;
+	}
+};

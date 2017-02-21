@@ -240,6 +240,9 @@ ArcGraphicsAdapter.prototype.update = function (timeSinceLast) {
         this.tiles[i].update(timeSinceLast);
     }
 };
+ArcGraphicsAdapter.prototype.drawLine = function(loc1, loc2){
+
+};
 
 
 var ArcCanvasAdapter = ArcBaseObject();
@@ -349,6 +352,15 @@ ArcCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
     context.fillStyle = "rgba(255, 255, 0, 0.5)";
     context.arc(waypointLoc[0] - offset[0], waypointLoc[1] - offset[1], 10, 0, 2 * Math.PI, false);
     context.fill();
+};
+ArcCanvasAdapter.prototype.drawLine = function(loc1, loc2){
+    var offset = this.camera.offset;
+    var context = this.context;
+
+    context.beginPath();
+    context.moveTo(loc1[0] - offset[0], loc1[1] - offset[1]);
+    context.lineTo(loc2[0] - offset[0], loc2[1] - offset[1]);
+    context.stroke();
 };
 ArcCanvasAdapter.prototype.resize = function (width, height) {
 
@@ -891,6 +903,15 @@ ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fi
 
     textContext.fillText(message, x, y);
 };
+ArcGLCanvasAdapter.prototype.drawLine = function(loc1, loc2){
+    var offset = this.camera.offset;
+    var context = this.textContext;
+
+    context.beginPath();
+    context.moveTo(loc1[0] - offset[0], loc1[1] - offset[1]);
+    context.lineTo(loc2[0] - offset[0], loc2[1] - offset[1]);
+    context.stroke();
+};
 ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
     var gl = this.context;
     var __this = this;
@@ -943,7 +964,8 @@ ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
     }
 
     // Write messages to the screen
-    //swapMessageBuffer(); //TODO: Find a way to display this information without having to write to the texture each time.
+    swapMessageBuffer(); //TODO: Find a way to display this information without having to write to the texture each time.
+    //this.flatContext.drawImage(this.textCanvas, 0, 0);
 };
 ArcGLCanvasAdapter.prototype.resize = function (width, height) {
     var gl = this.context;
@@ -1007,6 +1029,42 @@ ArcGLCanvasAdapter.prototype.setScaleDist = function (value) {
     gl.uniform1f(program.uScaleDist, value);
 };
 
+var ArcGL2CanvasAdapter = ArcBaseObject();
+ArcGL2CanvasAdapter.prototype = Object.create(ArcGLCanvasAdapter.prototype);
+ArcGL2CanvasAdapter.prototype.init = function(canvas) {
+    ArcGraphicsAdapter.prototype.init.call(this);
+    var textCanvas = document.createElement('canvas');
+    $(textCanvas).css("background-color", "rgba(255, 0, 255, 0)");
+    textCanvas.width = canvas.width;
+    textCanvas.height = canvas.height;
+
+    // Setup WebGL
+    var gl;
+
+    try {
+        gl = canvas.getContext("webgl2");
+    } catch (e) {
+        throw("WebGL2 not supported.");
+    }
+
+    this.textCanvas = textCanvas;
+    this.textContext = textCanvas.getContext('2d');
+    this.program = null;
+    this.waypointProgram = null;
+    this.postProgram = null;
+    this.textProgram = null;
+    this.backbuffer = null;
+    this.backbufferTexture = null;
+    this.textbufferTexture = null;
+    this.context = gl;
+    this.vBuffer = null;
+    this.size[0] = canvas.width;
+    this.size[1] = canvas.height;
+    this.canvas = canvas;
+
+    this.initGL();
+}
+
 var ArcMobileCanvasAdapter = ArcBaseObject();
 ArcMobileCanvasAdapter.prototype = Object.create(ArcCanvasAdapter.prototype);
 ArcMobileCanvasAdapter.prototype.init = function (canvas) {
@@ -1031,6 +1089,7 @@ ArcMobileCanvasAdapter.prototype.requestFullscreen = function () {
     this.context = backgroundCanvas.getContext("2d");
 };
 
+
 function arcGetDisplayAdapter(canvas, useGL) {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         return new ArcMobileCanvasAdapter(canvas);
@@ -1039,11 +1098,15 @@ function arcGetDisplayAdapter(canvas, useGL) {
     var adapter;
 
     if (useGL) {
-        try {
-            adapter = new ArcGLCanvasAdapter(canvas);
-        } catch (e) {
-            console.log(e);
-            adapter = new ArcCanvasAdapter(canvas);
+        var adapters = [ArcGL2CanvasAdapter, ArcGLCanvasAdapter, ArcCanvasAdapter];
+
+        for(var i = 0; i < adapters.length; ++i){
+            try{
+                adapter = new adapters[i](canvas);
+                break;
+            }catch(e){
+                console.log(e);
+            }
         }
     } else {
         adapter = new ArcCanvasAdapter(canvas);

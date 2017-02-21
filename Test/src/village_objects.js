@@ -103,8 +103,12 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
                 frame.x, frame.y, frame.width, frame.height,
                 frameCenter - frame.wHalf, frameTop,
                 frame.drawWidth, frame.drawHeight);
-                
-        this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
+        
+        // Debug features    
+        if(window.debugMode){    
+            this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
+            displayContext.drawLine(this.waypoint, this.location);
+        }
     }
 };
 Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
@@ -342,6 +346,9 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     } else {
         this.showWaypoint = false;
     }
+
+    user.waypoint[0] = this.waypointLoc[0];
+    user.waypoint[1] = this.waypointLoc[1];
 };
 // The basic world adapter object
 var WorldAdapter = ArcBaseObject();
