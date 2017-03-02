@@ -154,6 +154,16 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
     this.updateLocation(newLoc[0], newLoc[1]);
 
     this.animateFrame(timeSinceLast);
+};
+Character.prototype.inLocation = function(x, y){
+    let box = this.collisionBox();
+
+    return !(
+        x < box[0] ||
+        x > box[0] + box[2] ||
+        y < box[1] ||
+        y > box[1] + box[3]
+        );
 }
 
 // A non playable character

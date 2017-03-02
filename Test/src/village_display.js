@@ -44,23 +44,23 @@ VillageDisplay.prototype.handleActions = function (actions) {
 
     for (var i = 0; i < actions.length; ++i) {
         action = actions[i];
-        
-        switch (action.id) {
-            case CONTROL_MOUSE1_DOWN:
-            case CONTROL_MOUSE1_UP:
-            case CONTROL_MOUSE1_DRAG:
-                if (player !== null && player.user) {
-                    player.waypointLoc[0] = offset[0] + action.data.x;
-                    player.waypointLoc[1] = offset[1] + action.data.y;
-                    player.showWaypoint = true;
-                    
+
+        if (player !== null && player.user) {
+            switch (action.id) {
+                case CONTROL_MOUSE1_DOWN:
+                case CONTROL_MOUSE1_UP:
                     //Check Clicks
                     this.world.click(player.waypointLoc[0], player.waypointLoc[1], player, this.world);
 
+                case CONTROL_MOUSE1_DRAG:
+                    player.waypointLoc[0] = offset[0] + action.data.x;
+                    player.waypointLoc[1] = offset[1] + action.data.y;
+                    player.showWaypoint = true;
+
                     // Check if this is on a trigger
                     this.world.checkTriggers(player.waypointLoc[0], player.waypointLoc[1], 1, 1, false, true, this.worldAdapter, player); // tODO: Remove the tree
-                }
-                break;
+                    break;
+            }
         }
     }
 };
