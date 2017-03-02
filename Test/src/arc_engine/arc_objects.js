@@ -177,9 +177,20 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.children = [];
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+    this.clickEnabled = false;
+    this.interactEnabled = false;
     this.name = null;
     this.location = [-100, -100, -100, -100];
     this.size = [0, 0];
+};
+ArcRenderableObject.prototype.inLocation = function(x, y){
+    let loc = this.location;
+    return !(
+        x < loc[0] ||
+        x > loc[2] ||
+        y < loc[1] ||
+        y > loc[3]
+    ); 
 };
 ArcRenderableObject.prototype.updateLocation = function(x, y){
     let loc = this.location;
@@ -241,6 +252,22 @@ ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
         let child = this.children[key];
         if(child.tickEnabled){
             child.tick.apply(child, arguments);
+        }
+    }
+};
+ArcRenderableObject.prototype.click = function(x, y){
+    for (let key in this.children){
+        let child = this.children[key];
+        if(child.clickEnabled){
+            child.click.apply(child, arguments);
+        }
+    }
+};
+ArcRenderableObject.prototype.interact = function(x, y){
+    for (let key in this.children){
+        let child = this.children[key];
+        if(child.interactEnabled){
+            child.interact.apply(child, arguments);
         }
     }
 };
@@ -546,6 +573,8 @@ QuadTree.prototype.init = function (x, y, width, height, level) {
     // We don't use the parent init because we do not wish to create more arrays
     this.tickEnabled = true;
     this.drawEnabled = true;
+    this.clickEnabled = true;
+    this.interactEnabled = true;
     
     this.level = level ? level : 0;
     this.nodes = [null, null, null, null]; //Northwest, Northeast, Southeast, Southwest
@@ -660,12 +689,12 @@ QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, ex
     if (nodes[0] !== null) {
         var index = this.getIndex(x, y, width, height);
         if (index > -1) {
-            returnObjects = returnObjects.concat(nodes[index].getObjects(x, y, width, height, returnObjects));
+            returnObjects = returnObjects.concat(nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction));
         } else {
-            nodes[0].getObjects(x, y, width, height, returnObjects);
-            nodes[1].getObjects(x, y, width, height, returnObjects);
-            nodes[2].getObjects(x, y, width, height, returnObjects);
-            nodes[3].getObjects(x, y, width, height, returnObjects);
+            nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
+            nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
+            nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
+            nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
         }
     }
 
@@ -718,6 +747,22 @@ QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, heig
     for(index = 0; index < buffer.length; ++index){
         buffer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
+};
+QuadTree.prototype.click = function(x, y){
+    let args = arguments;
+    let objects = this.getObjects(x, y, 1, 1, [], function(obj){
+        if(obj.clickEnabled && obj.inLocation(x, y)){
+            obj.click.apply(obj, args);
+        }
+    });
+};
+QuadTree.prototype.interact = function(x, y){
+    let args = arguments;
+    let objects = this.getObjects(x, y, 1, 1, [], function(obj){
+        if(obj.clickEnabled && obj.inLocation(x, y)){
+            obj.interact.apply(obj, args)
+        }
+    });
 };
 QuadTree.ArrayBuffer = [];
 QuadTree.StackBuffer = [];

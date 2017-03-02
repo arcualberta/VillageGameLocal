@@ -54,8 +54,11 @@ VillageDisplay.prototype.handleActions = function (actions) {
                     player.waypointLoc[1] = offset[1] + action.data.y;
                     player.showWaypoint = true;
                     
+                    //Check Clicks
+                    this.world.click(player.waypointLoc[0], player.waypointLoc[1], player, this.world);
+
                     // Check if this is on a trigger
-                    this.world.checkTriggers(player.waypointLoc[0], player.waypointLoc[1], 1, 1, false, true, this.worldAdapter, player);
+                    this.world.checkTriggers(player.waypointLoc[0], player.waypointLoc[1], 1, 1, false, true, this.worldAdapter, player); // tODO: Remove the tree
                 }
                 break;
         }

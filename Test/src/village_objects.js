@@ -169,11 +169,14 @@ NPC.prototype.init = function (id, name, state, location, properties) {
     this.properties = properties;
     this.setState(state);
 
+    this.clickEnabled = true;
+    this.interactEnabled = true;
+
     for(var key in properties){
         var test = key.substring(0, 2);
         var state = 0;
         if(test === "on"){
-            this[key] = Function("time", properties[key]);
+            this[key] = Function("time", "player", "world", properties[key]);
         }
     }
 
@@ -190,6 +193,11 @@ NPC.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     if(f){ f.call(this, timeSinceLast); }
 
     Character.prototype.tick.apply(this, arguments);
+};
+NPC.prototype.click = function(x, y, player, world){
+    var f = this['onclick'];
+
+    if(f){ f.call(this, null, player, world); }
 };
 
 // An idividual on the screen controlled by a human
