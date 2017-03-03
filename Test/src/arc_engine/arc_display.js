@@ -240,7 +240,7 @@ ArcGraphicsAdapter.prototype.update = function (timeSinceLast) {
         this.tiles[i].update(timeSinceLast);
     }
 };
-ArcGraphicsAdapter.prototype.drawLine = function(loc1, loc2){
+ArcGraphicsAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
 
 };
 
@@ -353,13 +353,18 @@ ArcCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
     context.arc(waypointLoc[0] - offset[0], waypointLoc[1] - offset[1], 10, 0, 2 * Math.PI, false);
     context.fill();
 };
-ArcCanvasAdapter.prototype.drawLine = function(loc1, loc2){
+ArcCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
     var offset = this.camera.offset;
     var context = this.context;
 
+    if(!(color)){
+        color = "#0F0";
+    };
+    context.strokeStyle = color;
+
     context.beginPath();
-    context.moveTo(loc1[0] - offset[0], loc1[1] - offset[1]);
-    context.lineTo(loc2[0] - offset[0], loc2[1] - offset[1]);
+    context.moveTo(x1 - offset[0], y1 - offset[1]);
+    context.lineTo(x2 - offset[0], y2 - offset[1]);
     context.stroke();
 };
 ArcCanvasAdapter.prototype.resize = function (width, height) {
@@ -903,13 +908,18 @@ ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fi
 
     textContext.fillText(message, x, y);
 };
-ArcGLCanvasAdapter.prototype.drawLine = function(loc1, loc2){
+ArcGLCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
     var offset = this.camera.offset;
     var context = this.textContext;
 
+    if(!(color)){
+        color = "#0F0";
+    };
+    context.strokeStyle = color;
+
     context.beginPath();
-    context.moveTo(loc1[0] - offset[0], loc1[1] - offset[1]);
-    context.lineTo(loc2[0] - offset[0], loc2[1] - offset[1]);
+    context.moveTo(x1 - offset[0], y1 - offset[1]);
+    context.lineTo(x2 - offset[0], y2 - offset[1]);
     context.stroke();
 };
 ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {

@@ -15,15 +15,21 @@ Character.prototype.init = function (id, name) {
     this.addChild(text, "name");
 
     this.lastStep = [0, 0, false];
+    this.bounds = [0, 0, 0, 0];
     this.waypoint = [0, 0];
     this.speed = 0.05;
     this.action = 0;
     this.direction = 0;
+
+    this.updateSize(16, 16);
 };
 Character.directions = ["down", "left", "up", "right"];
 Character.actions = ["stand", "walk"];
+Character.prototype.stop = function(){
+
+};
 Character.prototype.calculateNextStep = function (village, speed, time, goal, output) {
-    var start = village.getClosestTileCoord(this.location[0], this.location[1]);
+    var start = village.getClosestTileCoord(this.location[4], this.location[5]);
     var end = village.getClosestTileCoord(goal[0], goal[1]);
 
     var xDif = start[0] - end[0];
@@ -72,8 +78,8 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
         newX = 0;
     }
 
-    newX += this.location[0];
-    newY += this.location[1];
+    newX += this.location[4];
+    newY += this.location[5];
 
     output[0] = newX;
     output[1] = newY;
@@ -107,7 +113,7 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
         // Debug features    
         if(window.debugMode){    
             this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
-            displayContext.drawLine(this.waypoint, this.location);
+            displayContext.drawLine(this.waypoint[0], this.waypoint[1], this.location[0], this.location[1]);
         }
     }
 };
@@ -121,8 +127,8 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
         this.action = 1;
 
         // Set the new direciton
-        var xDif = this.location[0] - newLoc[0];
-        var yDif = this.location[1] - newLoc[1];
+        var xDif = this.location[4] - newLoc[0];
+        var yDif = this.location[5] - newLoc[1];
 
         if (xDif < 0.0) {
             this.direction = 3;
@@ -151,20 +157,10 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
         this.showWaypoint = false;
     }
 
-    this.updateLocation(newLoc[0], newLoc[1]);
+    //this.updateLocation(newLoc[0], newLoc[1]);
 
     this.animateFrame(timeSinceLast);
 };
-Character.prototype.inLocation = function(left, top, right, bottom){
-    let box = this.collisionBox();
-
-    return !(
-        right < box[0] ||
-        left > box[0] + box[2] ||
-        bottom < box[1] ||
-        top > box[1] + box[3]
-        );
-}
 
 // A non playable character
 var NPC = ArcBaseObject();
@@ -192,7 +188,7 @@ NPC.prototype.init = function (id, name, state, location, properties) {
 
     this.updateLocation(location[0], location[1]);
     this.waypoint[0] = location[0];
-    this.waypoint[1] = location[1];
+    this.waypoint[1] = this.location[1];
 };
 NPC.prototype.setState = function(state){
     this.state = "on" + state;
@@ -306,6 +302,9 @@ Player.prototype.init = function (user) {
     this.lastStep = [0, 0, false];
     this.activeObject = null;
 };
+Player.prototype.stop = function(){
+    this.user.stop();
+};
 Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     var user = this.user;
 
@@ -318,8 +317,8 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
         this.action = 1;
 
         // Set the new direciton
-        var xDif = user.location[0] - newLoc[0];
-        var yDif = user.location[1] - newLoc[1];
+        var xDif = user.location[4] - newLoc[0];
+        var yDif = user.location[5] - newLoc[1];
 
         if (xDif < 0.0) {
             this.direction = 3;

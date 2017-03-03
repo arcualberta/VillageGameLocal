@@ -260,8 +260,7 @@ VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, 
         user = new User(id, name);
     }
 
-    user.location[0] = location[0];
-    user.location[1] = location[1];
+    user.updateLocation(location[0], location[1]);
 
     var spriteSheet = this.worldAdapter.getSpriteSheet(spriteSheetId).copy();
     spriteSheet.id = spriteSheetId + user.id; // Used for unique spritesheets

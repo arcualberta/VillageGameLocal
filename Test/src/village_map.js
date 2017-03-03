@@ -116,12 +116,12 @@ VillageObject.prototype.init = function (name, type, position, size, rotation, t
     this.name = name;
     this.properties = {};
     this.tileId = tileId;
-    this.size = size.slice();
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.rotation = rotation;
     this.type = type;
     this.parameters = parameters;
 
+    this.updateSize(size[0], size[1]);
     this.updateLocation(position[0], position[1]);
 };
 VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
@@ -132,13 +132,21 @@ VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width,
 var Trigger = ArcBaseObject();
 Trigger.prototype.init = function (name, type, position, size, rotation) {
     this.name = name;
-    this.location = [position[0], position[1], position[0] + size[0], position[1] + size[1]];
+    this.location = [0, 0, 0, 0];
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.size = size.slice();
     this.rotation = rotation;
     this.type = type;
     this.followObject = null;
     this.interactEnabled = true;
+
+    this.updateLocation(position[0], position[1]);
+};
+Trigger.prototype.updateLocation = function(x, y){
+    this.location[0] = x;
+    this.location[1] = y;
+    this.location[2] = x + this.size[0];
+    this.location[3] = y + this.size[1];
 };
 Trigger.prototype.setProperty = function (name, value) {
     this.properties[name] = value;
@@ -197,6 +205,8 @@ ClickReadTrigger.prototype.interact = function (left, top, right, bottom, player
     var _this = this;
     if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
         this.activated = true;
+
+        player.stop();
 
          worldAdapter.showMessage(this.message, false, function () {
             _this.activated = false;
@@ -548,7 +558,8 @@ VillageMap.prototype.load = function (onload, startName) {
                                 objectWidth = Math.round(objectWidth == 0 ? tile.width * scale : objectWidth);
                                 objectHeight = Math.round(objectHeight == 0 ? tile.height * scale : objectHeight);
 
-                                objectY -= objectHeight;
+                                objectY -= (objectHeight >> 1);
+                                objectX += (objectWidth >> 1);
                             }
                         }
 
@@ -579,8 +590,8 @@ VillageMap.prototype.load = function (onload, startName) {
         if (startName) {
             var startObject = _this.getChild("objects").getByName(startName);
             if (startObject !== null) {
-                startLocation[0] = startObject.centre[0];
-                startLocation[1] = startObject.centre[1];
+                startLocation[0] = startObject.location[4];
+                startLocation[1] = startObject.location[5];
             }
         }
 

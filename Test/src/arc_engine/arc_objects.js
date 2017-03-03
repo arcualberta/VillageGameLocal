@@ -180,8 +180,8 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.clickEnabled = false;
     this.interactEnabled = false;
     this.name = null;
-    this.location = [-100, -100, -100, -100];
-    this.size = [0, 0];
+    this.location = [-100, -100, -100, -100, 0, 0];
+    this.size = new Uint16Array(4);
 };
 ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
     let loc = this.location;
@@ -194,10 +194,22 @@ ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
 };
 ArcRenderableObject.prototype.updateLocation = function(x, y){
     let loc = this.location;
-    loc[0] = x;
-    loc[1] = y;
-    loc[2] = x + this.size[0];
-    loc[3] = y + this.size[1];
+    let size = this.size;
+
+    loc[0] = x - size[2];
+    loc[1] = y - size[3];
+    loc[2] = loc[0] + size[0];
+    loc[3] = loc[1] + size[1];
+    loc[4] = x;
+    loc[5] = y;
+};
+ArcRenderableObject.prototype.updateSize = function(width, height){
+    this.size[0] = width;
+    this.size[1] = height;
+    this.size[2] = width >> 1;
+    this.size[3] = height >> 1;
+
+    this.updateLocation(this.location[4], this.location[5]);
 };
 ArcRenderableObject.prototype.addChild = function(child, name, index){
     var c = this.indexOfChild(name);
@@ -332,24 +344,10 @@ ArcCharacter.prototype.collisionBox = function () {
     // TODO: Make it based on frame size;
     var cb = this.lastCollisionBox;
 
-    let frame = false;
-
-    try {
-        frame = this.spriteSheet.getAnimation(this.animation).frames[this.frame];
-    } catch (ex) {
-        console.log(ex);
-    }
-
-    if (frame) {
-        let tileWidth = frame.width;
-        let tileHalfWidth = (tileWidth >> 1) - 1;
-        let tileHalfHeight = frame.height;
-
-        cb[0] = this.location[0] - tileHalfWidth;
-        cb[1] = this.location[1];
-        cb[2] = tileWidth;
-        cb[3] = tileHalfHeight;
-    }
+    cb[0] = this.location[0];
+    cb[1] = this.location[5]; // Verticle center
+    cb[2] = this.size[0];
+    cb[3] = this.size[3];
 
     return cb;
 };
@@ -367,6 +365,10 @@ ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
         this.frameTime -= this.frameTime;
         frame = frames[this.frame];
     }
+
+    if(frame){
+        this.updateSize(frame.drawWidth, frame.drawWidth);
+    }
 };
 ArcCharacter.prototype.setAnimation = function (animationName) {
     if (this.animation !== animationName) {
@@ -379,12 +381,10 @@ ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, 
     var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
     var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
     
-    var frameCenter = this.location[0] - xOffset;
-    var frameTop = this.location[1] - frame.hHalf - yOffset;
     
     displayContext.drawImage(spriteSheet.image,
             frame.x, frame.y, frame.width, frame.height,
-            frameCenter - frame.wHalf, frameTop,
+            this.location[0], this.location[1],
             frame.drawWidth, frame.drawHeight);
 };
 ArcCharacter.prototype.tick = function(deltaMilliseconds){
@@ -581,10 +581,17 @@ QuadTree.prototype.init = function (x, y, width, height, level) {
     this.objects = []; // Objects fully contained in this area
     this.halfSize = [width / 2, height / 2];
 
-    this.size[0] = width;
-    this.size[1] = height;
+    this.updateSize(width, height);
 
     this.updateLocation(x, y)
+};
+QuadTree.prototype.updateLocation = function(x, y){
+    this.location[0] = x;
+    this.location[1] = y;
+    this.location[2] = x + this.size[0];
+    this.location[3] = y + this.size[1];
+    this.location[4] = x + this.size[2];
+    this.location[5] = y + this.size[3];
 };
 QuadTree.prototype.unload = function(){
     this.clear();
@@ -737,15 +744,42 @@ QuadTree.prototype.tick = function (timeSinceLastFrame) {
         node.tick.apply(node, arguments);
     }
 };
+QuadTree.prototype.drawGrid = function(displayContext, xOffset, yOffset, width, height){
+    let color = "#00F";
+    let x1 = this.location[0];
+    let y1 = this.location[1];
+    let x2 = this.location[2];
+    let y2 = this.location[3];
+
+    displayContext.drawLine(x1, y1, x1, y2, color);
+    displayContext.drawLine(x1, y1, x2, y1, color);
+    displayContext.drawLine(x2, y2, x1, y2, color);
+    displayContext.drawLine(x2, y2, x2, y1, color);
+
+    let nodes = this.nodes;
+    if (nodes[0] !== null) {
+        let index = this.getIndex(xOffset, yOffset, width, height);
+        if (index > -1) {
+            nodes[index].drawGrid(displayContext, xOffset, yOffset, width, height);
+        } else {
+            nodes[0].drawGrid(displayContext, xOffset, yOffset, width, height);
+            nodes[1].drawGrid(displayContext, xOffset, yOffset, width, height);
+            nodes[2].drawGrid(displayContext, xOffset, yOffset, width, height);
+            nodes[3].drawGrid(displayContext, xOffset, yOffset, width, height);
+        }
+    }
+};
 QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer= QuadTree.ArrayBuffer;
     let index;
     buffer.length = 0;
     
-    this.getObjects(xOffset, yOffset, width, height, buffer);
-   
-    for(index = 0; index < buffer.length; ++index){
-        buffer[index].draw(displayContext, xOffset, yOffset, width, height);
+    this.getObjects(xOffset, yOffset, width, height, buffer, function(obj){
+        obj.draw(displayContext, xOffset, yOffset, width, height);
+    });
+
+    if(window.debugMode){
+        this.drawGrid(displayContext, xOffset, yOffset, width, height);
     }
 };
 QuadTree.prototype.click = function(x, y){
