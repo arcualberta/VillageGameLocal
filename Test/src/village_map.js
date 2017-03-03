@@ -138,28 +138,27 @@ Trigger.prototype.init = function (name, type, position, size, rotation) {
     this.rotation = rotation;
     this.type = type;
     this.followObject = null;
+    this.interactEnabled = true;
 };
 Trigger.prototype.setProperty = function (name, value) {
     this.properties[name] = value;
-};
-Trigger.prototype.checkTrigger = function (left, top, right, bottom) {
-    var points = this.location;
-
-    return !(points[0] > right ||
-            points[2] < left ||
-            points[1] > bottom ||
-            points[3] < top);
-};
-Trigger.prototype.walkTrigger = function (map, worldAdapter, player) {
-
-};
-Trigger.prototype.clickTrigger = function (map, worldAdapter, player) {
-
 };
 Trigger.prototype.update = function(map, timeSinceLast){
     if(typeof(this.followObject) === "string"){
         console.log(this.followObject);
     }
+};
+Trigger.prototype.inLocation = function(left, top, right, bottom){
+    let loc = this.location;
+    return !(
+        right < loc[0] ||
+        left > loc[2] ||
+        bottom < loc[1] ||
+        top > loc[3]
+    ); 
+};
+Trigger.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
+
 };
 
 var ChangeMapTrigger = ArcBaseObject();
@@ -170,7 +169,7 @@ ChangeMapTrigger.prototype.init = function (name, type, position, size, rotation
     this.mapName = mapName;
     this.start = start;
 };
-ChangeMapTrigger.prototype.walkTrigger = function () {
+ChangeMapTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
     this.module.load(this.mapName, this.start);
 };
 
@@ -181,19 +180,27 @@ ClickReadTrigger.prototype.init = function (name, type, position, size, rotation
     this.message = message;
     this.connectedObject = connectedObject;
     this.activated = false;
+    this.clickEnabled = true;
 };
-ClickReadTrigger.prototype.clickTrigger = function (map, worldAdapter, player) {
+ClickReadTrigger.prototype.click = function (x, y, player, world) {
     player.showWaypoint = false;
     player.waypointLoc[0] = this.centre[0];
     player.waypointLoc[1] = this.centre[1];
+
+    player.activeObject = this;
 };
-ClickReadTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
+ClickReadTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
+    if(player.activeObject != this){
+        return;
+    };
+
     var _this = this;
     if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
         this.activated = true;
 
          worldAdapter.showMessage(this.message, false, function () {
             _this.activated = false;
+            player.activeObject = null;
         });
     }
 };
@@ -205,19 +212,27 @@ ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation,
     this.task = task;
     this.title = title;
     this.activated = false;
+    this.clickEnabled = true;
 }
-ClickTaskTrigger.prototype.clickTrigger = function (map, worldAdapter, player) {
+ClickTaskTrigger.prototype.click = function (x, y, player, world) {
     player.showWaypoint = false;
     player.waypointLoc[0] = this.centre[0];
     player.waypointLoc[1] = this.centre[1];
+
+    player.activeObject = this;
 };
-ClickTaskTrigger.prototype.walkTrigger = function (map, worldAdapter, player) {
+ClickTaskTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
+    if(player.activeObject != this){
+        return;
+    };
+
     var _this = this;
     if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
         this.activated = true;
 
         worldAdapter.loadTask(this.task, worldAdapter.getTaskScript(this.task), function (model) {
             _this.activated = false;
+            player.activeObject = null;
         });
     }
 };
@@ -590,26 +605,6 @@ VillageMap.prototype.isBlocked = function (x, y, width, height) {
     }
 
     return false;
-};
-VillageMap.prototype.checkTriggers = function (x, y, width, height, activateWalk, activateClick, worldAdapter, player) {
-    var trigger;
-    var x2 = x + width;
-    var y2 = y + height;
-
-    var triggers = this.triggers.getObjects(x, y, width, height, []);
-
-    for (var i in triggers) {
-        trigger = triggers[i];
-        if (trigger.checkTrigger(x, y, x2, y2)) {
-            if (activateWalk) {
-                trigger.walkTrigger(this, worldAdapter, player);
-            }
-
-            if (activateClick) {
-                trigger.clickTrigger(this, worldAdapter, player);
-            }
-        }
-    }
 };
 /*VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer = QuadTree.ArrayBuffer;

@@ -48,9 +48,19 @@ VillageDisplay.prototype.handleActions = function (actions) {
         if (player !== null && player.user) {
             switch (action.id) {
                 case CONTROL_MOUSE1_DOWN:
+                    player.waypointLoc[0] = offset[0] + action.data.x;
+                    player.waypointLoc[1] = offset[1] + action.data.y;
+                    player.showWaypoint = true;
+                    break;
+
                 case CONTROL_MOUSE1_UP:
+                    player.waypointLoc[0] = offset[0] + action.data.x;
+                    player.waypointLoc[1] = offset[1] + action.data.y;
+                    player.showWaypoint = true;
+
                     //Check Clicks
                     this.world.click(player.waypointLoc[0], player.waypointLoc[1], player, this.world);
+                    break;
 
                 case CONTROL_MOUSE1_DRAG:
                     player.waypointLoc[0] = offset[0] + action.data.x;
@@ -58,7 +68,7 @@ VillageDisplay.prototype.handleActions = function (actions) {
                     player.showWaypoint = true;
 
                     // Check if this is on a trigger
-                    this.world.checkTriggers(player.waypointLoc[0], player.waypointLoc[1], 1, 1, false, true, this.worldAdapter, player); // tODO: Remove the tree
+                    //this.world.checkTriggers(player.waypointLoc[0], player.waypointLoc[1], 1, 1, false, true, this.worldAdapter, player); // tODO: Remove the tree
                     break;
             }
         }

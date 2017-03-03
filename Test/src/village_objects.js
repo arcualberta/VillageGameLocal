@@ -155,14 +155,14 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
 
     this.animateFrame(timeSinceLast);
 };
-Character.prototype.inLocation = function(x, y){
+Character.prototype.inLocation = function(left, top, right, bottom){
     let box = this.collisionBox();
 
     return !(
-        x < box[0] ||
-        x > box[0] + box[2] ||
-        y < box[1] ||
-        y > box[1] + box[3]
+        right < box[0] ||
+        left > box[0] + box[2] ||
+        bottom < box[1] ||
+        top > box[1] + box[3]
         );
 }
 
@@ -304,6 +304,7 @@ Player.prototype.init = function (user) {
     this.direction = 0;
     this.action = 0;
     this.lastStep = [0, 0, false];
+    this.activeObject = null;
 };
 Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     var user = this.user;
@@ -337,7 +338,7 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
 
         // Check if we walked on a trigger and activate the triggers
         var collisionBox = user.collisionBox();
-        village.checkTriggers(collisionBox[0], collisionBox[1], collisionBox[2], collisionBox[3], true, false, worldAdapter, this);
+        village.interact(collisionBox[0], collisionBox[1], collisionBox[0] + collisionBox[2], collisionBox[1] + collisionBox[3], this, village, worldAdapter);
     } else {
         if (this.action === 1) {
             this.action = 0;

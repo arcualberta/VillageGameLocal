@@ -183,13 +183,13 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.location = [-100, -100, -100, -100];
     this.size = [0, 0];
 };
-ArcRenderableObject.prototype.inLocation = function(x, y){
+ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
     let loc = this.location;
     return !(
-        x < loc[0] ||
-        x > loc[2] ||
-        y < loc[1] ||
-        y > loc[3]
+        right < loc[0] ||
+        left > loc[2] ||
+        bottom < loc[1] ||
+        top > loc[3]
     ); 
 };
 ArcRenderableObject.prototype.updateLocation = function(x, y){
@@ -263,7 +263,7 @@ ArcRenderableObject.prototype.click = function(x, y){
         }
     }
 };
-ArcRenderableObject.prototype.interact = function(x, y){
+ArcRenderableObject.prototype.interact = function(left, top, right, bottom){
     for (let key in this.children){
         let child = this.children[key];
         if(child.interactEnabled){
@@ -751,15 +751,15 @@ QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, heig
 QuadTree.prototype.click = function(x, y){
     let args = arguments;
     let objects = this.getObjects(x, y, 1, 1, [], function(obj){
-        if(obj.clickEnabled && obj.inLocation(x, y)){
+        if(obj.clickEnabled && obj.inLocation(x, y, x, y)){
             obj.click.apply(obj, args);
         }
     });
 };
-QuadTree.prototype.interact = function(x, y){
+QuadTree.prototype.interact = function(left, top, right, bottom){
     let args = arguments;
-    let objects = this.getObjects(x, y, 1, 1, [], function(obj){
-        if(obj.clickEnabled && obj.inLocation(x, y)){
+    let objects = this.getObjects(left, top, right, bottom, [], function(obj){
+        if(obj.interactEnabled && obj.inLocation(left, top, right, bottom)){
             obj.interact.apply(obj, args)
         }
     });
