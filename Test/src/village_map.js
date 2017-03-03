@@ -126,27 +126,26 @@ VillageObject.prototype.init = function (name, type, position, size, rotation, t
 };
 VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     displayContext.drawTileById(this.tileId, this.location[0] - xOffset, this.location[1] - yOffset, this.size[0], this.size[1]);
+
+    if(window.debugMode){
+        displayContext.drawLine(this.location[0], this.location[1], this.location[0], this.location[3], '#F00');
+        displayContext.drawLine(this.location[0], this.location[1], this.location[2], this.location[1], '#F00');
+        displayContext.drawLine(this.location[2], this.location[3], this.location[0], this.location[3], '#F00');
+        displayContext.drawLine(this.location[2], this.location[3], this.location[2], this.location[1], '#F00');
+    }
 };
 
 // Trigger Objects
 var Trigger = ArcBaseObject();
 Trigger.prototype.init = function (name, type, position, size, rotation) {
     this.name = name;
-    this.location = [0, 0, 0, 0];
+    this.location = [position[0], position[1], position[0] + size[0], position[1] + size[1]];
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.size = size.slice();
     this.rotation = rotation;
     this.type = type;
     this.followObject = null;
     this.interactEnabled = true;
-
-    this.updateLocation(position[0], position[1]);
-};
-Trigger.prototype.updateLocation = function(x, y){
-    this.location[0] = x;
-    this.location[1] = y;
-    this.location[2] = x + this.size[0];
-    this.location[3] = y + this.size[1];
 };
 Trigger.prototype.setProperty = function (name, value) {
     this.properties[name] = value;
