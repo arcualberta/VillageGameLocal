@@ -660,8 +660,9 @@ QuadTree.prototype.isInside = function(value){
 QuadTree.prototype.recalculate = function(buffer) {
     let nodes = this.nodes;
     let isEmpty = true;
-    let i, obj;
+    let i;
     let addedToBuffer = false;
+    var obj;
 
     // Recalcualte nodes
     if (nodes[0] !== null) {
