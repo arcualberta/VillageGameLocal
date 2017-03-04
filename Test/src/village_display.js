@@ -115,13 +115,11 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
         //Find the player
         //console.log(JSON.stringify(world.players));
         let players = world.players;
-        for (var i in players.children) { // tODO: Change to function
-            if (players.children[i].id == player) {
-                this.player = new Player(players.children[i]);
-                player = this.player;
-                //player.user.location[0] = this.playerStart[0];
-                //player.user.location[1] = this.playerStart[1];
-            }
+        if (players[player]) {
+            this.player = new Player(players[player]);
+            player = this.player;
+            //player.user.location[0] = this.playerStart[0];
+            //player.user.location[1] = this.playerStart[1];
         }
     } else {
         isPlayerSet = player !== null;
@@ -185,8 +183,8 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
 
     // Players should already be added
     let players = world.players;
-    for (i = 0; i < players.children.length; ++i) {
-        var user = players.children[i];
+    for (i in players) {
+        var user = players[i];
 
         //this.addUser(user.id, user.name, user.location, user.spriteSheet.id, user.spriteSheet.palette, user.spriteSheet.animations);
     }
@@ -197,7 +195,7 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
         this.player.waypointLoc[0] = this.playerStart[0];
         this.player.waypointLoc[1] = this.playerStart[1];
 
-        players.addChild(this.player.user, this.player.user.id);
+        world.addPlayer.addChild(this.player.user, this.player.user.id);
     }
 
     // Set the tilesheet
@@ -252,8 +250,8 @@ VillageDisplay.prototype.addSpriteSheet = function(spriteSheet){
     this.display.addSpriteSheet(spriteSheet.id, spriteSheet.baseImage.src, spriteSheet.animations, palette);
 };
 VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, palette, animations) {
-    let players = this.world.getChild("players");
-    let user = players.getChild(id);
+    let players = this.world.players;
+    let user = players[id];
     if (user) {
         //completed
     } else {
@@ -272,7 +270,7 @@ VillageDisplay.prototype.addUser = function (id, name, location, spriteSheetId, 
     this.display.addSpriteSheet(spriteSheet.id, spriteSheet.baseImage.src, spriteSheet.animations, palette);
 
     user.spriteSheet = spriteSheet;
-    players.addChild(user, id);
+    this.world.addPlayer(user);
 
     return user;
 };

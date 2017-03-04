@@ -73,6 +73,8 @@ ArcControlAdapter.prototype.init = function(canvas){
     var jcanvas = $(canvas);
     
     jcanvas.mousedown(function (e) {
+        e.preventDefault();
+
         mouseDown = true;
         var x = e.pageX - jcanvas.offset().left;
         var y = e.pageY - jcanvas.offset().top;
@@ -84,6 +86,8 @@ ArcControlAdapter.prototype.init = function(canvas){
     });
 
     jcanvas.mouseup(function (e) {
+        e.preventDefault();
+
         mouseDown = false;
         var x = e.pageX - jcanvas.offset().left;
         var y = e.pageY - jcanvas.offset().top;
@@ -95,6 +99,8 @@ ArcControlAdapter.prototype.init = function(canvas){
     });
 
     jcanvas.mousemove(function (e) {
+        e.preventDefault();
+        
         if (mouseDown) {
             var x = e.pageX - jcanvas.offset().left;
             var y = e.pageY - jcanvas.offset().top;

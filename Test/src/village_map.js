@@ -261,11 +261,18 @@ VillageMap.prototype.init = function (parent, mapName, studentList) {
     ];
     this.waypointIndex = 0;
     
-    this.players = new ArcRenderableObjectCollection(true, true); //TODO: Add after objects.
+    this.players = {};
     this.waypoint = new ArcWaypoint(); // TODO: add before objects
     this.triggers = null;
     this.objects = null;
 };
+VillageMap.prototype.addPlayer = function(player){
+    this.players[player.id] = player;
+
+    if(this.objects){
+        this.objects.insert(player);
+    }
+}
 VillageMap.prototype.setWaypointLocation = function(location){
     let waypoint = this.waypoint;
     
@@ -516,9 +523,12 @@ VillageMap.prototype.load = function (onload, startName) {
                     });
                     _this.addChild(tree, name);
                 } else if (name === "objects") {
-                    _this.objects = tree;
-                    _this.waypointIndex = _this.children.length;
-                    _this.addChild(_this.waypoint, "waypoint");
+                    if(!(this.objects)){
+                        _this.objects = tree;
+                        _this.waypointIndex = _this.children.length;
+                        _this.addChild(_this.waypoint, "waypoint");
+                    }
+                    
                     // Handle map objects
                     workingLowerLevels = false;
 
@@ -580,7 +590,7 @@ VillageMap.prototype.load = function (onload, startName) {
                     });
 
                     _this.addChild(tree, name);
-                    _this.addChild(_this.players, "players");
+                    //_this.addChild(_this.players, "players");
                 }
             }
         });

@@ -96,6 +96,18 @@ Character.prototype.getSpriteSheet = function(displayContext){
 
     return spriteSheet;
 };
+Character.prototype.drawBounds = function(displayContext){
+    let color = "#FF0";
+    let x1 = this.location[0];
+    let y1 = this.location[1];
+    let x2 = this.location[2];
+    let y2 = this.location[3];
+
+    displayContext.drawLine(x1, y1, x1, y2, color);
+    displayContext.drawLine(x1, y1, x2, y1, color);
+    displayContext.drawLine(x2, y2, x1, y2, color);
+    displayContext.drawLine(x2, y2, x2, y1, color);
+}
 Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     var spriteSheet = this.getSpriteSheet(displayContext);
 
@@ -114,10 +126,12 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
         if(window.debugMode){    
             this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
             displayContext.drawLine(this.waypoint[0], this.waypoint[1], this.location[0], this.location[1]);
+            this.drawBounds(displayContext);
         }
     }
 };
 Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
+    // Calculate new location
     var newLoc = this.calculateNextStep(village, this.speed, timeSinceLast, this.waypoint, this.lastStep);
 
     var isChanged = newLoc[2];
@@ -160,6 +174,12 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
     //this.updateLocation(newLoc[0], newLoc[1]);
 
     this.animateFrame(timeSinceLast);
+
+    // Check if we are the current active object
+    if(parent.activeObject == this){
+        parent.waypointLoc[0] = this.location[4];
+        parent.waypointLoc[1] = this.location[3];
+    }
 };
 
 // A non playable character
@@ -194,13 +214,20 @@ NPC.prototype.setState = function(state){
     this.state = "on" + state;
 }
 NPC.prototype.tick = function (timeSinceLast, worldAdapter, village) {
+
+    // Check for functions
     var f = this[this.state];
 
     if(f){ f.call(this, timeSinceLast); }
 
+    // Execute parent functions
     Character.prototype.tick.apply(this, arguments);
 };
 NPC.prototype.click = function(x, y, player, world){
+    // Set as the active object
+    player.activeObject = this;
+
+    // Check if we have any click functions
     var f = this['onclick'];
 
     if(f){ f.call(this, null, player, world); }
@@ -215,6 +242,9 @@ User.prototype.init = function (id, name) {
 User.prototype.tick = function(timeSinceLast){
     this.animateFrame(timeSinceLast);
 };
+User.prototype.draw = function(){
+    Character.prototype.draw.apply(this, arguments);
+}
 
 // The individule running the class
 var Teacher = ArcBaseObject();

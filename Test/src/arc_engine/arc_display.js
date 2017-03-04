@@ -135,6 +135,7 @@ ArcGraphicsAdapter.prototype.addSpriteSheet = function (id, url, animations, pal
         spriteSheet.setAnimation(key, animations[key]);
     }
 
+    spriteSheet.id = id;
     this.spriteSheets[id] = spriteSheet;
 };
 ArcGraphicsAdapter.prototype.addExistingSpriteSheet = function (id, spriteSheet) {
@@ -853,6 +854,7 @@ ArcGLCanvasAdapter.prototype.addSpriteSheet = function (id, url, animations, pal
         spriteSheet.setAnimation(key, animations[key]);
     }
 
+    spriteSheet.id = id;
     this.spriteSheets[id] = spriteSheet;
 };
 ArcGLCanvasAdapter.prototype.addExistingSpriteSheet = function (id, spriteSheet) {
