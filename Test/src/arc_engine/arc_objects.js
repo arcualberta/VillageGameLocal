@@ -345,7 +345,7 @@ ArcCharacter.prototype.collisionBox = function () {
     var cb = this.lastCollisionBox;
 
     cb[0] = this.location[0];
-    cb[1] = this.location[5]; // Verticle center
+    cb[1] = this.location[1] + this.size[3]; // Verticle center
     cb[2] = this.size[0];
     cb[3] = this.size[3];
 
@@ -367,7 +367,7 @@ ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
     }
 
     if(frame){
-        this.updateSize(frame.drawWidth, frame.drawWidth);
+        this.updateSize(frame.drawWidth, frame.drawHeight);
     }
 };
 ArcCharacter.prototype.setAnimation = function (animationName) {

@@ -147,8 +147,8 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
         p = player.user;
         dimension = this.halfDim;
 
-        offset[0] = p.location[0] - dimension[0];
-        offset[1] = p.location[1] - dimension[1];
+        offset[0] = p.location[4] - dimension[0];
+        offset[1] = p.location[5] - dimension[1];
     } else if (cameraOffset) {
         offset[0] = cameraOffset[0];
         offset[1] = cameraOffset[1];
@@ -195,7 +195,7 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
         this.player.waypointLoc[0] = this.playerStart[0];
         this.player.waypointLoc[1] = this.playerStart[1];
 
-        world.addPlayer.addChild(this.player.user, this.player.user.id);
+        world.addPlayer(this.player.user);
     }
 
     // Set the tilesheet
@@ -211,8 +211,7 @@ VillageDisplay.prototype.handleMoveUser = function (message) {
     var user = world.getChild("players").getChild(message.id);
 
     if (user) {
-        user.location[0] = message.location[0];
-        user.location[1] = message.location[1];
+        user.updateLocation(message.location[0], message.location[1]);
         user.setAnimation(message.animation);
     }
 };

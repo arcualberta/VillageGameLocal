@@ -16,20 +16,20 @@ CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 
 		switch(direction){
 			case 0:
-				waypoint[0] = location[0];
-				waypoint[1] = location[1] + amount;
+				waypoint[0] = location[4];
+				waypoint[1] = location[5] + amount;
 				break;
 			case 1:
-				waypoint[0] = location[0] + amount;
-				waypoint[1] = location[1];
+				waypoint[0] = location[4] + amount;
+				waypoint[1] = location[5];
 				break;
 			case 2:
-				waypoint[0] = location[0];
-				waypoint[1] = location[1] - amount;
+				waypoint[0] = location[4];
+				waypoint[1] = location[5] - amount;
 				break;
 			case 3:
-				waypoint[0] = location[0] - amount;
-				waypoint[1] = location[1];
+				waypoint[0] = location[4] - amount;
+				waypoint[1] = location[5];
 				break;
 		}
 	}

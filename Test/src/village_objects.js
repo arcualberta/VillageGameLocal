@@ -15,7 +15,6 @@ Character.prototype.init = function (id, name) {
     this.addChild(text, "name");
 
     this.lastStep = [0, 0, false];
-    this.bounds = [0, 0, 0, 0];
     this.waypoint = [0, 0];
     this.speed = 0.05;
     this.action = 0;
@@ -60,8 +59,8 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
     //}
 
     if (!isChanged) {
-        output[0] = this.location[0];
-        output[1] = this.location[1];
+        output[0] = this.location[4];
+        output[1] = this.location[5];
         output[2] = false;
 
         return output;
@@ -114,8 +113,8 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
     if(spriteSheet){
         var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
         
-        var frameCenter = this.location[0] - xOffset;
-        var frameTop = this.location[1] - frame.hHalf - yOffset;
+        var frameCenter = this.location[4] - xOffset;
+        var frameTop = this.location[5] - frame.hHalf - yOffset;
         
         displayContext.drawImage(spriteSheet.image,
                 frame.x, frame.y, frame.width, frame.height,
@@ -125,7 +124,7 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
         // Debug features    
         if(window.debugMode){    
             this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
-            displayContext.drawLine(this.waypoint[0], this.waypoint[1], this.location[0], this.location[1]);
+            displayContext.drawLine(this.waypoint[0], this.waypoint[1], this.location[4], this.location[5]);
             this.drawBounds(displayContext);
         }
     }
@@ -177,8 +176,8 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
 
     // Check if we are the current active object
     if(parent.activeObject == this){
-        parent.waypointLoc[0] = this.location[4];
-        parent.waypointLoc[1] = this.location[3];
+        parent.waypointLoc[0] = this.location[3] + this.size[2];
+        parent.waypointLoc[1] = this.location[2];
     }
 };
 
@@ -202,7 +201,7 @@ NPC.prototype.init = function (id, name, state, location, properties) {
         var test = key.substring(0, 2);
         var state = 0;
         if(test === "on"){
-            this[key] = Function("time", "player", "world", properties[key]);
+            this[key] = Function("time", "player", "world", "worldAdapter", properties[key]);
         }
     }
 

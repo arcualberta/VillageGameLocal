@@ -34,8 +34,7 @@ function addUser(id, name, location, spriteSheetId, palette, animations) {
     self.postMessage([WORKER_SET_SPRITESHEET, id, spriteSheetId, palette]);
 
     var user = new User(id, name);
-    user.location[0] = location[0];
-    user.location[1] = location[1];
+    user.updateLocation(location[0], location[1]);
 
     var spriteSheet = new ArcSpriteSheet();
     spriteSheet.id = spriteSheetId + user.id; // Used for unique spritesheets
@@ -291,8 +290,7 @@ function handleMoveUser(user) {
     var student = world.players[user.id];
 
     if (student) {
-        student.location[0] = user.location[0];
-        student.location[1] = user.location[1];
+        student.updateLocation(user.location[0], user.location[1]);
         student.setAnimation(user.animation);
     }
 }
@@ -355,8 +353,8 @@ function readWorldState(result, cameraOffset) {
     if (isPlayerSet) {
         p = player.user;
 
-        offset[0] = p.location[0] - halfDim[0];
-        offset[1] = p.location[1] - halfDim[1];
+        offset[0] = p.location[4] - halfDim[0];
+        offset[1] = p.location[5] - halfDim[1];
     } else if (cameraOffset) {
         offset[0] = cameraOffset[0];
         offset[1] = cameraOffset[1];
