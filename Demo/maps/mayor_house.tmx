@@ -166,22 +166,17 @@
  <objectgroup name="objects">
   <object id="1" name="Mayor" type="NPC" gid="73" x="206.667" y="97.667" width="16" height="24">
    <properties>
+    <property name="ontalk" value="this.TriggerDialog('MAYOR_1', worldAdapter);"/>
     <property name="spritesheet" value="dancer_male_large2"/>
    </properties>
   </object>
   <object id="2" name="MainStart" type="PlayerStart" x="272.545" y="121.364" width="14" height="16"/>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="3" name="MayorDoor" type="ChangeMap" x="272.719" y="141.556" width="14.409" height="56.5531">
    <properties>
     <property name="Map" value="village_small"/>
     <property name="Start" value="MayorStart"/>
-   </properties>
-  </object>
-  <object id="4" name="MayorTrigger" type="ClickRead" x="207.208" y="73.5" width="15.6667" height="25">
-   <properties>
-    <property name="Follow" value="Mayor"/>
-    <property name="Message" value="MAYOR_1"/>
    </properties>
   </object>
  </objectgroup>

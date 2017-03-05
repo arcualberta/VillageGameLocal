@@ -1,6 +1,7 @@
 var Character = ArcBaseObject();
 Character.prototype = Object.create(ArcCharacter.prototype);
 new CharacterScripts(Character.prototype);
+new DialogScripts(Character.prototype);
 Character.prototype.init = function (id, name) {
     ArcCharacter.prototype.init.call(this);
     this.id = id;
@@ -230,6 +231,23 @@ NPC.prototype.click = function(x, y, player, world){
     var f = this['onclick'];
 
     if(f){ f.call(this, null, player, world); }
+};
+NPC.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
+    var f = this['oninteract'];
+
+    if(f){
+        f.call(this, null, player, world, worldAdapter);
+    }
+
+    if(player.activeObject === this){
+        f = this['ontalk'];
+
+        if(f){
+            f.call(this, null, player, world, worldAdapter);
+        }
+
+        player.activeObject = null;
+    }
 };
 
 // An idividual on the screen controlled by a human

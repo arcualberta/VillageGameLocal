@@ -43,3 +43,18 @@ CharacterScripts.prototype.WalkArea = function(x1, y1, x2, y2){
 		waypoint[1] = (Math.random() * (y2 - y1)) + y1;
 	}
 };
+
+var DialogScripts = new ArcBaseObject();
+DialogScripts.prototype = Object.create(ArcScriptObject.prototype)
+DialogScripts.prototype.init = function(parent){
+	ArcScriptObject.prototype.init.call(this, parent);
+
+	this.AttachFunction("TriggerDialog");
+	this.AttachFunction("TriggerTask");
+};
+DialogScripts.prototype.TriggerDialog = function(messageKey, worldAdapter, onclose){
+	worldAdapter.showMessage(messageKey, false, onclose);
+};
+DialogScripts.prototype.TriggerTask = function(task, worldAdapter, onclose){
+	worldAdapter.loadTask(task, worldAdapter.getTaskScript(task), onclose);
+};

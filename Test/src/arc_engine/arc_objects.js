@@ -596,7 +596,7 @@ QuadTree.prototype.updateLocation = function(x, y){
 QuadTree.prototype.unload = function(){
     this.clear();
 }
-QuadTree.prototype.MAX_OBJECTS = 3;
+QuadTree.prototype.MAX_OBJECTS = 10;
 QuadTree.prototype.MAX_LEVELS = 10;
 QuadTree.prototype.clear = function (onObjectClear) {
     var i = 0;

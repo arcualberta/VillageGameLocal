@@ -293,7 +293,9 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             menu = new DialogMenu(dialog, name, lineNumber);
             menu.closeComplete = function(){
                 menu = null;
-                onClose();
+                if(onClose){
+                    onClose();
+                }
             };
             menu.show(canvas);
         });

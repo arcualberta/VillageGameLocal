@@ -190,8 +190,7 @@ VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
     }
 
     if (this.player !== null && this.player.user) {
-        this.player.user.location[0] = this.playerStart[0];
-        this.player.user.location[1] = this.playerStart[1];
+        this.player.user.updateLocation(this.playerStart[0], this.playerStart[1]);
         this.player.waypointLoc[0] = this.playerStart[0];
         this.player.waypointLoc[1] = this.playerStart[1];
 
