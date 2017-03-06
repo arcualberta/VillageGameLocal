@@ -245,7 +245,7 @@ ClickReadTrigger.prototype.interact = function (left, top, right, bottom, player
 
         player.stop();
 
-         worldAdapter.showMessage(this.message, false, function () {
+         worldAdapter.showMessage(this.message, false, player, this, function () {
             _this.activated = false;
             player.activeObject = null;
         });

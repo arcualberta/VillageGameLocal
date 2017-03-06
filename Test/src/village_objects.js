@@ -209,6 +209,11 @@ NPC.prototype.init = function (id, name, state, location, properties) {
     this.updateLocation(location[0], location[1]);
     this.waypoint[0] = location[0];
     this.waypoint[1] = this.location[1];
+
+    // Check for an onstart
+    var f = this["onstart"];
+
+    if(f){ f.call(this); }
 };
 NPC.prototype.setState = function(state){
     this.state = "on" + state;
@@ -348,6 +353,8 @@ Player.prototype.init = function (user) {
     this.action = 0;
     this.lastStep = [0, 0, false];
     this.activeObject = null;
+    this.stats = {
+    };
 };
 Player.prototype.stop = function(){
     this.user.stop();
@@ -452,7 +459,7 @@ WorldAdapter.prototype.removeUserFromMap = function (id) {
             }
         }]);
 };
-WorldAdapter.prototype.showMessage = function (message, lineNumber, onComplete) {
+WorldAdapter.prototype.showMessage = function (message, lineNumber, player, speaker, onComplete) {
     console.log(message);
     onComplete();
 };

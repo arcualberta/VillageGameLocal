@@ -37,8 +37,8 @@ ArcDialog.prototype.insert = function (name, lineNumber, character, message, var
         'LINE_NUMBER' : lineNumber,
         'CHARACTER' : character, 
         'MESSAGE' : message,
-        'VARIABLE' : variable,
-        'SET_VARIABLE' : setVariable,
+        'ON_START' : variable,
+        'ON_END' : setVariable,
         'NEXT_LINE' : nextLine,
         'OPTION_1' : option1,
         'OPTION_1_LINE' : option1Line,
@@ -60,11 +60,13 @@ var ArcSQLDialog = ArcBaseObject();
 ArcSQLDialog.prototype = Object.create(ArcDialog.prototype);
 ArcSQLDialog.prototype.init = function (csvUrl) {
     var _this = this;
-    this.db = openDatabase('arc_db', '1.0', 'Databse to store needed ARC information.', 2 * 1024 * 1024);
+    // arc_db - Base Database
+    // arc_db1 - Change VARIABLE and SET_VARIABLE to ON_START and ON_END
+    this.db = openDatabase('arc_db1', '1.0', 'Databse to store needed ARC information.', 2 * 1024 * 1024);
 
     // Create the table if needed
     this.db.transaction(function (tx) {
-        tx.executeSql('CREATE TABLE IF NOT EXISTS DIALOGS (NAME, LINE_NUMBER, CHARACTER, MESSAGE, VARIABLE, SET_VARIABLE, NEXT_LINE, OPTION_1, OPTION_1_LINE, OPTION_2, OPTION_2_LINE, OPTION_3, OPTION_3_LINE, PRIMARY KEY (NAME, LINE_NUMBER))');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS DIALOGS (NAME, LINE_NUMBER, CHARACTER, MESSAGE, ON_OPEN, ON_CLOSE, NEXT_LINE, OPTION_1, OPTION_1_LINE, OPTION_2, OPTION_2_LINE, OPTION_3, OPTION_3_LINE, PRIMARY KEY (NAME, LINE_NUMBER))');
     });
 
     // Open the dialog file and read each line
@@ -89,15 +91,15 @@ ArcSQLDialog.prototype.init = function (csvUrl) {
         }
     });
 };
-ArcSQLDialog.prototype.insert = function (name, lineNumber, character, message, variable, setVariable, nextLine, option1, option1Line, option2, option2Line, option3, option3Line) {
+ArcSQLDialog.prototype.insert = function (name, lineNumber, character, message, onStart, onEnd, nextLine, option1, option1Line, option2, option2Line, option3, option3Line) {
     this.db.transaction(function (tx) {
         tx.executeSql('SELECT * FROM DIALOGS WHERE NAME = ? AND LINE_NUMBER = ?', [name, lineNumber], function (tx2, results) {
             if (results.rows.length > 0) {
-                tx2.executeSql('UPDATE DIALOGS SET CHARACTER = ?, MESSAGE = ?, VARIABLE = ?, SET_VARIABLE = ?, NEXT_LINE = ?, OPTION_1 = ?, OPTION_1_LINE = ?, OPTION_2 = ?, OPTION_2_LINE = ?, OPTION_3 = ?, OPTION_3_LINE = ? WHERE NAME = ? AND LINE_NUMBER = ?',
-                        [character, message, variable, setVariable, nextLine, option1, option1Line, option2, option2Line, option3, option3Line, name, lineNumber]);
+                tx2.executeSql('UPDATE DIALOGS SET CHARACTER = ?, MESSAGE = ?, ON_OPEN = ?, ON_CLOSE = ?, NEXT_LINE = ?, OPTION_1 = ?, OPTION_1_LINE = ?, OPTION_2 = ?, OPTION_2_LINE = ?, OPTION_3 = ?, OPTION_3_LINE = ? WHERE NAME = ? AND LINE_NUMBER = ?',
+                        [character, message, onStart, onEnd, nextLine, option1, option1Line, option2, option2Line, option3, option3Line, name, lineNumber]);
             } else {
-                tx2.executeSql('INSERT INTO DIALOGS(NAME, LINE_NUMBER, CHARACTER, MESSAGE, VARIABLE, SET_VARIABLE, NEXT_LINE, OPTION_1, OPTION_1_LINE, OPTION_2, OPTION_2_LINE, OPTION_3, OPTION_3_LINE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                        [name, lineNumber, character, message, variable, setVariable, nextLine, option1, option1Line, option2, option2Line, option3, option3Line]);
+                tx2.executeSql('INSERT INTO DIALOGS(NAME, LINE_NUMBER, CHARACTER, MESSAGE, ON_OPEN, ON_CLOSE, NEXT_LINE, OPTION_1, OPTION_1_LINE, OPTION_2, OPTION_2_LINE, OPTION_3, OPTION_3_LINE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [name, lineNumber, character, message, onStart, onEnd, nextLine, option1, option1Line, option2, option2Line, option3, option3Line]);
             }
         }, null);
     });

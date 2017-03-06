@@ -444,9 +444,14 @@ function SettingsWindow(game){
 }
 
 // Window for dialogs
-function DialogMenu(dialog, name, lineNumber) {
+function DialogMenu(dialog, name, lineNumber, player, speaker) {
     var menu = new GameMenu("", 500, 200);
     var currentLine = null;
+    
+    menu.variables = {
+        player: player,
+        speaker: speaker
+    }
 
     // Setup the components
     var dialogSection = $("<div class='dialog_text'></div>");
@@ -465,10 +470,16 @@ function DialogMenu(dialog, name, lineNumber) {
                 menu.close();
             }
 
+            let player = menu.variables.player;
+            let speaker = menu.variables.speaker;
+
+            if(result["ON_OPEN"]){
+                eval(result["ON_OPEN"]);
+            }
             dialogSection.empty();
 
             var message = $("<h3></h3>");
-            message.text(result["MESSAGE"]);
+            message.text(eval('`' + result["MESSAGE"] + '`'));
             dialogSection.append(message);
 
             // Add the options
@@ -491,6 +502,12 @@ function DialogMenu(dialog, name, lineNumber) {
         if (currentLine === null) {
             menu.close();
         }
+
+        /*TODO: if(result["ON_CLOSE"]){
+            let player = menu.variables.player;
+            let speaker = menu.variables.speaker;
+            eval(result["ON_CLOSE"]);
+        }*/
 
         // If there are options, check which one has been clicked
         if (currentLine["OPTION_1"] !== null) {

@@ -329,11 +329,30 @@ ArcWaypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, h
     }
 };
 
+// We are using actor to define any noun object on a quad tree.
+var ArcActor = ArcBaseObject();
+ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
+ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
+    ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
+    
+    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
+    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+    this.radius = 0;
+
+    // TODO: check if objects interect through the circle.
+};
+ArcActor.prototype.updateSize = function(w, h){
+    ArcRenderableObject.prototype.updateSize.apply(this, arguments);
+
+    this.radius = Math.sqrt((this.size[3] * this.size[3]) + (this.size[4] * this.size[4]));
+};
+
+
 // Basic Character objects
 var ArcCharacter = ArcBaseObject();
-ArcCharacter.prototype = Object.create(ArcRenderableObject.prototype);
+ArcCharacter.prototype = Object.create(ArcActor.prototype);
 ArcCharacter.prototype.init = function(){
-    ArcRenderableObject.prototype.init.call(this, true, true);
+    ArcActor.prototype.init.call(this, true, true);
     this.animation = "stand_down";
     this.frame = 0;
     this.frameTime = 0;
@@ -390,7 +409,7 @@ ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, 
 ArcCharacter.prototype.tick = function(deltaMilliseconds){
     this.animateFrame(deltaMilliseconds);
     
-    ArcRenderableObject.prototype.tick.apply(this, arguments);
+    ArcActor.prototype.tick.apply(this, arguments);
 };
 
 // ARC Generate TileMap from TiledCode
@@ -553,17 +572,6 @@ function arcUpscaleImage(amount, image, gridX, gridY) {
     return canvasOut;
 }
 
-// We are using actor to define any noun object on a quad tree.
-var ArcActor = ArcBaseObject();
-ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
-ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
-    ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
-    
-    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
-    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
-};
-
-
 // Defining the quadtree class
 // Tutorial from: http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 var QuadTree = ArcBaseObject();
@@ -596,7 +604,7 @@ QuadTree.prototype.updateLocation = function(x, y){
 QuadTree.prototype.unload = function(){
     this.clear();
 }
-QuadTree.prototype.MAX_OBJECTS = 10;
+QuadTree.prototype.MAX_OBJECTS = 5;
 QuadTree.prototype.MAX_LEVELS = 10;
 QuadTree.prototype.clear = function (onObjectClear) {
     var i = 0;
