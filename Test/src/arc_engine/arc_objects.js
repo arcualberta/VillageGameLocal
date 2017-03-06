@@ -1020,6 +1020,37 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
 
     return returnObjects;
 };
+ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjects, offset, repeat){
+    let i, obj, nodes;
+
+    for(i = 0; i < this.objects.length; ++i){
+        obj = this.objects[i];
+        if(obj.tile.isDrawable){
+            returnObjects.push({
+                    x: obj.location[0],
+                    y: obj.location[1],
+                    width: obj.size[0],
+                    height: obj.size[1],
+                    tile: obj.tile.drawable(),
+                    tileSheet: obj.tile.tileSheetName
+                });
+        }
+    }
+
+    nodes = this.nodes;
+    if(nodes[0] !== null){
+        i = this.getIndex(x, y, width, height);
+
+        if(i >= 0){
+            nodes[i].getObjects(x, y, width, height, returnObjects, offset, repeat);
+        }else{
+            nodes[0].getObjects(x, y, width, height, returnObjects, offset, repeat);
+            nodes[1].getObjects(x, y, width, height, returnObjects, offset, repeat);
+            nodes[2].getObjects(x, y, width, height, returnObjects, offset, repeat);
+            nodes[3].getObjects(x, y, width, height, returnObjects, offset, repeat);
+        }
+    }
+};
 ArcTileQuadTree.prototype.isBlocked = function (x, y, width, height) {
     var i = 0;
     var checkObject = null;
