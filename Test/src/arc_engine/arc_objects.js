@@ -252,32 +252,40 @@ ArcRenderableObject.prototype.unload = function(){
     }
 };
 ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
-    for (let key in this.children){
-        let child = this.children[key];
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
         if(child.drawEnabled){
             child.draw(displayContext, xOffset, yOffset, width, height);
         }
     }
 };
 ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
-    for (let key in this.children){
-        let child = this.children[key];
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
         if(child.tickEnabled){
             child.tick.apply(child, arguments);
         }
     }
 };
 ArcRenderableObject.prototype.click = function(x, y){
-    for (let key in this.children){
-        let child = this.children[key];
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
         if(child.clickEnabled){
             child.click.apply(child, arguments);
         }
     }
 };
 ArcRenderableObject.prototype.interact = function(left, top, right, bottom){
-    for (let key in this.children){
-        let child = this.children[key];
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
         if(child.interactEnabled){
             child.interact.apply(child, arguments);
         }
@@ -878,6 +886,26 @@ QuadTree.prototype.interact = function(left, top, right, bottom){
 QuadTree.ArrayBuffer = [];
 QuadTree.StackBuffer = [];
 
+var ArcTileQuadTree_Tile = ArcBaseObject();
+ArcTileQuadTree_Tile.prototype = Object.create(ArcRenderableObject());
+ArcTileQuadTree_Tile.prototype.init = function(tile, x, y, tileWidth, tileHeight){
+    ArcRenderableObject.prototype.init.call(this, false, false);
+
+    this.location[4] = x + (tileWidth >> 1);
+    this.location[5] = y + (tileWidth >> 1);
+
+    this.updateSize(tileWidth, tileHeight);
+
+    this.tile = tile;
+};
+ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom){
+    if(this.inLocation(left, top, right, bottom)){
+        return !this.tile.walkable;
+    }
+
+    return null;
+};
+
 // Special Quadtree for tiles
 var ArcTileQuadTree = ArcBaseObject();
 ArcTileQuadTree.prototype = Object.create(QuadTree.prototype);
@@ -915,11 +943,7 @@ ArcTileQuadTree.prototype.split = function () {
     }
 };
 ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeight) {
-    this.insert({
-        location: [x, y, x + tileWidth, y + tileHeight],
-        size: [tileWidth, tileHeight],
-        tile: tile
-    });
+    this.insert(new ArcTileQuadTree_Tile(tile, x, y, tileWidth, tileHeight));
 };
 ArcTileQuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
@@ -1021,19 +1045,13 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
     return returnObjects;
 };
 ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjects, offset, repeat){
-    let i, obj, nodes;
+    let i, nodes, obj;
 
     for(i = 0; i < this.objects.length; ++i){
         obj = this.objects[i];
         if(obj.tile.isDrawable){
-            returnObjects.push({
-                    x: obj.location[0],
-                    y: obj.location[1],
-                    width: obj.size[0],
-                    height: obj.size[1],
-                    tile: obj.tile.drawable(),
-                    tileSheet: obj.tile.tileSheetName
-                });
+            // TODO: Find a way around this. We shouldnt need to create a new object.
+            returnObjects.push(obj);
         }
     }
 
@@ -1051,36 +1069,51 @@ ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjec
         }
     }
 };
-ArcTileQuadTree.prototype.isBlocked = function (x, y, width, height) {
-    var i = 0;
-    var checkObject = null;
-    for (; i < this.objects.length; ++i) {
-        checkObject = this.objects[i];
-        if (!checkObject.tile.walkable) { //If not walkable, check if we overlap with it.
-            if (x > checkObject.location[2] || (x + width) < checkObject.location[0]
-                    || y > checkObject.location[3] || (y + height) < checkObject.location[1]) {
-                // Does not overlap
-            } else {
+ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+    const nodes = this.nodes;
+    let i, r;
+    let result = null;
+
+    for (i = 0; i < this.objects.length; ++i) {
+        r = this.objects[i].isBlocked(x1, y1, x2, y2, width, height);
+
+        if(r !== null){
+            if(r){
                 return true;
+            }else{
+                result = false;
             }
         }
     }
 
-    var nodes = this.nodes;
     if (nodes[0] !== null) {
-        var index = this.getIndex(x, y, width, height);
-        if (index > -1) {
-            return nodes[index].isBlocked(x, y, width, height);
+        i = this.getIndex(x1, y1, width, height);
+        if (i > -1) {
+            r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+
+            if(r !== null){
+                if(r){
+                    return true;
+                }else{
+                    result = false;
+                }
+            }
         } else {
             for (i = 0; i < 4; ++i) {
-                if (nodes[i].isBlocked(x, y, width, height)) {
-                    return true;
+                r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+
+                if(r !== null){
+                    if(r){
+                        return true;
+                    }else{
+                        result = false;
+                    }
                 }
             }
         }
     }
 
-    return false;
+    return result;
 };
 ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
     if (this.scroll !== null) {
@@ -1298,14 +1331,10 @@ ArcTile.prototype.init = function (x, y, width, height, walkable, deleted, name)
     this.name = name;
     this.tileSheetName = "";
     this.isDrawable = true;
+    this.properties = {};
 };
 ArcTile.prototype.drawable = function () {
-    return {
-        x: this.x,
-        y: this.y,
-        width: this.width,
-        height: this.height
-    };
+    return this;
 };
 ArcTile.prototype.update = function (timeSinceLastFrame) {
 
@@ -1313,6 +1342,7 @@ ArcTile.prototype.update = function (timeSinceLastFrame) {
 ArcTile.prototype.getState = function () {
     return this;
 };
+
 // A single animated tile.
 var ArcAnimatedTile = ArcBaseObject();
 ArcAnimatedTile.prototype.init = function (animation, walkable, deleted, name) {
@@ -1342,12 +1372,7 @@ ArcAnimatedTile.prototype.getState = function () {
 };
 ArcAnimatedTile.prototype.drawable = function () {
     var frame = this.getState();
-    return {
-        x: frame.x,
-        y: frame.y,
-        width: frame.width,
-        height: frame.height
-    };
+    return frame;
 };
 // The base object for a tiled image.
 // Note: This will be used for the village.
@@ -1396,8 +1421,8 @@ ArcTileMap.prototype.getTile = function (x, y) {
 
     return null;
 };
-ArcTileMap.prototype.isBlocked = function (x, y, width, height) {
-    return this.data.isBlocked(x, y, width, height);
+ArcTileMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+    return this.data.isBlocked(x1, y1, x2, y2, width, height);
 };
 ArcTileMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     this.data.draw(displayContext, xOffset, yOffset, width, height);

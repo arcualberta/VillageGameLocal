@@ -404,7 +404,7 @@ VillageMap.prototype.load = function (onload, startName) {
 
         // Setup tiles
         var tiles = _this.tiles;
-        var addTile = function (tileSheet, index, imageWidth, tileWidth, tileHeight) {
+        var addTile = function (tileSheet, index, imageWidth, tileWidth, tileHeight, properties) {
             if (index < tileSheet.firstGid) {
                 return null;
             }
@@ -489,6 +489,8 @@ VillageMap.prototype.load = function (onload, startName) {
                         tile.walkable = "false" !== value.toLowerCase();
                     }else if(propName === "drawable"){
                         tile.isDrawable = "false" !== value.toLowerCase();
+                    }else {
+                        tile.properties[propName] = value;
                     }
                 });
             });
@@ -653,12 +655,18 @@ VillageMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
     return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
 };
 // Checks if a rectangular area is blocked.
-VillageMap.prototype.isBlocked = function (x, y, width, height) {
-    var checkVal = null;
+VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+    let checkVal = null;
+    let child = null;
+
     for(var i = this.waypointIndex - 1; i > -1; --i){
-        checkVal = this.children[i].isBlocked(x, y, width, height);
-        if(checkVal !== null){
-            return checkVal;
+        child = this.children[i];
+        
+        if(child.isBlocked){
+            checkVal = this.children[i].isBlocked(x1, y1, x2, y2, width, height);
+            if(checkVal !== null){
+                return checkVal;
+            }
         }
     }
 
@@ -832,3 +840,61 @@ VillageModule.prototype.load = function (mapName, startName) {
         }
     }, startName);
 };
+
+// Minimap code
+QuadTree.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+    let i, obj;
+    const nodes = this.nodes;
+
+    for(i = 0; i < this.objects.length; ++i){
+        obj = this.objects.length;
+
+        if(obj.drawMinimap){
+            obj.drawMinimap.apply(child, arguments);
+        }
+    }
+
+    if(nodes[0] !== null){
+        i = this.getIndex(x, y, width, height);
+        if(i >= 0){
+            nodes[i].drawMinimap.apply(nodes[i], arguments);
+        }else{
+            nodes[0].drawMinimap.apply(nodes[0], arguments);
+            nodes[1].drawMinimap.apply(nodes[1], arguments);
+            nodes[2].drawMinimap.apply(nodes[2], arguments);
+            nodes[3].drawMinimap.apply(nodes[3], arguments);
+        }
+    }
+};
+
+ArcTileQuadTree_Tile.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+    if(this.tile.properties["minimap"]){
+        context.fillStyle = this.tile.properties["minimap"];
+        context.fillRect(this.location[0] * scale, this.location[1] * scale, this.size[0] * scale, this.size[1] * scale);
+    }
+}
+
+VillageMap.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+    let child, i;
+    
+    for(i = 0; i < this.children.length; ++i){
+        child = this.children[i];
+        
+        if(child.drawMinimap){
+            child.drawMinimap.apply(child, arguments);
+        }
+    }
+
+    return false;
+};
+
+function villageDrawMinimap(canvas, map){
+    var scale = 2 / map.tileWidth;
+
+    canvas.width = map.width << 1;
+    canvas.height = map.height << 1;
+
+    var context = canvas.getContext("2d");
+
+    map.drawMinimap(canvas, context, 0, 0, canvas.width, canvas.height, scale);
+}

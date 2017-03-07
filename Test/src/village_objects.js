@@ -70,11 +70,11 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
     // TODO: Define an acutal bounding box variable
     var tileBox = this.collisionBox();
 
-    if (village.isBlocked(tileBox[0], tileBox[1] + newY, tileBox[2], tileBox[3])) {
+    if (village.isBlocked(tileBox[0], tileBox[1] + newY, tileBox[0] + tileBox[2], tileBox[1] + tileBox[3] + newY, tileBox[2], tileBox[3])) {
         newY = 0;
     }
 
-    if (village.isBlocked(tileBox[0] + newX, tileBox[1], tileBox[2], tileBox[3])) {
+    if (village.isBlocked(tileBox[0] + newX, tileBox[1], tileBox[0] + newX + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])) {
         newX = 0;
     }
 
@@ -291,10 +291,10 @@ Village.prototype.getClosestTileCoord = function (pixelX, pixelY) {
     return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
 };
 // Checks if a rectangular area is blocked.
-Village.prototype.isBlocked = function (x, y, width, height) {
+Village.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
     if (this.tileSheet !== null) {
-        var tX1 = x / this.tileWidth;
-        var tY1 = y / this.tileHeight;
+        var tX1 = x1 / this.tileWidth;
+        var tY1 = y1 / this.tileHeight;
         var tX2 = Math.ceil(tX1 + (width / this.tileWidth));
         var tY2 = Math.ceil(tY1 + (height / this.tileHeight));
 

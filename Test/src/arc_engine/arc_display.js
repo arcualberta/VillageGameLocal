@@ -146,12 +146,13 @@ ArcGraphicsAdapter.prototype.drawTileLayer = function (tiles) {
     let offset = this.camera.offset;
     let length = tiles.length;
     let tile, tileSheet;
+
     for (; index < length; ++index) {
         tile = tiles[index];
 
-        tileSheet = this.tileSheets[tile.tileSheet];
+        tileSheet = this.tileSheets[tile.tile.tileSheetName];
         if (tileSheet) {
-            this.drawTile(tileSheet, tile.tile, tile.x - offset[0], tile.y - offset[1], tile.width, tile.height);
+            this.drawTile(tileSheet, tile.tile.drawable(), tile.location[0] - offset[0], tile.location[1] - offset[1], tile.size[0], tile.size[1]);
         }
     }
 };

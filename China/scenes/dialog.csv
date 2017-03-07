@@ -1,4 +1,4 @@
-NAME,LINE_NUMBER,CHARACTER_NAME,MESSAGE,VARIABLE,SET_VARIABLE_VALUE,NEXT_LINE,OPTION_1,OPTION_1_LINE,OPTION_2,OPTION_2_LINE,OPTION_3,OPTION_3_LINE
+NAME,LINE_NUMBER,CHARACTER_NAME,MESSAGE,ON_START,ON_END,NEXT_LINE,OPTION_1,OPTION_1_LINE,OPTION_2,OPTION_2_LINE,OPTION_3,OPTION_3_LINE
 DIALOGUE_4,1,Wukong,Careful! You know not what lurks in that vile hut.,,,2,,,,,,
 DIALOGUE_4,2,[Player],"Sir please, my friend, he is missing!",,,3,,,,,,
 DIALOGUE_4,3,Wukong,"I fear he my be lost, and you must not be lost too.",,,4,,,,,,
@@ -12,3 +12,9 @@ DIALOGUE_4,10,Wukong,Leave!!,,,,,,,,,
 BEGINNING,1,Leader,"Hello, Welcome to our beautiful town!",,,2,,,,,,
 BEGINNING,2,Leader,Good morning. Let me introduce myself. I am the leader of the town.,,,3,,,,,,
 BEGINNING,3,Leader,My name is ,,,,,,,,,
+WU_HAI_1,1,Ma Liang,"Wu Hai looks very anxious, what is wrong with him?",,,2,,,,,,
+WU_HAI_1,2,Ma Liang,"Hey, Wu Hai, how’s it going?",player.waypoint[0] = speaker.location[4]; player.waypoint[1] = speaker.location[5] - 16; player.waypoint[1] = speaker.location[5]; ,,3,,,,,,
+WU_HAI_1,3,Wu Hai,"My hoe is broke into two parts; I cannot do farm works now. I need to cut off all the wheat and sell them at the market, otherwise there won’t be enough money to support my family.",,,4,,,,,,
+WU_HAI_1,4,Ma Liang,"I am sorry to hear that, but I do not have a hoe with me. I will try my best to help you.",,,5,,,,,,
+WU_HAI_1,5,Wu Hai,"That’s fine, thank you Ma Liang. You are so kind.",,,6,,,,,,
+WU_HAI_1,6,Ma Liang,Sorry I cannot help you.,,,,,,,,,

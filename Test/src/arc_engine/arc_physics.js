@@ -31,7 +31,7 @@ function arcInitializePhysics() {
             while (xWalk || yWalk) {
                 if (xWalk) {
                     for (i = 0; i < length; ++i) {
-                        if (layers[i].isBlocked(x, y, w, h)) {
+                        if (layers[i].isBlocked(x, y, x + w, y + h, w, h)) {
                             x -= xi;
                             xBlocked = true;
                             xWalk = false;
@@ -50,7 +50,7 @@ function arcInitializePhysics() {
 
                 if (yWalk) {
                     for (i = 0; i < length; ++i) {
-                        if (layers[i].isBlocked(x, y, w, h)) {
+                        if (layers[i].isBlocked(x, y, x + w, y + h, w, h)) {
                             y -= yi;
                             yBlocked = true;
                             yWalk = false;
