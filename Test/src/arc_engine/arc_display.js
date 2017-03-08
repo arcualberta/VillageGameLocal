@@ -21,8 +21,8 @@ var ArcCameraPanAction = ArcBaseObject();
 ArcCameraPanAction.prototype = Object.create(ArcCameraAction.prototype);
 ArcCameraPanAction.prototype.init = function (time, onComplete, xStart, yStart, xEnd, yEnd) {
     ArcCameraAction.prototype.init.call(this, time, onComplete);
-    this.velocity = [(xEnd - xStart) / time, (yEnd - yStart) / time];
-    this.location = [xStart, yStart];
+    this.velocity = new Float32Array([(xEnd - xStart) / time, (yEnd - yStart) / time]);
+    this.location = new Float32Array([xStart, yStart]);
 };
 ArcCameraPanAction.prototype.update = function (camera, timeSinceLast) {
     ArcCameraAction.prototype.update.call(this, camera, timeSinceLast);
