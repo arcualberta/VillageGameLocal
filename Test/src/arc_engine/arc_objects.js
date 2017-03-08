@@ -180,7 +180,7 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.clickEnabled = false;
     this.interactEnabled = false;
     this.name = null;
-    this.location = [-100, -100, -100, -100, 0, 0];
+    this.location = new Float32Array(6);
     this.size = new Uint16Array(4);
 };
 ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
@@ -1354,6 +1354,7 @@ ArcAnimatedTile.prototype.init = function (animation, walkable, deleted, name) {
     this.name = name;
     this.tileSheetName = "";
     this.isDrawable = true;
+    this.properties = {};
 };
 ArcAnimatedTile.prototype.update = function (timeSinceLastFrame) {
     var frame = this.animation.frames[this.frame];

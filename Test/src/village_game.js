@@ -12,6 +12,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     var userName = null;
 
     this.villageDisplay = null;
+    this.minimap = document.createElement('canvas');
 
     //TODO: Temp code for sounds. Fix for full version
     var sounds = [
@@ -106,6 +107,9 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         if(renderable != null){
             let size = displayAdapter.size;
             renderable.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
+
+            //TEMP
+            villageDrawMinimap(__this.minimap, renderable);
         }
 
         displayAdapter.drawToDisplay('UNKNOWN');

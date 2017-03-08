@@ -847,25 +847,29 @@ QuadTree.prototype.drawMinimap = function(canvas, context, x, y, width, height, 
     const nodes = this.nodes;
 
     for(i = 0; i < this.objects.length; ++i){
-        obj = this.objects.length;
+        obj = this.objects[i];
 
         if(obj.drawMinimap){
-            obj.drawMinimap.apply(child, arguments);
+            obj.drawMinimap(canvas, context, x, y, width, height, scale);
         }
     }
 
     if(nodes[0] !== null){
         i = this.getIndex(x, y, width, height);
         if(i >= 0){
-            nodes[i].drawMinimap.apply(nodes[i], arguments);
+            nodes[i].drawMinimap(canvas, context, x, y, width, height, scale);
         }else{
-            nodes[0].drawMinimap.apply(nodes[0], arguments);
-            nodes[1].drawMinimap.apply(nodes[1], arguments);
-            nodes[2].drawMinimap.apply(nodes[2], arguments);
-            nodes[3].drawMinimap.apply(nodes[3], arguments);
+            nodes[0].drawMinimap(canvas, context, x, y, width, height, scale);
+            nodes[1].drawMinimap(canvas, context, x, y, width, height, scale);
+            nodes[2].drawMinimap(canvas, context, x, y, width, height, scale);
+            nodes[3].drawMinimap(canvas, context, x, y, width, height, scale);
         }
     }
 };
+
+ArcTileMap.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+    this.data.drawMinimap(canvas, context, x, y, width, height, scale);
+}
 
 ArcTileQuadTree_Tile.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
     if(this.tile.properties["minimap"]){
@@ -881,20 +885,27 @@ VillageMap.prototype.drawMinimap = function(canvas, context, x, y, width, height
         child = this.children[i];
         
         if(child.drawMinimap){
-            child.drawMinimap.apply(child, arguments);
+            child.drawMinimap(canvas, context, x, y, width, height, scale);
         }
     }
 
     return false;
 };
 
-function villageDrawMinimap(canvas, map){
-    var scale = 2 / map.tileWidth;
+User.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+    let cb = this.lastCollisionBox;
 
-    canvas.width = map.width << 1;
-    canvas.height = map.height << 1;
+    context.fillStyle = '#FF0';
+    context.fillRect(Math.floor(cb[0] * scale), Math.floor(cb[1] * scale), cb[2] * scale, this.size[3] * scale);
+}
+
+function villageDrawMinimap(canvas, map){
+    var scale = 1 / map.tileWidth;
+
+    canvas.width = map.width << 0;
+    canvas.height = map.height << 0;
 
     var context = canvas.getContext("2d");
 
-    map.drawMinimap(canvas, context, 0, 0, canvas.width, canvas.height, scale);
+    map.drawMinimap(canvas, context, 0, 0, map.width * map.tileWidth, map.height * map.tileHeight, scale);
 }

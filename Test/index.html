@@ -25,14 +25,20 @@
         <script type="text/javascript" src="./module_worldAdapter.js"></script>
         <script type="text/javascript" src="./src/village_display.js"></script>
         <script type="text/javascript" src="./src/village_game.js"></script>
+
+        <style>
+            #testMap > canvas {
+                width: 500px;
+                image-rendering: pixelated;
+            }
+        </style>
     </head>
     <body>
         <div class="game_window">
             <canvas id="gamePanel" width="800" height="600" role="img"></canvas>
         </div>
         <span id="testText"></span>
-        <div>
-            <canvas id="testMap"></canvas>
+        <div id="testMap">
         <div>
 
         <script type="text/javascript">
@@ -42,6 +48,8 @@
                 game = new VillageGame($("#gamePanel")[0], "./src", "./Resources");
                 game.characterScreens = testSpriteList;
                 game.start();
+
+                $(testMap).append($(game.minimap));
             });
         </script>
     </body>
