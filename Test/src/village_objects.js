@@ -41,6 +41,8 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
     var distance = speed * time;
     var isChanged = false;
 
+    // TODO: check if we are going diagonally.
+
     //if(Math.abs(xDif) > Math.abs(yDif)){
     if (xDif > 0.0) {
         newX -= distance;
@@ -348,7 +350,7 @@ Player.prototype.init = function (user) {
     this.user = user;
     this.showWaypoint = false;
     this.waypointLoc = [user.location[0], user.location[1]];
-    this.speed = 0.08;
+    this.speed = 0.12;
     this.direction = 0;
     this.action = 0;
     this.lastStep = [0, 0, false];

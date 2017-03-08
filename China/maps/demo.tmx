@@ -437,6 +437,7 @@
   </tile>
   <tile id="156">
    <properties>
+    <property name="minimap" value="#603913"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
@@ -772,7 +773,7 @@
 100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,260,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100
 </data>
  </layer>
- <objectgroup name="objects" visible="0">
+ <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="393" y="428" width="20" height="19"/>
   <object id="2" name="Wukong" type="Object" gid="268" x="2010" y="255.5" width="30" height="50">
    <properties>

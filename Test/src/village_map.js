@@ -445,6 +445,19 @@ VillageMap.prototype.load = function (onload, startName) {
         tiledFile.find('tileset').each(function () {
             var $tileset = $(this);
             var start = parseInt($tileset.attr("firstgid")) - 1;
+
+            if(!($tileset.attr("name")) && $tileset.attr("source")){
+                // Load the source tileset file
+                $.ajax({
+                    url: modulePath + "/maps/" + $tileset.attr("source"),
+                    method: 'GET',
+                    success: function(result){
+                        $tileset = $($.parseXML(result)).children();
+                    },
+                    async: false
+                });
+            }
+
             var tileWidth = parseInt($tileset.attr("tilewidth"));
             var tileHeight = parseInt($tileset.attr("tileheight"));
             var $image = $tileset.find("image");
