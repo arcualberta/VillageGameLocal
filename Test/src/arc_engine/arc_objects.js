@@ -682,10 +682,10 @@ QuadTree.prototype.recalculate = function(buffer) {
 
     // Recalcualte nodes
     if (nodes[0] !== null) {
-        isEmpty = nodes[0].recalculate(buffer) &&
-        nodes[1].recalculate(buffer) &&
-        nodes[2].recalculate(buffer) &&
-        nodes[3].recalculate(buffer);
+        isEmpty = nodes[0].recalculate(buffer);
+        isEmpty = nodes[1].recalculate(buffer) && isEmpty;
+        isEmpty = nodes[2].recalculate(buffer) && isEmpty;
+        isEmpty = nodes[3].recalculate(buffer) && isEmpty;
 
         if(isEmpty){
             nodes[0] = null;
