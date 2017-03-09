@@ -905,6 +905,13 @@ VillageMap.prototype.drawMinimap = function(canvas, context, x, y, width, height
     return false;
 };
 
+/*NPC.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+    let cb = this.lastCollisionBox;
+
+    context.fillStyle = '#00F';
+    context.fillRect(Math.floor(cb[0] * scale), Math.floor(cb[1] * scale), cb[2] * scale, this.size[3] * scale);
+}*/
+
 User.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
     let cb = this.lastCollisionBox;
 

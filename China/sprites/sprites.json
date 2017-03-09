@@ -270,6 +270,14 @@
             "image": "villager1.png",
             "animation": "animation_30x50"
         },
+		"npc_farmer": {
+            "image": "npc_farmer.png",
+            "animation": "animation_30x50"
+        },
+		"npc_tattered": {
+            "image": "npc_tattered.png",
+            "animation": "animation_30x50"
+        },
         "dancer_male_palette": {
             "image": "dancer_male_palette.png",
             "animation": "animation_16x24"
