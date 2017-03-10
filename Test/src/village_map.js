@@ -855,6 +855,75 @@ VillageModule.prototype.load = function (mapName, startName) {
 };
 
 // Minimap code
+var MiniMap = ArcBaseObject();
+MiniMap.prototype = Object.create(ArcRenderableObject.prototype)
+MiniMap.prototype.init = function(width, height, mask, image){
+    this.tickEnabled = true;
+    this.drawEnabled = true;
+    this.canvas = document.createElement('canvas');
+    this.scale = 1;
+    this.name = null;
+    this.location = new Float32Array(6);
+    this.size = new Uint16Array(4);
+    this.offset = new Float32Array(2);
+    this.map = null;
+    this.mask = mask;
+    this.image = image;
+
+    this.resize(width, height);
+    this.updateSize(width, height);
+};
+MiniMap.prototype.resize = function(width, height){
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    this.context = this.canvas.getContext("2d");
+};
+MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+    let canvas = this.canvas;
+    canvas.complete = false;
+
+    let map = this.map;
+    let context = this.context;
+    let scale = 1 / map.tileWidth;
+    let w = canvas.width * map.tileWidth;
+    let h = canvas.height * map.tileHeight;
+    let location = this.location;
+    let size = this.size;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Place Our Mask
+    context.drawImage(this.mask, 0, 0, canvas.width, canvas.height);
+    context.globalCompositeOperation = "source-atop";
+
+    map.drawMinimap(canvas, context, this.offset[0], this.offset[1], w, h, scale);
+
+    // Go back to the default drawing
+    context.globalCompositeOperation = "source-over"
+
+    // Draw the map image
+    context.drawImage(this.image, 0, 0, canvas.width, canvas.height);
+    
+    canvas.complete = true;
+
+    displayContext.updateImage(canvas);
+    displayContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, location[0], location[1], size[0], size[1]);
+};
+MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
+    this.map = map;  
+
+    if(worldAdapter.user){
+        let canvas = this.canvas;
+        let location = map.players[worldAdapter.user.id].location;
+        let w = canvas.width * map.tileWidth;
+        let h = canvas.height * map.tileHeight;
+
+        this.offset[0] = location[4] - (w >> 1);
+        this.offset[1] = location[5] - (h >> 1);
+    }
+};
+
 QuadTree.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
     let i, obj;
     const nodes = this.nodes;
@@ -886,8 +955,11 @@ ArcTileMap.prototype.drawMinimap = function(canvas, context, x, y, width, height
 
 ArcTileQuadTree_Tile.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
     if(this.tile.properties["minimap"]){
+        let xs = Math.round((this.location[0] - x) * scale);
+        let ys = Math.round((this.location[1] - y) * scale);
+
         context.fillStyle = this.tile.properties["minimap"];
-        context.fillRect(this.location[0] * scale, this.location[1] * scale, this.size[0] * scale, this.size[1] * scale);
+        context.fillRect(xs, ys, this.size[0] * scale, this.size[1] * scale);
     }
 }
 
@@ -915,17 +987,9 @@ VillageMap.prototype.drawMinimap = function(canvas, context, x, y, width, height
 User.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
     let cb = this.lastCollisionBox;
 
+    let xs = Math.round((cb[0] - x) * scale);
+    let ys = Math.round((cb[1] - y) * scale);
+
     context.fillStyle = '#FF0';
-    context.fillRect(Math.floor(cb[0] * scale), Math.floor(cb[1] * scale), cb[2] * scale, this.size[3] * scale);
-}
-
-function villageDrawMinimap(canvas, map){
-    var scale = 1 / map.tileWidth;
-
-    canvas.width = map.width << 0;
-    canvas.height = map.height << 0;
-
-    var context = canvas.getContext("2d");
-
-    map.drawMinimap(canvas, context, 0, 0, map.width * map.tileWidth, map.height * map.tileHeight, scale);
+    context.fillRect(xs, ys, cb[2] * scale, this.size[3] * scale);
 }

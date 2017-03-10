@@ -38,8 +38,6 @@
             <canvas id="gamePanel" width="800" height="600" role="img"></canvas>
         </div>
         <span id="testText"></span>
-        <div id="testMap">
-        <div>
 
         <script type="text/javascript">
             var game;
@@ -48,8 +46,6 @@
                 game = new VillageGame($("#gamePanel")[0], "./src", "./Resources");
                 game.characterScreens = testSpriteList;
                 game.start();
-
-                $(testMap).append($(game.minimap));
             });
         </script>
     </body>

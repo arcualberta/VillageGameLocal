@@ -38,7 +38,7 @@ CharacterScripts.prototype.WalkArea = function(x1, y1, x2, y2){
 	let waypoint = this.waypoint;
 	let location = this.location;
 
-	if(!this.lastStep[2]){
+	if(!this.lastStep[2] || Math.random() < 0.001){
 		waypoint[0] = (Math.random() * (x2 - x1)) + x1;
 		waypoint[1] = (Math.random() * (y2 - y1)) + y1;
 	}

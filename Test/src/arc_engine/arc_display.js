@@ -93,6 +93,9 @@ ArcGraphicsAdapter.prototype.drawWaypoint = function (waypointLoc, xOffset, yOff
 };
 ArcGraphicsAdapter.prototype.drawToDisplay = function (clearSwap) {
 };
+ArcGraphicsAdapter.prototype.updateImage = function(image) {
+    // Used so GL adapters can update the texture.
+};
 ArcGraphicsAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
 };
 ArcGraphicsAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
@@ -792,6 +795,24 @@ ArcGLCanvasAdapter.prototype.loadTexture = function (image, flipY) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     return texture;
+};
+ArcGLCanvasAdapter.prototype.updateImage = function(image, useNearest) {
+    let gl = this.context;
+
+    if(!image.texture){
+        image.texture = this.loadTexture(image);
+    }else{
+        gl.bindTexture(gl.TEXTURE_2D, image.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    }
+
+    if(useNearest){
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    }else{
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    }
 };
 ArcGLCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
     if (!image || !image.complete) {

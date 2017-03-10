@@ -12,7 +12,23 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     var userName = null;
 
     this.villageDisplay = null;
-    this.minimap = document.createElement('canvas');
+
+
+    this.hud = new ArcRenderableObject(true, true);
+
+    var createHud = function(worldAdapter){
+        let mask = new Image();
+        mask.src = worldAdapter.module.path + "/images/map_mask.png";
+
+        let container = new Image();
+        container.src = worldAdapter.module.path + "/images/map_container.png";
+
+        let minimap = new MiniMap(30, 30, mask, container);
+        minimap.updateSize(Math.floor(canvas.width / 4), Math.floor(canvas.width / 4));
+        minimap.updateLocation(canvas.width - minimap.size[2], minimap.size[3]);
+
+        __this.hud.addChild(minimap, "Mini Map");
+    }
 
     //TODO: Temp code for sounds. Fix for full version
     var sounds = [
@@ -50,6 +66,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         var worldActions = worldAdapter.getWorldActions(__this.timestamp);
         __this.villageDisplay.updateWorld(time, worldActions, __this.display.camera.offset);
+        __this.hud.tick(time, worldAdapter, worldAdapter.module.currentMap);
         //drawScene();
     });
 
@@ -108,8 +125,9 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             let size = displayAdapter.size;
             renderable.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
 
-            //TEMP
-            villageDrawMinimap(__this.minimap, renderable);
+            if(playerLoc[4]){
+                __this.hud.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
+            }
         }
 
         displayAdapter.drawToDisplay('UNKNOWN');
@@ -304,6 +322,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             menu.show(canvas);
         });
         worldAdapter.loadTask = __this.loadTask;
+        createHud(worldAdapter);
 
         __this.villageDisplay = new VillageDisplay(__this, worldAdapter, javascriptPath + "/village_worker.js", setDrawScene);
         __this.villageDisplay.resize(canvas.width, canvas.height);
