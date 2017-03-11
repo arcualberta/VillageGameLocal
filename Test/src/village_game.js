@@ -23,7 +23,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         let container = new Image();
         container.src = worldAdapter.module.path + "/images/map_container.png";
 
-        let minimap = new MiniMap(30, 30, mask, container);
+        let minimap = new MiniMap(30, 30, 100, 100, mask, container);
         minimap.updateSize(Math.floor(canvas.width / 4), Math.floor(canvas.width / 4));
         minimap.updateLocation(canvas.width - minimap.size[2], minimap.size[3]);
 

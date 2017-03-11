@@ -857,10 +857,11 @@ VillageModule.prototype.load = function (mapName, startName) {
 // Minimap code
 var MiniMap = ArcBaseObject();
 MiniMap.prototype = Object.create(ArcRenderableObject.prototype)
-MiniMap.prototype.init = function(width, height, mask, image){
+MiniMap.prototype.init = function(width, height, outWidth, outHeight, mask, image){
     this.tickEnabled = true;
     this.drawEnabled = true;
-    this.canvas = document.createElement('canvas');
+	this.canvas = document.createElement('canvas');
+    this.mapCanvas = document.createElement('canvas');
     this.scale = 1;
     this.name = null;
     this.location = new Float32Array(6);
@@ -870,14 +871,18 @@ MiniMap.prototype.init = function(width, height, mask, image){
     this.mask = mask;
     this.image = image;
 
-    this.resize(width, height);
+    this.resize(width, height, outWidth, outHeight);
     this.updateSize(width, height);
 };
-MiniMap.prototype.resize = function(width, height){
-    this.canvas.width = width;
-    this.canvas.height = height;
+MiniMap.prototype.resize = function(width, height, outWidth, outHeight){
+    this.canvas.width = outWidth;
+    this.canvas.height = outHeight;
+	
+	this.mapCanvas.width = width;
+	this.mapCanvas.height = height
 
     this.context = this.canvas.getContext("2d");
+	this.mapContext = this.mapCanvas.getContext("2d");
 };
 MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let canvas = this.canvas;
@@ -886,18 +891,21 @@ MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, heigh
     let map = this.map;
     let context = this.context;
     let scale = 1 / map.tileWidth;
-    let w = canvas.width * map.tileWidth;
-    let h = canvas.height * map.tileHeight;
+    let w = this.mapCanvas.width * map.tileWidth;
+    let h = this.mapCanvas.height * map.tileHeight;
     let location = this.location;
     let size = this.size;
 
+	this.mapContext.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
+	map.drawMinimap(this.mapCanvas, this.mapContext, this.offset[0], this.offset[1], w, h, scale);
+	
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     // Place Our Mask
     context.drawImage(this.mask, 0, 0, canvas.width, canvas.height);
     context.globalCompositeOperation = "source-atop";
 
-    map.drawMinimap(canvas, context, this.offset[0], this.offset[1], w, h, scale);
+    context.drawImage(this.mapCanvas, 0, 0, canvas.width, canvas.height);
 
     // Go back to the default drawing
     context.globalCompositeOperation = "source-over"
@@ -914,7 +922,7 @@ MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
     this.map = map;  
 
     if(worldAdapter.user){
-        let canvas = this.canvas;
+        let canvas = this.mapCanvas;
         let location = map.players[worldAdapter.user.id].location;
         let w = canvas.width * map.tileWidth;
         let h = canvas.height * map.tileHeight;
