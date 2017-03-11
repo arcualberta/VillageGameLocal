@@ -259,6 +259,215 @@
                     "height": 50,
                     "time": 250
                 }]
+        },
+		"cloud_90x30": {
+			"hidden_down": [{
+                    "x": 0,
+                    "y": 0,
+                    "width": 90,
+                    "height": 30,
+                    "time": 1000
+                }],
+            "stand_down": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "stand_up": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "stand_left": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "stand_right": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "walk_down": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "walk_up": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "walk_left": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }],
+            "walk_right": [{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 90,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 0,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                },{
+                    "x": 180,
+                    "y": 30,
+                    "width": 90,
+                    "height": 30,
+                    "time": 333
+                }]
         }
     },
     "sprites": {
@@ -285,6 +494,10 @@
         "base_female_large": {
             "image": "base_female_large.png",
             "animation": "animation_16x24"
-        }
+        },
+		"cloud": {
+			"image": "cloud.png",
+			"animation": "cloud_90x30"
+		}
     }
 }

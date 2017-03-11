@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="10">
- <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="304" columns="16">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="12">
+ <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30">
   <image source="../tiles/tileset.png" width="480" height="570"/>
   <terraintypes>
    <terrain name="Water" tile="33"/>
@@ -55,32 +55,32 @@
   </tile>
   <tile id="8">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="9">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="10">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="11">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="12">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="13">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="16" terrain=",,,0">
@@ -96,7 +96,7 @@
   <tile id="17" terrain=",,0,0">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="17" duration="500"/>
@@ -106,7 +106,7 @@
   <tile id="18" terrain=",,0,">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="18" duration="500"/>
@@ -140,38 +140,38 @@
   </tile>
   <tile id="24">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="25">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="26">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="27">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="28">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="29">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="32" terrain=",0,,0">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="32" duration="500"/>
@@ -191,7 +191,7 @@
   <tile id="34" terrain="0,,0,">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="34" duration="500"/>
@@ -220,38 +220,38 @@
   </tile>
   <tile id="40">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="41">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="42">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="43">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="44">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="45">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="48" terrain=",0,,">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="48" duration="500"/>
@@ -271,7 +271,7 @@
   <tile id="50" terrain="0,,,">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="50" duration="500"/>
@@ -295,32 +295,32 @@
   </tile>
   <tile id="56">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="57">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="58">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="59">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="60">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="61">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="64" terrain=",,,1">
@@ -366,7 +366,7 @@
   <tile id="75">
    <properties>
     <property name="minimap" value="#603913"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="80" terrain=",1,,1">
@@ -418,558 +418,558 @@
   <tile id="101">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="102">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="103">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="104">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="117">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="118">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="119">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="120">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="140">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="144">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="145">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="146">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="147">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="156">
    <properties>
     <property name="minimap" value="#603913"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="160">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="161">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="162">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="163">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="181">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="182">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="183">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="184">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="185">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="186">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="197">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="198">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="199">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="200">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="201">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="202">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="213">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="214">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="215">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="216">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="217">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="218">
    <properties>
     <property name="minimap" value="#bf8358"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="219">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="220">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="221">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="222">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="225">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="226">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="227">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="228">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="229">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="230">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="235">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="236">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="237">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="238">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="240">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="241">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="242">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="243">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="244">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="245">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="246">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="247">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="250">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="251">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="252">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="253">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="254">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="255">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="256">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="257">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="258">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="259">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="260">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="261">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="262">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="263">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="266">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="267">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="268">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="269">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="270">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="271">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="272">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="273">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="274">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="275">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="276">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="277">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="278">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="279">
    <properties>
     <property name="minimap" value="#d0c4af"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="282">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="283">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="284">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="285">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="286">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="287">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="298">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="299">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="300">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="301">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="302">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="303">
    <properties>
     <property name="minimap" value="#F00"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="305" name="Villager Placeholder" tilewidth="30" tileheight="50" tilecount="12" columns="3">
+ <tileset firstgid="305" name="Villager Placeholder" tilewidth="30" tileheight="50">
   <image source="../sprites/villager1.png" width="90" height="200"/>
   <tile id="6">
    <properties>
@@ -1150,16 +1150,16 @@
   <object id="2" name="Farmer" type="NPC" gid="305" x="1230.33" y="522.333" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(2640, 420, 3240, 900);"/>
-    <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+    <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
+    <property name="ontalk" value="if(this.properties[&quot;taskComplete&quot;]) { this.TriggerDialog('WU_HAI_2', worldAdapter, player); }else{ this.TriggerDialog('WU_HAI_1', worldAdapter, player); }"/>
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
   </object>
   <object id="4" name="Fisherman" type="NPC" gid="305" x="238.333" y="985.667" width="30" height="50">
    <properties>
     <property name="onidle" value="//TODO: Fish"/>
-    <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+    <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
+    <property name="ontalk" value="if(this.properties[&quot;taskComplete&quot;]) { this.TriggerDialog('GRANDPA_2', worldAdapter, player); }else{ this.TriggerDialog('GRANDPA_1', worldAdapter, player); }"/>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
@@ -1185,6 +1185,20 @@ this.properties[&quot;taskComplete&quot;] = false;</property>
    <properties>
     <property name="onidle" value="this.WalkArea(1800, 3120, 2320, 4440);"/>
     <property name="spritesheet" value="villager_1"/>
+   </properties>
+  </object>
+  <object id="10" name="AhYu" type="NPC" gid="305" x="870" y="1110" width="30" height="50">
+   <properties>
+    <property name="onidle" value="// NOTHING"/>
+    <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
+    <property name="ontalk" value="if(this.properties[&quot;taskComplete&quot;]) { this.TriggerDialog('AH_YU_2', worldAdapter, player); }else{ this.TriggerDialog('AH_YU_1', worldAdapter, player); }"/>
+    <property name="spritesheet" value="npc_tattered"/>
+   </properties>
+  </object>
+  <object id="11" name="Cloud" type="NPC" gid="305" x="2670" y="2220" width="30" height="50">
+   <properties>
+    <property name="onidle" value="// NOTHING"/>
+    <property name="spritesheet" value="cloud"/>
    </properties>
   </object>
  </objectgroup>
