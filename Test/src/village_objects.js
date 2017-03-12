@@ -220,12 +220,12 @@ NPC.prototype.init = function (id, name, state, location, properties) {
 NPC.prototype.setState = function(state){
     this.state = "on" + state;
 }
-NPC.prototype.tick = function (timeSinceLast, worldAdapter, village) {
+NPC.prototype.tick = function (timeSinceLast, worldAdapter, village, player) {
 
     // Check for functions
     var f = this[this.state];
 
-    if(f){ f.call(this, timeSinceLast); }
+    if(f){ f.call(this, timeSinceLast, player, village, worldAdapter); }
 
     // Execute parent functions
     Character.prototype.tick.apply(this, arguments);

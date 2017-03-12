@@ -883,6 +883,12 @@ MiniMap.prototype.resize = function(width, height, outWidth, outHeight){
 
     this.context = this.canvas.getContext("2d");
 	this.mapContext = this.mapCanvas.getContext("2d");
+
+    let context = this.context;
+    context.mozImageSmoothingEnabled = false;
+    context.webkitImageSmoothingEnabled = false;
+    context.msImageSmoothingEnabled = false;
+    context.imageSmoothingEnabled = false;
 };
 MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let canvas = this.canvas;

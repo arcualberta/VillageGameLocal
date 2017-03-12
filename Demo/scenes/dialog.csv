@@ -7,8 +7,3 @@ MAYOR_1,4,Mayor,That’s too bad.,,,,,,,,,
 MAYOR_1,5,Mayor,"Yea, I know what you mean.",,,,,,,,,
 GUY_1,1,,Hey ${player.user.name}!,if(!(speaker.talkCount)) { speaker.talkCount = 0 } ++speaker.talkCount;,,2,,,,,,
 GUY_1,2,, We've talked ${speaker.talkCount} times.,,,,,,,,,
-
-
-if(this.properties["taskComplete"]) { this.TriggerDialog('WU_HAI_2', worldAdapter, player); }else{ this.TriggerDialog('WU_HAI_1', worldAdapter, player); }
-
-if(this.properties["taskComplete"]) { this.TriggerDialog('AH_YU_2', worldAdapter, player); }else{ this.TriggerDialog('AH_YU_1', worldAdapter, player); }

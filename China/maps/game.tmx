@@ -1197,7 +1197,9 @@
   </object>
   <object id="11" name="Cloud" type="NPC" gid="305" x="2670" y="2220" width="30" height="50">
    <properties>
-    <property name="onidle" value="// NOTHING"/>
+    <property name="onidle" value=""/>
+    <property name="onstart" value="this.animation = &quot;hidden_down&quot;; this.state = &quot;onwait&quot;;"/>
+    <property name="onwait" value="if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= true) { this.animation = &quot;stand_down&quot;; this.state = &quot;onidle&quot; }"/>
     <property name="spritesheet" value="cloud"/>
    </properties>
   </object>

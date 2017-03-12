@@ -25,7 +25,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         let minimap = new MiniMap(40, 40, 256, 256, mask, container);
         minimap.updateSize(Math.floor(canvas.width / 4), Math.floor(canvas.width / 4));
-        minimap.updateLocation(canvas.width - minimap.size[2], minimap.size[3]);
+        minimap.updateLocation(canvas.width - minimap.size[2] - 5, minimap.size[3] + 5);
 
         __this.hud.addChild(minimap, "Mini Map");
     }

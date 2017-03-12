@@ -366,6 +366,18 @@ ArcCharacter.prototype.init = function(){
     this.frameTime = 0;
     this.spriteSheet = null;
     this.lastCollisionBox = [0, 0, 0, 0];
+    this.interactRad = 8;
+    this.dynamicInteract = true;
+};
+ArcCharacter.prototype.updateSize = function(width, height){
+    ArcActor.prototype.updateSize.call(this, width, height);
+
+    if(this.dynamicInteract){
+        let a = this.size[2];
+        let b = this.size[3];
+
+        this.interactRad = Math.sqrt((a * a) + (b * b));
+    }
 };
 ArcCharacter.prototype.collisionBox = function () {
     // TODO: Make it based on frame size;

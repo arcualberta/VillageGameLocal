@@ -89,7 +89,7 @@ VillageDisplay.prototype.updateWorld = function (time, actionList, cameraOffset)
     }
 
     // Update the layers
-    this.world.tick(time, this.worldAdapter, this.world);
+    this.world.tick(time, this.worldAdapter, this.world, player);
 };
 VillageDisplay.prototype.resize = function (width, height) {
     this.dimension[0] = width;

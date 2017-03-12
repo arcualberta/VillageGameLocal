@@ -20,5 +20,14 @@ var ArcVec2 = {
         out[1] = in1[1] * in2[1];
         
         return out;
+    },
+    length: function(in1){
+        return Math.sqrt((in1[0] * in1[0]) + (in1[1] * in1[1]));
+    },
+    distance: function(in1, in2){
+        let a = in1[0] - in2[0];
+        let b = in1[1] - in2[1];
+
+        return Math.sqrt((a * a) + (b * b));
     }
 };
