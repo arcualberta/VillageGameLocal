@@ -369,14 +369,30 @@ ArcCharacter.prototype.init = function(){
     this.interactRad = 8;
     this.dynamicInteract = true;
 };
+ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
+    let x = this.location[4];
+    let y = this.location[5];
+
+    if(x > right) x = right;
+    if(x < left) x = left;
+    if(y > bottom) y = bottom;
+    if(y < top) y = top;
+
+    x -= this.location[4];
+    y -= this.location[5];
+
+    return Math.sqrt((x * x) + (y * y)) < this.interactRad;
+};
 ArcCharacter.prototype.updateSize = function(width, height){
-    ArcActor.prototype.updateSize.call(this, width, height);
+    if(width != this.size[0] || height != this.size[1]){
+        ArcActor.prototype.updateSize.call(this, width, height);
 
-    if(this.dynamicInteract){
-        let a = this.size[2];
-        let b = this.size[3];
+        if(this.dynamicInteract){
+            let a = this.size[2];
+            let b = this.size[3];
 
-        this.interactRad = Math.sqrt((a * a) + (b * b));
+            this.interactRad = Math.sqrt((a * a) + (b * b));
+        }
     }
 };
 ArcCharacter.prototype.collisionBox = function () {

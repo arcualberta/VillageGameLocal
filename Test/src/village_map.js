@@ -870,6 +870,7 @@ MiniMap.prototype.init = function(width, height, outWidth, outHeight, mask, imag
     this.map = null;
     this.mask = mask;
     this.image = image;
+    this.opacity = 1.0;
 
     this.resize(width, height, outWidth, outHeight);
     this.updateSize(width, height);
@@ -902,6 +903,8 @@ MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, heigh
     let location = this.location;
     let size = this.size;
 
+    context.globalAlpha = this.opacity;
+
 	this.mapContext.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
 	map.drawMinimap(this.mapCanvas, this.mapContext, this.offset[0], this.offset[1], w, h, scale);
 	
@@ -929,12 +932,19 @@ MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
 
     if(worldAdapter.user){
         let canvas = this.mapCanvas;
-        let location = map.players[worldAdapter.user.id].location;
+        let user = map.players[worldAdapter.user.id]
+        let location = user.location;
         let w = canvas.width * map.tileWidth;
         let h = canvas.height * map.tileHeight;
 
         this.offset[0] = location[4] - (w >> 1);
         this.offset[1] = location[5] - (h >> 1);
+
+        if(map.waypoint.isVisible){
+            this.opacity = Math.max(0.6, this.opacity - 0.05);
+        }else{
+            this.opacity = Math.min(1.0, this.opacity + 0.05);
+        }
     }
 };
 
