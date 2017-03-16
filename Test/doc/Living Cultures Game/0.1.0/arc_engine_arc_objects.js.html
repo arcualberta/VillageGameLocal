@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: arc_engine/arc_objects.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: arc_engine/arc_objects.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
 * Sorts tiles on the screen so that they appear in a top down fashion. This makes objects closer to the bottom of the screen occlude objects near the top.
 */
 var sortOutputTiles = (function(){ // NOTE: This currently does not work because it requires overwriting the check value.
@@ -12,13 +40,13 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
             return 1;
         }
         
-        if (o1.tileSheet == o2.tileSheet && o1.y == o2.y && o1.height == o2.height){
-            if (o1.x == o2.x + o2.width && o1.tile.x == o2.tile.x + o2.tile.width){
+        if (o1.tileSheet == o2.tileSheet &amp;&amp; o1.y == o2.y &amp;&amp; o1.height == o2.height){
+            if (o1.x == o2.x + o2.width &amp;&amp; o1.tile.x == o2.tile.x + o2.tile.width){
                 o2.width += o1.width;
                 o2.tile.width += o1.tile.width;
                 array[i1] = null;
                 return -1;
-            } else if (o2.x == o1.x + o1.width && o2.tile.x == o1.tile.x + o1.tile.width){
+            } else if (o2.x == o1.x + o1.width &amp;&amp; o2.tile.x == o1.tile.x + o1.tile.width){
                 o1.width += o2.width;
                 o1.tile.width += o2.tile.width;
                 array[i2] = o1;
@@ -40,13 +68,13 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
             return 1;
         }
         
-        if (o1.tileSheet == o2.tileSheet && o1.x == o2.x && o1.width == o2.width){
-            if (o1.y == o2.y + o2.height && o1.tile.y == o2.tile.y + o2.tile.height){
+        if (o1.tileSheet == o2.tileSheet &amp;&amp; o1.x == o2.x &amp;&amp; o1.width == o2.width){
+            if (o1.y == o2.y + o2.height &amp;&amp; o1.tile.y == o2.tile.y + o2.tile.height){
                 o2.height += o1.height;
                 o2.tile.height += o1.tile.height;
                 array[i1] = null;
                 return -1;
-            } else if (o2.y == o1.y + o1.height && o2.tile.y == o1.tile.y + o1.tile.height){
+            } else if (o2.y == o1.y + o1.height &amp;&amp; o2.tile.y == o1.tile.y + o1.tile.height){
                 o1.height += o2.height;
                 o1.tile.height += o2.tile.height;
                 array[i2] = null;
@@ -62,9 +90,9 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
         let minEnd = left;
         let maxEnd, result;
         
-        for(maxEnd = left; maxEnd < compare; ++maxEnd){
+        for(maxEnd = left; maxEnd &lt; compare; ++maxEnd){
             result = compareFunc(array, maxEnd, compare);
-            if(result < 0){
+            if(result &lt; 0){
                 swap(array, maxEnd, minEnd);
                 ++minEnd;
             }
@@ -83,7 +111,7 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
     function quickSort(array, left, right, compareFunc){
         let p = null;
         
-        if(left < right){
+        if(left &lt; right){
             p = partition(array, left, right, compareFunc);
             quickSort(array, left, p, compareFunc);
             quickSort(array, p + 1, right, compareFunc);
@@ -96,7 +124,7 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
         let index = 0;
         let count = 0;
         
-        for(index = 0; index < array.length; ++index){
+        for(index = 0; index &lt; array.length; ++index){
             if(array[index] == null){
                 ++count;
             }else{
@@ -121,14 +149,14 @@ function arcVerticalMergeOutputTiles(o1, o2){
         return 0;
     };
     
-    if(o1.tileSheet == o2.tileSheet && o1.x == o2.x && o1.width == o2.width){
-        if(o2.y < o1.y && o1.tile.y == o2.tile.y + o2.tile.height){
+    if(o1.tileSheet == o2.tileSheet &amp;&amp; o1.x == o2.x &amp;&amp; o1.width == o2.width){
+        if(o2.y &lt; o1.y &amp;&amp; o1.tile.y == o2.tile.y + o2.tile.height){
             o2.height += o1.height;
             o2.tile.height += o1.tile.height;
             o1 = null;
             
             return -1;
-        }else if(o2.x > o1.x && o2.tile.x == o1.tile.x + o1.tile.height){
+        }else if(o2.x > o1.x &amp;&amp; o2.tile.x == o1.tile.x + o1.tile.height){
             o1.height += o2.height;
             o1.tile.height += o2.tile.height;
             o2 = null;
@@ -202,9 +230,9 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
 ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
     let loc = this.location;
     return !(
-        right < loc[0] ||
+        right &lt; loc[0] ||
         left > loc[2] ||
-        bottom < loc[1] ||
+        bottom &lt; loc[1] ||
         top > loc[3]
     ); 
 };
@@ -231,7 +259,7 @@ ArcRenderableObject.prototype.addChild = function(child, name, index){
     var c = this.indexOfChild(name);
     child.name = name;
 
-    if(c < 0){
+    if(c &lt; 0){
         this.children.push(child);
     }else{
         this.children[c] = child;
@@ -319,7 +347,7 @@ ArcRenderableObjectCollection.prototype.sort = function(sortFunction){
 ArcRenderableObjectCollection.prototype.drawWhile = function(drawFunction){
     let child = null;
     let index = 0;
-    while(index < this.children.length && drawFunction(child = this.children[index])){
+    while(index &lt; this.children.length &amp;&amp; drawFunction(child = this.children[index])){
        ++index;
     }
     
@@ -390,14 +418,14 @@ ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
     let y = this.location[5];
 
     if(x > right) x = right;
-    if(x < left) x = left;
+    if(x &lt; left) x = left;
     if(y > bottom) y = bottom;
-    if(y < top) y = top;
+    if(y &lt; top) y = top;
 
     x -= this.location[4];
     y -= this.location[5];
 
-    return Math.sqrt((x * x) + (y * y)) < this.interactRad;
+    return Math.sqrt((x * x) + (y * y)) &lt; this.interactRad;
 };
 ArcCharacter.prototype.updateSize = function(width, height){
     if(width != this.size[0] || height != this.size[1]){
@@ -502,7 +530,7 @@ function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {
     }
 
     var addTile = function (index) {
-        if (index < 0 || outTiles[index]) {
+        if (index &lt; 0 || outTiles[index]) {
             return;
         }
 
@@ -514,12 +542,12 @@ function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {
     };
     output.tileset = new ArcTileSheet(tileset.name, imageUrl, outTiles);
     // Load the map and add any extra tiles
-    for (index = 0; index < data.layers.length; ++index) {
+    for (index = 0; index &lt; data.layers.length; ++index) {
         var layer = data.layers[index];
         if (layer.type.toLowerCase() === 'tilelayer') {
             var outputLayer = new ArcTileMap(layer.name, layer.width, layer.height);
             outputLayer.setTileSheet(output.tileset, drawWidth, drawHeight);
-            for (var i = 0; i < layer.data.length; ++i) {
+            for (var i = 0; i &lt; layer.data.length; ++i) {
                 outputLayer.data[i] = layer.data[i] - 1;
                 addTile(layer.data[i] - 1);
             }
@@ -555,11 +583,11 @@ function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {
 
 // Code to upcale image
 function arcGetPixel(input, x, y, outsideX, outsideY) {
-    if (x < 0 || y < 0 || x >= outsideX || y >= outsideY || x >= input.width || y >= input.height) {
+    if (x &lt; 0 || y &lt; 0 || x >= outsideX || y >= outsideY || x >= input.width || y >= input.height) {
         return null;
     }
 
-    var index = (x + (y * input.width)) << 2;
+    var index = (x + (y * input.width)) &lt;&lt; 2;
     return [
         input.data[index + 0],
         input.data[index + 1],
@@ -575,8 +603,8 @@ function arcDistance(loc1, loc2){
 function arcScale2(input, output, x, y, width, height) {
     var outsideX = x + width;
     var outsideY = y + height;
-    for (var v = y; v < y + height; ++v) {
-        for (var u = x; u < x + width; ++u) {
+    for (var v = y; v &lt; y + height; ++v) {
+        for (var u = x; u &lt; x + width; ++u) {
 // Calculate the pixels
             var A = getPixel(input, x, y - 1, outsideX, outsideY);
             var B = getPixel(input, x + 1, y, outsideX, outsideY);
@@ -585,11 +613,11 @@ function arcScale2(input, output, x, y, width, height) {
             var P = getPixel(input, x, y, outsideX, outsideY);
             var out = [P, P, P, P];
             // Set the pixel data
-            var indexList = [(x + (y * width)) << 3, 0, 0, 0];
+            var indexList = [(x + (y * width)) &lt;&lt; 3, 0, 0, 0];
             indexList[1] = indexList[0] + 4;
-            indexList[2] = indexList[0] + (width << 3);
+            indexList[2] = indexList[0] + (width &lt;&lt; 3);
             indexList[3] = indexList[2] + 4;
-            for (var index = 0; index < 4; ++index) {
+            for (var index = 0; index &lt; 4; ++index) {
                 output.data[indexList[index] + 0] = out[index][0];
                 output.data[indexList[index] + 1] = out[index][1];
                 output.data[indexList[index] + 2] = out[index][2];
@@ -600,16 +628,16 @@ function arcScale2(input, output, x, y, width, height) {
 }
 
 function arcUpscaleImage(amount, image, gridX, gridY) {
-    var canvasIn = $("<canvas></canvas>")[0];
+    var canvasIn = $("&lt;canvas>&lt;/canvas>")[0];
     canvasIn.width = image.width;
     canvasIn.height = image.height;
     var input = canvasIn.getContext("2d").getImageData(0, 0, canvasIn.width, canvasIn.height);
-    var canvasOut = $("<canvas></canvas>")[0];
+    var canvasOut = $("&lt;canvas>&lt;/canvas>")[0];
     canvasOut.width = image.width * amount;
     canvasOut.height = image.height * amount;
     var output = canvasOut.getContext("2d").getImageData(0, 0, canvasOut.width, canvasOut.height);
-    for (var y = 0; y < image.height; y += gridY) {
-        for (var x = 0; x < image.width; x += gridX) {
+    for (var y = 0; y &lt; image.height; y += gridY) {
+        for (var x = 0; x &lt; image.width; x += gridX) {
             switch (amount) {
                 case 2:
                     return arcScale2(input, output, x, y, gridX, gridY);
@@ -664,13 +692,13 @@ QuadTree.prototype.clear = function (onObjectClear) {
     var nodes = this.nodes;
     // Clear the objects
     if (onObjectClear) {
-        for (i = 0; i < objects.length; ++i) {
+        for (i = 0; i &lt; objects.length; ++i) {
             onObjectClear(objects[i]);
         }
     }
     objects.length = 0;
     // Clear child nodes
-    for (i = 0; i < 4; ++i) {
+    for (i = 0; i &lt; 4; ++i) {
         if (nodes[i] !== null) {
             nodes[i].clear();
             nodes[i] = null;
@@ -694,11 +722,11 @@ QuadTree.prototype.getIndex = function (x, y, width, height) {
     let vMid = bounds[1] + this.halfSize[1];
     
     // Check if the object fits in the top and bottom quadtrants
-    let fitNorth = (y + height) < vMid;
+    let fitNorth = (y + height) &lt; vMid;
     let fitSouth = y >= vMid;
     
     // Check if the object fits on the left or right sides
-    if ((x + width) < hMid) {
+    if ((x + width) &lt; hMid) {
         if (fitNorth) {
             return 1;
         } else if (fitSouth) {
@@ -727,9 +755,9 @@ QuadTree.prototype.recalculate = function(buffer) {
     // Recalcualte nodes
     if (nodes[0] !== null) {
         isEmpty = nodes[0].recalculate(buffer);
-        isEmpty = nodes[1].recalculate(buffer) && isEmpty;
-        isEmpty = nodes[2].recalculate(buffer) && isEmpty;
-        isEmpty = nodes[3].recalculate(buffer) && isEmpty;
+        isEmpty = nodes[1].recalculate(buffer) &amp;&amp; isEmpty;
+        isEmpty = nodes[2].recalculate(buffer) &amp;&amp; isEmpty;
+        isEmpty = nodes[3].recalculate(buffer) &amp;&amp; isEmpty;
 
         if(isEmpty){
             nodes[0] = null;
@@ -752,7 +780,7 @@ QuadTree.prototype.recalculate = function(buffer) {
         }
     }
 
-    if(!addedToBuffer && buffer.length > 0){
+    if(!addedToBuffer &amp;&amp; buffer.length > 0){
         for(i = buffer.length - 1; i >= 0; --i){
             obj = buffer.pop();
 
@@ -767,7 +795,7 @@ QuadTree.prototype.recalculate = function(buffer) {
     }
 
 
-    return nodes[0] === null && this.objects.length < 1;
+    return nodes[0] === null &amp;&amp; this.objects.length &lt; 1;
 };
 QuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
@@ -780,13 +808,13 @@ QuadTree.prototype.insert = function (value) {
     }
 
     this.objects.push(value);
-    if (this.objects.length > this.MAX_OBJECTS && this.level < this.MAX_LEVELS) {
+    if (this.objects.length > this.MAX_OBJECTS &amp;&amp; this.level &lt; this.MAX_LEVELS) {
         if (this.nodes[0] === null) {
             this.split();
         }
 
         var i = 0;
-        while (i < this.objects.length) {
+        while (i &lt; this.objects.length) {
             var o = this.objects[i];
             var index = this.getIndex(o.location[0], o.location[1], o.size[0], o.size[1]);
             if (index > -1) {
@@ -799,7 +827,7 @@ QuadTree.prototype.insert = function (value) {
     }
 };
 QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, executeFunction) {
-    for (var i = 0; i < this.objects.length; ++i) {
+    for (var i = 0; i &lt; this.objects.length; ++i) {
         returnObjects.push(this.objects[i]);
 
         if (executeFunction) {
@@ -824,14 +852,14 @@ QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, ex
 };
 QuadTree.prototype.getByName = function (name) {
     var i = 0;
-    for (; i < this.objects.length; ++i) {
+    for (; i &lt; this.objects.length; ++i) {
         if (this.objects[i].name === name) {
             return this.objects[i];
         }
     }
 
     if (this.nodes[0] !== null) {
-        for (i = 0; i < 4; ++i) {
+        for (i = 0; i &lt; 4; ++i) {
             var result = this.nodes[i].getByName(name);
             if (result !== null) {
                 return result;
@@ -846,7 +874,7 @@ QuadTree.prototype.tick = function (timeSinceLastFrame) {
     let node;
 
     if(this.nodes){
-        for(index = 0; index < 4; ++index){
+        for(index = 0; index &lt; 4; ++index){
             node = this.nodes[index];
             if(node){
                 node.tick.apply(node, arguments);
@@ -854,7 +882,7 @@ QuadTree.prototype.tick = function (timeSinceLastFrame) {
         }
     }
 
-    for(index = 0; index < this.objects.length; ++index){
+    for(index = 0; index &lt; this.objects.length; ++index){
         node = this.objects[index];
         node.tick.apply(node, arguments);
     }
@@ -864,7 +892,7 @@ QuadTree.prototype.tick = function (timeSinceLastFrame) {
         buffer.length = 0;
         this.recalculate(buffer);
 
-        for(index = 0; index < buffer.length; ++index){
+        for(index = 0; index &lt; buffer.length; ++index){
             this.insert(buffer[index]);
         }
     }
@@ -903,7 +931,7 @@ QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, heig
 
     buffer.sort(function(a, b){ return a.location[3] - b.location[3]; });
 
-    for(index = 0; index < buffer.length; ++index){
+    for(index = 0; index &lt; buffer.length; ++index){
         buffer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
 
@@ -914,7 +942,7 @@ QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, heig
 QuadTree.prototype.click = function(x, y){
     let args = arguments;
     let objects = this.getObjects(x, y, 1, 1, [], function(obj){
-        if(obj.clickEnabled && obj.inLocation(x, y, x, y)){
+        if(obj.clickEnabled &amp;&amp; obj.inLocation(x, y, x, y)){
             obj.click.apply(obj, args);
         }
     });
@@ -922,7 +950,7 @@ QuadTree.prototype.click = function(x, y){
 QuadTree.prototype.interact = function(left, top, right, bottom){
     let args = arguments;
     let objects = this.getObjects(left, top, right, bottom, [], function(obj){
-        if(obj.interactEnabled && obj.inLocation(left, top, right, bottom)){
+        if(obj.interactEnabled &amp;&amp; obj.inLocation(left, top, right, bottom)){
             obj.interact.apply(obj, args)
         }
     });
@@ -958,7 +986,7 @@ ArcTileQuadTree.prototype.init = function (x, y, width, height, level, scroll) {
     
     this.scroll = scroll ? [scroll[0], scroll[1]] : null;
     this.offset = [0, 0];
-    this.repeat = scroll && scroll !== null && (scroll[0] !== 0 || scroll[1] !== 0);
+    this.repeat = scroll &amp;&amp; scroll !== null &amp;&amp; (scroll[0] !== 0 || scroll[1] !== 0);
     this.searchStack = [];
 };
 ArcTileQuadTree.prototype.MIN_WIDTH = 80; // Min Patch size in pixels
@@ -980,8 +1008,8 @@ ArcTileQuadTree.prototype.split = function () {
     this.nodes[2] = new ArcTileQuadTree(x, y + halfHeight, halfWidth, halfHeight, level);
     this.nodes[3] = new ArcTileQuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
 
-    if (halfWidth > this.MIN_WIDTH && halfHeight > this.MIN_HEIGHT) {
-        for (var i = 0; i < 4; ++i) {
+    if (halfWidth > this.MIN_WIDTH &amp;&amp; halfHeight > this.MIN_HEIGHT) {
+        for (var i = 0; i &lt; 4; ++i) {
             this.nodes[i].split();
         }
     }
@@ -1009,10 +1037,10 @@ ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, of
      var splits = split.xSplits;
      var i = null;
      splits.length = 0;
-     if(x < 0){
+     if(x &lt; 0){
      split.isSplit = true;
      i = x;
-     while(i < 0){
+     while(i &lt; 0){
      i += this.bounds[2];
      }
      splits.push(i);
@@ -1031,7 +1059,7 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
     let object = null;
 
     while ((node = nodeStack.pop()) != null) {
-        if (offset && offset !== null) {
+        if (offset &amp;&amp; offset !== null) {
             node.offset[0] = offset[0];
             node.offset[1] = offset[1];
         }
@@ -1044,20 +1072,20 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
             var xCheck = x + node.offset[0];
             var yCheck = y + node.offset[1];
 
-            if (xCheck < bounds[0]) {
+            if (xCheck &lt; bounds[0]) {
                 x += node.size[0];
             } else if (xCheck > node.location[2]) {
                 x -= node.size[0];
             }
 
-            if (yCheck < bounds[1]) {
+            if (yCheck &lt; bounds[1]) {
                 y += node.size[1];
             } else if (yCheck > node.location[3]) {
                 y -= node.size[1];
             }
         }
 
-        for (var i = 0; i < node.objects.length; ++i) {
+        for (var i = 0; i &lt; node.objects.length; ++i) {
             object = node.objects[i];
             if (object.tile.isDrawable) {
                 returnObjects.push({
@@ -1091,7 +1119,7 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
 ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjects, offset, repeat){
     let i, nodes, obj;
 
-    for(i = 0; i < this.objects.length; ++i){
+    for(i = 0; i &lt; this.objects.length; ++i){
         obj = this.objects[i];
         if(obj.tile.isDrawable){
             // TODO: Find a way around this. We shouldnt need to create a new object.
@@ -1118,7 +1146,7 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
     let i, r;
     let result = null;
 
-    for (i = 0; i < this.objects.length; ++i) {
+    for (i = 0; i &lt; this.objects.length; ++i) {
         r = this.objects[i].isBlocked(x1, y1, x2, y2, width, height);
 
         if(r !== null){
@@ -1143,7 +1171,7 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
                 }
             }
         } else {
-            for (i = 0; i < 4; ++i) {
+            for (i = 0; i &lt; 4; ++i) {
                 r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
 
                 if(r !== null){
@@ -1169,13 +1197,13 @@ ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
         offset[1] += (seconds * this.scroll[1]);
 
         // Reset the offsets as needed
-        while (offset[0] < -width) {
+        while (offset[0] &lt; -width) {
             offset[0] += width;
         }
         while (offset[0] > width) {
             offset[0] -= width;
         }
-        while (offset[1] < -height) {
+        while (offset[1] &lt; -height) {
             offset[1] += height;
         }
         while (offset[1] > height) {
@@ -1227,8 +1255,8 @@ ArcAnimation.prototype.addFrame = function (x, y, width, height, frameTime, flip
         height: height, // The height of the sprite on the sprite sheet
         wHalf: drawWidth ? drawWidth >> 1 : width, //width / 2,
         hHalf: drawHeight ? drawHeight >> 1 : height, //height / 2,
-        drawWidth: drawWidth ? drawWidth : width << 1, // For now sprite sheets are double the scale
-        drawHeight: drawHeight ? drawHeight : height << 1,
+        drawWidth: drawWidth ? drawWidth : width &lt;&lt; 1, // For now sprite sheets are double the scale
+        drawHeight: drawHeight ? drawHeight : height &lt;&lt; 1,
         frameTime: frameTime, // Time until the next frame
         flipX: flipX,
         flipY: flipY
@@ -1253,7 +1281,7 @@ ArcSpriteSheet.prototype.init = function (imageUrl, imageUpdateFunc, palette) {
 
         this.baseImage.onload = function () {
             var dim = [_this.baseImage.width, _this.baseImage.height];
-            _this.image = $("<canvas></canvas>")[0];
+            _this.image = $("&lt;canvas>&lt;/canvas>")[0];
             _this.image.width = dim[0];
             _this.image.height = dim[1];
             _this.dimension = dim;
@@ -1305,10 +1333,10 @@ ArcSpriteSheet.prototype.updateColorset = function () {
         ctx.drawImage(image, 0, 0);
         var imgData = ctx.getImageData(0, 0, this.dimension[0], this.dimension[1]);
         var data = imgData.data;
-        for (var i = 0; i < data.length; i += 4) {
+        for (var i = 0; i &lt; data.length; i += 4) {
             var result = data[i + 0];
-            result = (result << 8) + data[i + 1];
-            result = (result << 8) + data[i + 2];
+            result = (result &lt;&lt; 8) + data[i + 1];
+            result = (result &lt;&lt; 8) + data[i + 2];
             var p = this.palette[result];
             if (p) {
                 data[i + 0] = p.r;
@@ -1352,9 +1380,9 @@ ArcTileSheet.prototype.init = function (name, imageUrl, tiles, imageLoadFunc, fi
     }
 };
 ArcTileSheet.prototype.update = function (timeSinceLastFrame) {
-    for (var i = 0; i < this.tiles.length; ++i) {
+    for (var i = 0; i &lt; this.tiles.length; ++i) {
         var tile = this.tiles[i];
-        if (tile && tile !== null) {
+        if (tile &amp;&amp; tile !== null) {
             tile.update(timeSinceLastFrame);
         }
 
@@ -1435,11 +1463,11 @@ ArcTileMap.prototype.init = function (name, width, height, tileWidth, tileHeight
     // Setup the quadtree and any scrolling
     var scroll = [0, 0];
 
-    if (scrollX && scrollX !== null) {
+    if (scrollX &amp;&amp; scrollX !== null) {
         scroll[0] = scrollX;
     }
 
-    if (scrollY && scrollY !== null) {
+    if (scrollY &amp;&amp; scrollY !== null) {
         scroll[1] = scrollY;
     }
     this.data = new ArcTileQuadTree(0, 0, width * tileWidth, height * tileHeight, 0, scroll);
@@ -1489,12 +1517,12 @@ ArcTileMap.prototype.tick = function(deltaMilliseconds){
  var t2 = [
  Math.min(Math.ceil((x + w) / dim[0]), width),
  Math.min(Math.ceil((y + h) / dim[1]), height)];
- for (var v = t1[1]; v < t2[1]; ++v) {
- for (var u = t1[0]; u < t2[0]; ++u) {
+ for (var v = t1[1]; v &lt; t2[1]; ++v) {
+ for (var u = t1[0]; u &lt; t2[0]; ++u) {
  var index = u + (v * width);
- if (index > 0 && index < this.data.length) {
+ if (index > 0 &amp;&amp; index &lt; this.data.length) {
  var checkIndex = this.data[index];
- if (checkIndex > -1 && !this.tileSheet.tiles[checkIndex].walkable) {
+ if (checkIndex > -1 &amp;&amp; !this.tileSheet.tiles[checkIndex].walkable) {
  return true;
  }
  }
@@ -1535,10 +1563,32 @@ ArcMap.prototype.getTileSheetForTile = function (index) {
     var currentTilesheet = null;
     for (var i in this.tileSheets) {
         var tileSheet = this.tileSheets[i];
-        if (tileSheet.firstGid <= index && (currentTilesheet == null || currentTilesheet.firstGid < tileSheet.firstGid)) {
+        if (tileSheet.firstGid &lt;= index &amp;&amp; (currentTilesheet == null || currentTilesheet.firstGid &lt; tileSheet.firstGid)) {
             currentTilesheet = tileSheet;
         }
     }
 
     return currentTilesheet;
-};
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ArcBaseObject.html">ArcBaseObject</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArcSound">ArcSound</a></li><li><a href="global.html#ArcVec2">ArcVec2</a></li><li><a href="global.html#sortOutputTiles">sortOutputTiles</a></li><li><a href="global.html#TaskScript">TaskScript</a></li><li><a href="global.html#TileView">TileView</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Mar 16 2017 07:03:01 GMT-0600 (Mountain Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

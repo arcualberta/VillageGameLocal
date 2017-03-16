@@ -1,7 +1,16 @@
 {
-    "name": "VillageModuleTest",
-    "version": "0.0.1",
-    "dependencies": {
-        "express": "3.x"
-    }
+	"name": "Living Cultures Game",
+	"version": "0.1.0",
+	"description": "A base system used to create village games focues on the culture of countries.",
+	"keywords": [
+		"javascript"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/arcualberta/VillageGameLocal"
+	},
+	"author": {
+		"name": "Mark McKellar",
+		"email": "mpm1@ualberta.ca"
+	}
 }
