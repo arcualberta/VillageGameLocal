@@ -178,7 +178,7 @@ function arcSortOutputTiles(o1, o2){
 
 /**
 * Represents the base object in the arc engine. Code inspired from: http://ejohn.org/blog/simple-class-instantiation/#postcomment
-* @constructor
+* @class
 */
 function ArcBaseObject() {
     return function (args) {
@@ -195,16 +195,18 @@ function ArcBaseObject() {
     };
 }
 
-/*
-* An object used to attach multiple scripting funcitons to a class.
-* @constructor
-*/
-var ArcScriptObject = new ArcBaseObject();
 /**
-* Initializes the class
+* An object used to attach multiple scripting funcitons to a class.
+* @class
+* @implements {ArcBaseObject}
 * @param {Object} attachObject The base object type to attache the script functions to.
 */
+var ArcScriptObject = new ArcBaseObject();
 ArcScriptObject.prototype.init = function(attachObject){
+    /**
+    * The base object to link all functions to.
+    * @member
+    */
 	this.attachObject = attachObject;
 };
 /**
@@ -215,7 +217,13 @@ ArcScriptObject.prototype.AttachFunction = function(func){
 	this.attachObject[func] = this[func];
 };
 
-// All objects that are renderable to the scene
+/**
+* All objects that are renderable to the scene.
+* @class
+* @implements {ArcBaseObject}
+* @param {bool} tickEnabled States if the tick function is enabled.
+* @param {bool} drawEnabled States if the draw function is enabled.
+*/
 var ArcRenderableObject = new ArcBaseObject();
 ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.children = [];
@@ -227,6 +235,13 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.location = new Float32Array(6);
     this.size = new Uint16Array(4);
 };
+/**
+* Checks if a rectangular area obverlaps with this renderable object.
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+*/
 ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
     let loc = this.location;
     return !(
@@ -236,6 +251,11 @@ ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
         top > loc[3]
     ); 
 };
+/**
+* Sets the location of the object. This will reset the location member.
+* @param {Number} x
+* @param {Number} y
+*/
 ArcRenderableObject.prototype.updateLocation = function(x, y){
     let loc = this.location;
     let size = this.size;
@@ -247,6 +267,11 @@ ArcRenderableObject.prototype.updateLocation = function(x, y){
     loc[4] = x;
     loc[5] = y;
 };
+/**
+* Set the size of the object. The location is then updated to reflect the new size.
+* @param {int} width
+* @param {int} height
+*/
 ArcRenderableObject.prototype.updateSize = function(width, height){
     this.size[0] = width;
     this.size[1] = height;
@@ -255,7 +280,12 @@ ArcRenderableObject.prototype.updateSize = function(width, height){
 
     this.updateLocation(this.location[4], this.location[5]);
 };
-ArcRenderableObject.prototype.addChild = function(child, name, index){
+/**
+* Adds a child element to the object.
+* @param {ArcRenderableObject} child The child to be added
+* @param {string} name The unique name of the child object.
+*/
+ArcRenderableObject.prototype.addChild = function(child, name){
     var c = this.indexOfChild(name);
     child.name = name;
 
@@ -265,6 +295,10 @@ ArcRenderableObject.prototype.addChild = function(child, name, index){
         this.children[c] = child;
     }
 };
+/**
+* @param {string} name The unique name of the child object
+* @return {int} The index location of the child object. If no object exists then -1 is returned.
+*/
 ArcRenderableObject.prototype.indexOfChild = function(name){
     for(var i in this.children){
         if(this.children[i].name === name){
@@ -274,6 +308,10 @@ ArcRenderableObject.prototype.indexOfChild = function(name){
 
     return -1;
 };
+/**
+* @param {string} name The unique name of the child object
+* @return {ArcRenderableObject} The child with the specified name. If no child exists, null is returned.
+*/
 ArcRenderableObject.prototype.getChild = function(name){
     for(var i in this.children){
         if(this.children[i].name === name){
@@ -283,10 +321,22 @@ ArcRenderableObject.prototype.getChild = function(name){
 
     return null;
 };
+/**
+* Removes the child object with the given name.
+* @param {string} name The unique name of the child object
+*/
 ArcRenderableObject.prototype.removeChild = function(name){
     //delete this.children[i];
-    this.children[i] = null; //TODO: Find out the better method
+    var childIndex = this.indexOfChild(name);
+    if(childIndex > 0){
+        var child = this.children[childIndex];
+        child.unload();
+        this.children.splice(childIndex, 1);
+    }
 };
+/**
+* Performs any operations that must be done on this object and its children when removing.
+*/
 ArcRenderableObject.prototype.unload = function(){
     for (let key in this.children){
         let child = this.children[key];
@@ -295,6 +345,14 @@ ArcRenderableObject.prototype.unload = function(){
         }
     }
 };
+/**
+* Draws the object and all child objects.
+* @param {ArcGraphicsAdapter} displayContext The display context used for drawing
+* @param {Number} xOffset The horizontal screen offset. 
+* @param {Number} yOffset The verticle screen offset. 
+* @param {int} width The visible width.
+* @param {int} height The visible height.
+*/
 ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
     let child, key;
 
@@ -305,6 +363,10 @@ ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, 
         }
     }
 };
+/**
+* An operation to be performed on the object and it's children for every frame tick.
+* @param {Number} deltaMilliseconds The time between this frame and the last in milliseconds.
+*/
 ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
     let child, key;
 
@@ -315,6 +377,11 @@ ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
         }
     }
 };
+/**
+* An operation to handle the click event for the object and children at the given scoordinates.
+* @param {Number} x Map space x coordinate.
+* @param {Number} y Map space y coordinate.
+*/
 ArcRenderableObject.prototype.click = function(x, y){
     let child, key;
 
@@ -325,6 +392,13 @@ ArcRenderableObject.prototype.click = function(x, y){
         }
     }
 };
+/**
+* An operation fo handle the interact event given a specified area.
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+*/
 ArcRenderableObject.prototype.interact = function(left, top, right, bottom){
     let child, key;
 
@@ -355,7 +429,13 @@ ArcRenderableObjectCollection.prototype.drawWhile = function(drawFunction){
 };
 
 
-// Basic text renderable
+/**
+* Basic text renderable
+* @class
+* @implements {ArcRenderableObject}
+* @param {string} text The string of text to be rendered.
+* @param {string} fontInfo The css style used to display the text. 
+*/
 var ArcRenderableText = ArcBaseObject();
 ArcRenderableText.prototype = Object.create(ArcRenderableObject.prototype);
 ArcRenderableText.prototype.init = function(text, fontInfo){
@@ -364,24 +444,38 @@ ArcRenderableText.prototype.init = function(text, fontInfo){
     this.fontInfo = fontInfo;
     this.offset = [0, 0];
 };
+/**
+* @override
+*/
 ArcRenderableText.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     displayContext.drawMessage(this.text, xOffset + this.offset[0], yOffset + this.offset[1], this.fontInfo);
 };
 
-// Character waypoints
+/**
+* Character waypoints
+* @class
+* @implements {ArcRenderableObject}
+*/
 var ArcWaypoint = ArcBaseObject();
 ArcWaypoint.prototype = Object.create(ArcRenderableObject.prototype);
 ArcWaypoint.prototype.init = function(){
     ArcRenderableObject.prototype.init.call(this, false, true);
     this.isVisible = false;
 };
+/**
+* @override
+*/
 ArcWaypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     if(this.isVisible){
         displayContext.drawWaypoint(this.location);
     }
 };
 
-// We are using actor to define any noun object on a quad tree.
+/**
+* We are using actor to define any noun object on a Renderable Object.
+* @class
+* @implements {ArcRenderableObject}
+*/
 var ArcActor = ArcBaseObject();
 ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
 ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
@@ -389,18 +483,31 @@ ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
     
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
-    this.radius = 0;
+    this.interactRad = 8;
+    this.dynamicInteract = true;
 
     // TODO: check if objects interect through the circle.
 };
+/**
+* @override
+*/
 ArcActor.prototype.updateSize = function(w, h){
     ArcRenderableObject.prototype.updateSize.apply(this, arguments);
 
-    this.radius = Math.sqrt((this.size[3] * this.size[3]) + (this.size[4] * this.size[4]));
+    if(this.dynamicInteract){
+        let a = this.size[2];
+        let b = this.size[3];
+
+        this.interactRad = Math.sqrt((a * a) + (b * b));
+    }
 };
 
 
-// Basic Character objects
+/**
+* Basic Character objects
+* @class
+* @implements {ArcActor}
+*/
 var ArcCharacter = ArcBaseObject();
 ArcCharacter.prototype = Object.create(ArcActor.prototype);
 ArcCharacter.prototype.init = function(){
@@ -410,9 +517,10 @@ ArcCharacter.prototype.init = function(){
     this.frameTime = 0;
     this.spriteSheet = null;
     this.lastCollisionBox = [0, 0, 0, 0];
-    this.interactRad = 8;
-    this.dynamicInteract = true;
 };
+/**
+* @override
+*/
 ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
     let x = this.location[4];
     let y = this.location[5];
@@ -427,18 +535,17 @@ ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
 
     return Math.sqrt((x * x) + (y * y)) &lt; this.interactRad;
 };
+/**
+* @override
+*/
 ArcCharacter.prototype.updateSize = function(width, height){
     if(width != this.size[0] || height != this.size[1]){
         ArcActor.prototype.updateSize.call(this, width, height);
-
-        if(this.dynamicInteract){
-            let a = this.size[2];
-            let b = this.size[3];
-
-            this.interactRad = Math.sqrt((a * a) + (b * b));
-        }
     }
 };
+/**
+* @return {Array} The collision box for the character at the current location.
+*/
 ArcCharacter.prototype.collisionBox = function () {
     // TODO: Make it based on frame size;
     var cb = this.lastCollisionBox;
@@ -450,6 +557,10 @@ ArcCharacter.prototype.collisionBox = function () {
 
     return cb;
 };
+/**
+* Calculates which frame of animation the character is in.
+* @param {Number} timeSinceLastFrame The time, in milliseconds, since the last page refresh.
+*/
 ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
     let frames = this.spriteSheet.getAnimation(this.animation).frames;
     let frame = frames[this.frame];
@@ -1579,13 +1690,13 @@ ArcMap.prototype.getTileSheetForTile = function (index) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ArcBaseObject.html">ArcBaseObject</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArcSound">ArcSound</a></li><li><a href="global.html#ArcVec2">ArcVec2</a></li><li><a href="global.html#sortOutputTiles">sortOutputTiles</a></li><li><a href="global.html#TaskScript">TaskScript</a></li><li><a href="global.html#TileView">TileView</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ArcActor.html">ArcActor</a></li><li><a href="ArcBaseObject.html">ArcBaseObject</a></li><li><a href="ArcCharacter.html">ArcCharacter</a></li><li><a href="ArcRenderableObject.html">ArcRenderableObject</a></li><li><a href="ArcRenderableText.html">ArcRenderableText</a></li><li><a href="ArcScriptObject.html">ArcScriptObject</a></li><li><a href="ArcWaypoint.html">ArcWaypoint</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArcSound">ArcSound</a></li><li><a href="global.html#ArcVec2">ArcVec2</a></li><li><a href="global.html#sortOutputTiles">sortOutputTiles</a></li><li><a href="global.html#TaskScript">TaskScript</a></li><li><a href="global.html#TileView">TileView</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Mar 16 2017 07:03:01 GMT-0600 (Mountain Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Mar 16 2017 14:25:54 GMT-0600 (Mountain Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
