@@ -426,7 +426,7 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
 };
 // The basic world adapter object
 var WorldAdapter = ArcBaseObject();
-WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction) {
+WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, gameContext) {
     this.responseFunction = stateResponseFunction;
     this.messageFunction = messageFunction;
 };

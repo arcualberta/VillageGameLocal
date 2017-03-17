@@ -320,7 +320,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
                 }
             };
             menu.show(canvas);
-        });
+        }, __this);
         worldAdapter.loadTask = __this.loadTask;
         createHud(worldAdapter);
 

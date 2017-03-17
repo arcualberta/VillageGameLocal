@@ -37,7 +37,7 @@ for (var temp_i = 0; temp_i < testSpriteList.length; ++temp_i) {
     spriteSheets[sprite.id] = sprite;
 }*/
 
-WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction) {
+WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, gameContext) {
     var _this = this;
     var temp_actionList = [];
     this.playerStart = [0, 0];
@@ -58,7 +58,7 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction) 
         }
     }
 
-    this.module = new VillageModule("http://127.0.0.1:8281/" + arcGetParameter("module"), arcGetParameter("mapname"), mapChangeFunction, mapChangeFunction);
+    this.module = new VillageModule("http://127.0.0.1:8281/" + arcGetParameter("module"), arcGetParameter("mapname"), mapChangeFunction, mapChangeFunction, gameContext);
     
     this.showMessage = function(message, lineNumber, player, speaker, onComplete){
         messageFunction(_this.module.dialog, message, lineNumber, player, speaker, onComplete);

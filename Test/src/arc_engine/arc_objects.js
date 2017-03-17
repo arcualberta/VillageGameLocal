@@ -190,9 +190,70 @@ ArcScriptObject.prototype.AttachFunction = function(func){
 };
 
 /**
+* The base interface to handle draw, tick, interact, unload and click events.
+* @interface
+*/
+var ArcEventObject = new ArcBaseObject();
+ArcEventObject.prototype.init = function(){
+
+};
+/**
+* Checks if a rectangular area obverlaps with this object.
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+*/
+ArcEventObject.prototype.inLocation = function(left, top, right, bottom){
+    return true;
+};
+/**
+* Event triggered beofre the object is deleted.
+*/
+ArcEventObject.prototype.unload = function(){
+
+};
+/**
+* Draws the object.
+* @param {ArcGraphicsAdapter} displayContext The display context used for drawing
+* @param {Number} xOffset The horizontal screen offset. 
+* @param {Number} yOffset The verticle screen offset. 
+* @param {int} width The visible width.
+* @param {int} height The visible height.
+*/
+ArcEventObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
+
+};
+/**
+* An operation to be performed on the object for every frame tick.
+* @param {Number} deltaMilliseconds The time between this frame and the last in milliseconds.
+*/
+ArcEventObject.prototype.tick = function(deltaMilliseconds){
+
+};
+/**
+* An operation to handle the click event for the object at the given scoordinates.
+* @param {Number} x Map space x coordinate.
+* @param {Number} y Map space y coordinate.
+*/
+ArcEventObject.prototype.click = function(x, y){
+
+};
+/**
+* An operation fo handle the interact event given a specified area.
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+*/
+ArcEventObject.prototype.interact = function(left, top, right, bottom){
+
+};
+
+/**
 * All objects that are renderable to the scene.
 * @class
-* @implements {ArcBaseObject}
+* @implements {ArcEventObject}
 * @param {bool} tickEnabled States if the tick function is enabled.
 * @param {bool} drawEnabled States if the draw function is enabled.
 */
@@ -208,11 +269,7 @@ ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
     this.size = new Uint16Array(4);
 };
 /**
-* Checks if a rectangular area obverlaps with this renderable object.
-* @param {Number} left
-* @param {Number} top
-* @param {Number} right
-* @param {Number} bottom
+* @override
 */
 ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
     let loc = this.location;
@@ -308,6 +365,7 @@ ArcRenderableObject.prototype.removeChild = function(name){
 };
 /**
 * Performs any operations that must be done on this object and its children when removing.
+* @override
 */
 ArcRenderableObject.prototype.unload = function(){
     for (let key in this.children){
@@ -324,6 +382,7 @@ ArcRenderableObject.prototype.unload = function(){
 * @param {Number} yOffset The verticle screen offset. 
 * @param {int} width The visible width.
 * @param {int} height The visible height.
+* @override
 */
 ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
     let child, key;
@@ -338,6 +397,7 @@ ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, 
 /**
 * An operation to be performed on the object and it's children for every frame tick.
 * @param {Number} deltaMilliseconds The time between this frame and the last in milliseconds.
+* @override
 */
 ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
     let child, key;
@@ -353,6 +413,7 @@ ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
 * An operation to handle the click event for the object and children at the given scoordinates.
 * @param {Number} x Map space x coordinate.
 * @param {Number} y Map space y coordinate.
+* @override
 */
 ArcRenderableObject.prototype.click = function(x, y){
     let child, key;
@@ -365,11 +426,7 @@ ArcRenderableObject.prototype.click = function(x, y){
     }
 };
 /**
-* An operation fo handle the interact event given a specified area.
-* @param {Number} left
-* @param {Number} top
-* @param {Number} right
-* @param {Number} bottom
+* @override
 */
 ArcRenderableObject.prototype.interact = function(left, top, right, bottom){
     let child, key;
@@ -1311,19 +1368,18 @@ ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, widt
  *  Used to Describe a sound on the map.
  *  @param radius The radius of the sound. A radius of 0 or less means that the sound can be heard at all times.
  *  @param repeat A boolean value used to  describe whether or not the sound repeats.
- *  @param location The x and y location of the sound.
+ *  @param url The file location of the sound.
  **/
 var ArcSound = ArcBaseObject();
-ArcSound.prototype.init = function (name, radius, repeat, location, url) {
+ArcSound.prototype.init = function (name, repeat, url) {
     this.name = name;
-    this.radius = 1.0 / radius;
     this.loop = repeat;
-    this.location = location;
     this.volume = 1.0;
     this.url = url;
     this.source = null;
     this.gain = null;
 };
+
 // Used to describe one frame of animation
 var ArcAnimation = ArcBaseObject();
 ArcAnimation.prototype.init = function () {
@@ -1619,7 +1675,11 @@ ArcTileMap.prototype.tick = function(deltaMilliseconds){
  return false; //[ex, ey];
  };*/
 
-// Basic map stucture to have a single actor treevar 
+/**
+* Basic map stucture to have a single actor treevar
+* @class
+* @implements {ArcRenderableObject} 
+*/
 var ArcMap = ArcBaseObject();
 ArcMap.prototype = Object.create(ArcRenderableObject.prototype);
 ArcMap.prototype.init = function(parent, mapName){
@@ -1636,12 +1696,19 @@ ArcMap.prototype.init = function(parent, mapName){
 
     // TODO: Use the children object to render the map as a single tree.
 };
+/**
+* @override
+*/
 ArcMap.prototype.unload = function(){
     this.loaded = false;
     ArcRenderableObject.prototype.unload.call(this);
 
     this.tiles.length = 0;
 };
+/**
+* @param {index} name The index of the tile to obtain the tilesheet for.
+* @return The tilesheet for a specified tile. If no tilesheet is found, null is returned.  
+*/
 ArcMap.prototype.getTileSheetForTile = function (index) {
     var currentTilesheet = null;
     for (var i in this.tileSheets) {
@@ -1652,4 +1719,44 @@ ArcMap.prototype.getTileSheetForTile = function (index) {
     }
 
     return currentTilesheet;
+};
+
+// Triggers that can be used on the map
+
+/**
+* The base trigger for the map
+* @class
+* @implements {ArcEventObject}
+*/
+var ArcTrigger = ArcBaseObject();
+ArcTrigger.prototype = Object.create(ArcEventObject.prototype);
+ArcTrigger.prototype.init = function (name, type, position, size, rotation) {
+    this.name = name;
+    this.location = new Float32Array([position[0], position[1], position[0] + size[0], position[1] + size[1]]);
+    this.centre = new Float32Array([position[0] + size[0] / 2, position[1] + size[1] / 2]);
+    this.size = size.slice();
+    this.rotation = rotation;
+    this.type = type;
+    this.followObject = null;
+    this.interactEnabled = true;
+};
+ArcTrigger.prototype.setProperty = function (name, value) {
+    this.properties[name] = value;
+};
+ArcTrigger.prototype.update = function(map, timeSinceLast){
+    if(typeof(this.followObject) === "string"){
+        console.log(this.followObject);
+    }
+};
+ArcTrigger.prototype.inLocation = function(left, top, right, bottom){
+    let loc = this.location;
+    return !(
+        right < loc[0] ||
+        left > loc[2] ||
+        bottom < loc[1] ||
+        top > loc[3]
+    ); 
+};
+ArcTrigger.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
+
 };

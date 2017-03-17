@@ -174,42 +174,11 @@ VillageObject.prototype.interact = function(left, top, right, bottom, player, wo
 };
 
 // Trigger Objects
-var Trigger = ArcBaseObject();
-Trigger.prototype.init = function (name, type, position, size, rotation) {
-    this.name = name;
-    this.location = new Float32Array([position[0], position[1], position[0] + size[0], position[1] + size[1]]);
-    this.centre = new Float32Array([position[0] + size[0] / 2, position[1] + size[1] / 2]);
-    this.size = size.slice();
-    this.rotation = rotation;
-    this.type = type;
-    this.followObject = null;
-    this.interactEnabled = true;
-};
-Trigger.prototype.setProperty = function (name, value) {
-    this.properties[name] = value;
-};
-Trigger.prototype.update = function(map, timeSinceLast){
-    if(typeof(this.followObject) === "string"){
-        console.log(this.followObject);
-    }
-};
-Trigger.prototype.inLocation = function(left, top, right, bottom){
-    let loc = this.location;
-    return !(
-        right < loc[0] ||
-        left > loc[2] ||
-        bottom < loc[1] ||
-        top > loc[3]
-    ); 
-};
-Trigger.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
-
-};
 
 var ChangeMapTrigger = ArcBaseObject();
-ChangeMapTrigger.prototype = Object.create(Trigger.prototype);
+ChangeMapTrigger.prototype = Object.create(ArcTrigger.prototype);
 ChangeMapTrigger.prototype.init = function (name, type, position, size, rotation, module, mapName, start) {
-    Trigger.prototype.init.call(this, name, type, position, size, rotation);
+    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
     this.module = module;
     this.mapName = mapName;
     this.start = start;
@@ -219,9 +188,9 @@ ChangeMapTrigger.prototype.interact = function (left, top, right, bottom, player
 };
 
 var ClickReadTrigger = ArcBaseObject();
-ClickReadTrigger.prototype = Object.create(Trigger.prototype);
+ClickReadTrigger.prototype = Object.create(ArcTrigger.prototype);
 ClickReadTrigger.prototype.init = function (name, type, position, size, rotation, message, connectedObject) {
-    Trigger.prototype.init.call(this, name, type, position, size, rotation);
+    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
     this.message = message;
     this.connectedObject = connectedObject;
     this.activated = false;
@@ -253,9 +222,9 @@ ClickReadTrigger.prototype.interact = function (left, top, right, bottom, player
 };
 
 var ClickTaskTrigger = ArcBaseObject();
-ClickTaskTrigger.prototype = Object.create(Trigger.prototype);
+ClickTaskTrigger.prototype = Object.create(ArcTrigger.prototype);
 ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation, title, task){
-    Trigger.prototype.init.call(this, name, type, position, size, rotation);
+    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
     this.task = task;
     this.title = title;
     this.activated = false;
@@ -282,6 +251,23 @@ ClickTaskTrigger.prototype.interact = function (left, top, right, bottom, player
             player.activeObject = null;
         });
     }
+};
+
+/**
+* Updates the sound based on the distance.
+* @implements {ArcTrigger}
+*/
+var ArcBackgroundMusicTrigger = ArcBaseObject();
+ArcBackgroundMusicTrigger.prototype = Object.create(ArcEventObject.prototype);
+ArcBackgroundMusicTrigger.prototype.init = function(name, type, position, size, rotation, url, audioContext){
+    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
+    this.audio = audioContext;
+    this.sound = new ArcSound(name, true, url);
+    this.isPlaying = false;
+
+    this.audio.loadSound(this.sound, false, function(error){
+        console.log("Error loading sound: " + url);
+    });
 };
 
 // Map Objects
@@ -334,7 +320,7 @@ VillageMap.prototype.cast = function () {
 VillageMap.prototype.getSpriteSheet = function(name){
     return this.parent.getSpriteSheet(name);
 };
-VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree) {
+VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, gameContext) {
     var triggerName = $trigger.attr("name");
     var triggerType = $trigger.attr("type").toLowerCase();
     var triggerX = Number($trigger.attr("x")) * scale; // Double the size for now since we double the map size
@@ -356,6 +342,8 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree) {
         trigger = new ClickReadTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["message"], triggerProperties["object"]);
     } else if(triggerType === "clicktask"){
         trigger = new ClickTaskTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["title"], triggerProperties["task"]);
+    } else if(triggerType === "backgroundswitch"){
+        trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["file"], gameContext.audio);
     }else {
         trigger = new Trigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
     }
@@ -366,7 +354,7 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree) {
 
     triggerTree.insert(trigger);
 };
-VillageMap.prototype.load = function (onload, startName) {
+VillageMap.prototype.load = function (onload, startName, gameContext) {
     // Check if the map is already loaded
     if (this.loaded) {
         var startLocation = [0, 0];
@@ -572,7 +560,7 @@ VillageMap.prototype.load = function (onload, startName) {
                     tree.tickEnabled = false;
                     // Handle map triggers
                     $(this).find("object").each(function () {
-                        _this.addTrigger($(this), scale, tree);
+                        _this.addTrigger($(this), scale, tree, gameContext);
                     });
                     _this.addChild(tree, name);
                 } else if (name === "objects") {
@@ -748,12 +736,13 @@ VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
 };*/
 
 var VillageModule = ArcBaseObject();
-VillageModule.prototype.init = function (path, initialMap, onLoaded, onMapChange) {
+VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded, onMapChange) {
     this.path = path;
     this.maps = {};
     this.onMapChange = onMapChange;
     this.css = path + "/css/style.css";
     this.spriteSheets = {};
+    this.gameContext = gameContext;
 
     // Load the spritesheets
     this.loadSpritesheets(path + "/sprites/");
@@ -766,7 +755,7 @@ VillageModule.prototype.init = function (path, initialMap, onLoaded, onMapChange
     // Load the dialog
     this.dialog = arcGetDialogAdapter(path + "/scenes/dialog.csv");
 
-    map.load(onLoaded, "MainStart");
+    map.load(onLoaded, "MainStart", gameContext);
 };
 VillageModule.prototype.loadSpritesheets = function (path) {
     var _this = this;
@@ -851,7 +840,7 @@ VillageModule.prototype.load = function (mapName, startName) {
         if (module.onMapChange) {
             module.onMapChange(module.currentMap, startLocation);
         }
-    }, startName);
+    }, startName, _this.gameContext);
 };
 
 // Minimap code
