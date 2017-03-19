@@ -14,6 +14,9 @@ ArcBaseAudioAdapter.prototype.loadSound = function (sound, play, onError) {
 ArcBaseAudioAdapter.prototype.playSound = function (sound) {
 
 };
+ArcBaseAudioAdapter.prototype.stopSound = function (sound) {
+
+};
 ArcBaseAudioAdapter.prototype.updateSound = function (sound, location) {
 
 };
@@ -75,7 +78,7 @@ ArcAudioAdapter.prototype.loadSound = function (sound, play, onError) {
         request.send();
     }
 };
-ArcAudioAdapter.prototype.playSound = function (sound) {
+ArcAudioAdapter.prototype.playSound = function (sound, fade) {
     var buffer = this.buffers[sound.name];
 
     if (buffer !== null) {
@@ -100,6 +103,11 @@ ArcAudioAdapter.prototype.playSound = function (sound) {
     }
 
     return null;
+};
+ArcAudioAdapter.prototype.stopSound = function(sound, fade){
+    if(sound && sound.source){
+        sound.source.stop();
+    }
 };
 ArcAudioAdapter.prototype.updateSound = function (sound, location) {
     if (sound.radius > 0.0) {

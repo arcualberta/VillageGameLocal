@@ -58,7 +58,7 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
         }
     }
 
-    this.module = new VillageModule("http://127.0.0.1:8281/" + arcGetParameter("module"), arcGetParameter("mapname"), mapChangeFunction, mapChangeFunction, gameContext);
+    this.module = new VillageModule("http://127.0.0.1:8281/" + arcGetParameter("module"), arcGetParameter("mapname"), gameContext, mapChangeFunction, mapChangeFunction);
     
     this.showMessage = function(message, lineNumber, player, speaker, onComplete){
         messageFunction(_this.module.dialog, message, lineNumber, player, speaker, onComplete);

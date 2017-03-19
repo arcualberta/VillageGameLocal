@@ -1748,6 +1748,9 @@ ArcTrigger.prototype.update = function(map, timeSinceLast){
         console.log(this.followObject);
     }
 };
+/**
+* @override
+*/
 ArcTrigger.prototype.inLocation = function(left, top, right, bottom){
     let loc = this.location;
     return !(

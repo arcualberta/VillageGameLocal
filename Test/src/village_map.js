@@ -258,16 +258,22 @@ ClickTaskTrigger.prototype.interact = function (left, top, right, bottom, player
 * @implements {ArcTrigger}
 */
 var ArcBackgroundMusicTrigger = ArcBaseObject();
-ArcBackgroundMusicTrigger.prototype = Object.create(ArcEventObject.prototype);
+ArcBackgroundMusicTrigger.prototype = Object.create(ArcTrigger.prototype);
 ArcBackgroundMusicTrigger.prototype.init = function(name, type, position, size, rotation, url, audioContext){
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
     this.audio = audioContext;
     this.sound = new ArcSound(name, true, url);
     this.isPlaying = false;
+    this.fade = 100;
 
     this.audio.loadSound(this.sound, false, function(error){
         console.log("Error loading sound: " + url);
     });
+};
+ArcBackgroundMusicTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
+    if(this.inLocation(left, top, right, bottom)){
+        worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
+    }
 };
 
 // Map Objects
@@ -320,7 +326,7 @@ VillageMap.prototype.cast = function () {
 VillageMap.prototype.getSpriteSheet = function(name){
     return this.parent.getSpriteSheet(name);
 };
-VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, gameContext) {
+VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, modulePath, gameContext) {
     var triggerName = $trigger.attr("name");
     var triggerType = $trigger.attr("type").toLowerCase();
     var triggerX = Number($trigger.attr("x")) * scale; // Double the size for now since we double the map size
@@ -342,8 +348,8 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, gameCo
         trigger = new ClickReadTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["message"], triggerProperties["object"]);
     } else if(triggerType === "clicktask"){
         trigger = new ClickTaskTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["title"], triggerProperties["task"]);
-    } else if(triggerType === "backgroundswitch"){
-        trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["file"], gameContext.audio);
+    } else if(triggerType === "backgroundmusic"){
+        trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, modulePath + "/" + triggerProperties["file"], gameContext.audio);
     }else {
         trigger = new Trigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
     }
@@ -560,7 +566,7 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                     tree.tickEnabled = false;
                     // Handle map triggers
                     $(this).find("object").each(function () {
-                        _this.addTrigger($(this), scale, tree, gameContext);
+                        _this.addTrigger($(this), scale, tree, modulePath, gameContext);
                     });
                     _this.addChild(tree, name);
                 } else if (name === "objects") {
@@ -735,6 +741,11 @@ VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
     }
 };*/
 
+/**
+* The container for village and it's linked maps.
+* @class
+* @inherits {ArcBaseObject}
+*/
 var VillageModule = ArcBaseObject();
 VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded, onMapChange) {
     this.path = path;
@@ -743,6 +754,7 @@ VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded
     this.css = path + "/css/style.css";
     this.spriteSheets = {};
     this.gameContext = gameContext;
+    this.backgroundMusic = null;
 
     // Load the spritesheets
     this.loadSpritesheets(path + "/sprites/");
@@ -756,6 +768,19 @@ VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded
     this.dialog = arcGetDialogAdapter(path + "/scenes/dialog.csv");
 
     map.load(onLoaded, "MainStart", gameContext);
+};
+VillageModule.prototype.setBackgroundMusic = function(sound, fade){
+    if(this.backgroundMusic){
+        if(sound === this.backgroundMusic){
+            return;
+        }
+
+        // Stop the current background music
+        this.gameContext.audio.stopSound(this.backgroundMusic, fade);
+    }
+
+    this.backgroundMusic = sound;
+    this.gameContext.audio.playSound(this.backgroundMusic, fade);
 };
 VillageModule.prototype.loadSpritesheets = function (path) {
     var _this = this;
