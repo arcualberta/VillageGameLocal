@@ -64,6 +64,7 @@ ArcAudioAdapter.prototype.loadSound = function (sound, play, onError) {
         var __this = this;
         request.open('GET', sound.url, true);
         request.responseType = 'arraybuffer';
+        buffers[sound.name] = false;
 
         request.onload = function () {
             context.decodeAudioData(request.response, function (buffer) {
@@ -81,7 +82,7 @@ ArcAudioAdapter.prototype.loadSound = function (sound, play, onError) {
 ArcAudioAdapter.prototype.playSound = function (sound, fade) {
     var buffer = this.buffers[sound.name];
 
-    if (buffer !== null) {
+    if (buffer) {
         var context = this.context;
 
         var source = context.createBufferSource();
