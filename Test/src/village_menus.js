@@ -432,6 +432,7 @@ function SettingsWindow(game){
                 addMenuChange(menu, "Video", 3);
                 addMenuButtons(dialogSection, ["Close"], [
                     function(){ 
+                        ArcSettings.Current.save(game);
                         result.close();
                     }
                 ]);

@@ -1,4 +1,4 @@
-
+// Gload functions
 window.arcRequestAnimFrame = (function () {
     return  window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -21,6 +21,39 @@ function arcGetParameter(paramName) {
     return false;
 }
 
+/**
+* The object containing settings information for game.
+* @class
+* @inherits {ArcBaseObject}
+*/
+var ArcSettings = ArcBaseObject();
+ArcSettings.Current = null;
+ArcSettings.prototype.init = function(name){
+    this.name = name;
+};
+/**
+* Saves the settings into local storage.
+*/
+ArcSettings.prototype.save = function(){
+    localStorage.setItem(this.name, JSON.stringify(this));
+};
+/**
+* Loads settings from local storage.
+*/
+ArcSettings.prototype.load = function(){
+    let data = null;
+    data = JSON.parse(localStorage.getItem(this.name));
+
+    if(data){
+        for(var key in data){
+            this[key] = data[key];
+        }
+    }
+}
+
+/**
+* @class
+*/
 var ArcGame = ArcBaseObject();
 // Static functions
 ArcGame.Current = null;

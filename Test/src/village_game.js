@@ -1,3 +1,39 @@
+
+/**
+* @class
+* @inherits {ArcSettings}
+*/
+var VillageSettings = ArcBaseObject();
+VillageSettings.prototype = Object.create(ArcSettings.prototype);
+VillageSettings.prototype.init = function(name){
+    ArcSettings.prototype.init.call(this, name);
+    this.audio = {
+        volume: 1.0
+    };
+};
+/**
+* @override
+* @param {VillageGame} The game to save the settings into.
+*/
+VillageSettings.prototype.save = function(game){
+    this.audio.volume = game.audio.getVolume();
+
+    ArcSettings.prototype.save.call(this);
+}
+/**
+* @override
+* @param {VillageGame} The game to load the settings into.
+*/
+VillageSettings.prototype.load = function(game){
+    ArcSettings.prototype.load.call(this);
+
+    game.audio.setVolume(this.audio.volume);
+}
+
+/**
+* @class
+* @inherits {ArcGame}
+*/
 var VillageGame = ArcBaseObject();
 VillageGame.prototype = Object.create(ArcGame.prototype);
 VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
@@ -11,8 +47,11 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     var userId = null;
     var userName = null;
 
-    this.villageDisplay = null;
+    var settings = new VillageSettings("arc.ualberta.villagegame");
+    settings.load(this)
+    ArcSettings.Current = settings;
 
+    this.villageDisplay = null;
 
     this.hud = new ArcRenderableObject(true, true);
 
