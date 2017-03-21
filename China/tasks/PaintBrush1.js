@@ -8,11 +8,6 @@
 * The mini-game will have it's own instance where it will tell the "brush" it is in Active state.
 * The Passive state is where the "brush" is in the game instance and only functions as a picture, not as an interactive object.
 */
-
-
-
-
-
 (function(){
 	var distance = function(start, end){
 		return Math.sqrt(Math.pow(start[0] - end[0], 2.0) + Math.pow(start[1] - end[1], 2.0));
