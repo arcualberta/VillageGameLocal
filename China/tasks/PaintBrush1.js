@@ -1,3 +1,18 @@
+/** Initially computes the required space/pixels for the "brush" to be drawn on.
+* Then imports the jpeg of the brush from the archive with images in China images.
+* The "brush" is then convertered to an object that has attributes such as height and width.
+* The "brush" is then loaded into the game engine pixel by pixel.
+* The "brush" has a feature of being clickable, as for the game concept. 
+* This means the "brush" has a state of being passive or active.
+* The Active state is where the user in the game uses the "brush" as a mouse to "draw" items for a mini-game.
+* The mini-game will have it's own instance where it will tell the "brush" it is in Active state.
+* The Passive state is where the "brush" is in the game instance and only functions as a picture, not as an interactive object.
+*/
+
+
+
+
+
 (function(){
 	var distance = function(start, end){
 		return Math.sqrt(Math.pow(start[0] - end[0], 2.0) + Math.pow(start[1] - end[1], 2.0));
