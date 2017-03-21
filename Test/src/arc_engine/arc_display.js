@@ -158,6 +158,17 @@ ArcGraphicsAdapter.prototype.drawTileLayer = function (tiles) {
             this.drawTile(tileSheet, tile.tile.drawable(), tile.location[0] - offset[0], tile.location[1] - offset[1], tile.size[0], tile.size[1]);
         }
     }
+
+    if(window.debugMode){
+        let color;
+        for (index = 0; index < length; ++index) {
+            tile = tiles[index];
+
+            color = tile.tile.walkable ? "#AAA" : "#000";
+            this.drawLine(tile.location[0], tile.location[1], tile.location[2], tile.location[3], color);
+            this.drawLine(tile.location[2], tile.location[1], tile.location[0], tile.location[3], color);
+        }
+    }
 };
 ArcGraphicsAdapter.prototype.drawTileLayerWithOffset = function (layer, loopX, loopY) {
     var offset = this.camera.offset;

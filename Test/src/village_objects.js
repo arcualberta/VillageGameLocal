@@ -17,7 +17,7 @@ Character.prototype.init = function (id, name) {
 
     this.lastStep = [0, 0, false];
     this.waypoint = [0, 0];
-    this.speed = 0.05;
+    this.speed = 0.1;
     this.action = 0;
     this.direction = 0;
 
@@ -28,35 +28,115 @@ Character.actions = ["stand", "walk"];
 Character.prototype.stop = function(){
 
 };
-Character.prototype.calculateNextStep = function (village, speed, time, goal, output) {
-    var start = village.getClosestTileCoord(this.location[4], this.location[5]);
-    var end = village.getClosestTileCoord(goal[0], goal[1]);
+Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
+    let start = village.getClosestTileCoord(this.location[4], this.location[5]);
+    let end = village.getClosestTileCoord(goal[0], goal[1]);
+    let xDif = start[0] - end[0];
+    let yDif = start[1] - end[1];
+    let dist = 1.0 / (speed * time);
 
-    var xDif = start[0] - end[0];
-    var yDif = start[1] - end[1];
+    // Check if we are moving
+    if(Math.abs(xDif) < 1 && Math.abs(yDif) < 1){
+        output[0] = this.location[4];
+        output[1] = this.location[5];
+        output[2] = false;
 
-    var newX = 0;//this.location[0];
-    var newY = 0;//this.location[1];
+        return output;
+    }
 
-    var distance = speed * time;
-    var isChanged = false;
+    // Find the movement vector
+    xDif = goal[0] - this.location[4];
+    yDif = goal[1] - this.location[5];
+    dist *= Math.sqrt((xDif * xDif) + (yDif * yDif));
+    xDif = (xDif / dist);
+    yDif = (yDif / dist);
+
+    // Set the new values
+    let isChanged = true;
+    let tileBox = this.collisionBox();
+    let x = 0;
+    let y = 0;
+
+    // Set to find where we intersect in the x direction.
+    if(xDif < 0){
+        for(x = -1; x > xDif; --x){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                break;
+            }
+        }
+
+        ++x;
+    }else{
+        for(x = 1; x < xDif; ++x){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                break;
+            }
+        }
+
+        --x;
+    }
+
+    // Step in the y direction to see where we intersect.
+    if(yDif < 0){
+        for(y = -1; y > yDif; --y){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                break;
+            }
+        }
+
+        ++y;
+    }else{
+        for(y = 1; y < yDif; ++y){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+
+                break;
+            }
+        }
+
+        --y;
+    }
+
+    output[0] = this.location[4] + x;
+    output[1] = this.location[5] + y;
+    output[2] = isChanged;
+
+    return output;
+}
+Character.prototype.calculateNextStep_old = function (village, speed, time, goal, output) {
+    let start = village.getClosestTileCoord(this.location[4], this.location[5]);
+    let end = village.getClosestTileCoord(goal[0], goal[1]);
+    let xDif = start[0] - end[0];
+    let yDif = start[1] - end[1];
+    let finalX = 0;//this.location[0];
+    let finalY = 0;//this.location[1];
+    let distance = speed * time;
+    let isChanged = false;
+    let newX = 0;
+    let newY = 0;
+    let xInc = 0;
+    let yInc = 0;
+    let nextX, nextY;
 
     // TODO: check if we are going diagonally.
 
     //if(Math.abs(xDif) > Math.abs(yDif)){
     if (xDif > 0.0) {
-        newX -= distance;
+        finalX -= distance;
+        xInc = -Character.STEP;
         isChanged = true;
     } else if (xDif < 0.0) {
-        newX += distance;
+        finalX += distance;
+        xInc = Character.STEP;
         isChanged = true;
     }
     //}else{
     if (yDif > 0) {
-        newY -= distance;
+        finalY -= distance;
+        yInc = -Character.STEP;
         isChanged = true;
     } else if (yDif < 0) {
-        newY += distance;
+        finalY += distance;
+        yInc = Character.STEP;
         isChanged = true;
     }
     //}
@@ -104,6 +184,17 @@ Character.prototype.drawBounds = function(displayContext){
     let y1 = this.location[1];
     let x2 = this.location[2];
     let y2 = this.location[3];
+
+    displayContext.drawLine(x1, y1, x1, y2, color);
+    displayContext.drawLine(x1, y1, x2, y1, color);
+    displayContext.drawLine(x2, y2, x1, y2, color);
+    displayContext.drawLine(x2, y2, x2, y1, color);
+
+    color = "#F80";
+    x1 = this.lastCollisionBox[0];
+    y1 = this.lastCollisionBox[1];
+    x2 = x1 + this.lastCollisionBox[2];
+    y2 = y1 + this.lastCollisionBox[3];
 
     displayContext.drawLine(x1, y1, x1, y2, color);
     displayContext.drawLine(x1, y1, x2, y1, color);
@@ -350,7 +441,7 @@ Player.prototype.init = function (user) {
     this.user = user;
     this.showWaypoint = false;
     this.waypointLoc = [user.location[0], user.location[1]];
-    this.speed = 0.12;
+    this.speed = 0.24;
     this.direction = 0;
     this.action = 0;
     this.lastStep = [0, 0, false];
