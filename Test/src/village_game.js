@@ -223,6 +223,8 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         }
 
         menu.show(canvas);
+
+        return __this.currentTask;
     };
 
     // Useful functions    
@@ -359,6 +361,8 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
                 }
             };
             menu.show(canvas);
+
+            return menu;
         }, __this);
         worldAdapter.loadTask = __this.loadTask;
         createHud(worldAdapter);

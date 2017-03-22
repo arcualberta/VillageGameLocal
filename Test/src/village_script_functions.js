@@ -53,8 +53,8 @@ DialogScripts.prototype.init = function(parent){
 	this.AttachFunction("TriggerTask");
 };
 DialogScripts.prototype.TriggerDialog = function(messageKey, worldAdapter, player, onclose){
-	worldAdapter.showMessage(messageKey, false, player, this, onclose);
+	return worldAdapter.showMessage(messageKey, false, player, this, onclose);
 };
 DialogScripts.prototype.TriggerTask = function(task, worldAdapter, onclose){
-	worldAdapter.loadTask(task, worldAdapter.getTaskScript(task), onclose);
+	return worldAdapter.loadTask(task, worldAdapter.getTaskScript(task), onclose);
 };
