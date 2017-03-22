@@ -29,14 +29,14 @@ Character.prototype.stop = function(){
 
 };
 Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
-    let start = village.getClosestTileCoord(this.location[4], this.location[5]);
-    let end = village.getClosestTileCoord(goal[0], goal[1]);
-    let xDif = start[0] - end[0];
-    let yDif = start[1] - end[1];
-    let dist = 1.0 / (speed * time);
+    var start = village.getClosestTileCoord(this.location[4], this.location[5]);
+    var end = village.getClosestTileCoord(goal[0], goal[1]);
+    var xDif = Math.abs(start[0] - end[0]);
+    var yDif = Math.abs(start[1] - end[1]);
+    var dist = 1.0 / (speed * time);
 
     // Check if we are moving
-    if(Math.abs(xDif) < 1 && Math.abs(yDif) < 1){
+    if(xDif < 1 && yDif < 1){
         output[0] = this.location[4];
         output[1] = this.location[5];
         output[2] = false;
@@ -52,10 +52,10 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     yDif = (yDif / dist);
 
     // Set the new values
-    let isChanged = true;
-    let tileBox = this.collisionBox();
-    let x = 0;
-    let y = 0;
+    var isChanged = true;
+    var tileBox = this.collisionBox();
+    var x = 0;
+    var y = 0;
 
     // Set to find where we intersect in the x direction.
     if(xDif < 0){
@@ -66,7 +66,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
         }
 
         ++x;
-    }else{
+    }else if(xDif > 0){
         for(x = 1; x < xDif; ++x){
             if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
                 break;
@@ -85,7 +85,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
         }
 
         ++y;
-    }else{
+    }else if(yDif > 0){
         for(y = 1; y < yDif; ++y){
             if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
 

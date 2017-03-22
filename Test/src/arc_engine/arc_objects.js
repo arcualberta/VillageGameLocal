@@ -551,8 +551,8 @@ ArcCharacter.prototype.init = function(){
 * @override
 */
 ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
-    let x = this.location[4];
-    let y = this.location[5];
+    var x = this.location[4];
+    var y = this.location[5];
 
     if(x > right) x = right;
     if(x < left) x = left;
@@ -579,9 +579,9 @@ ArcCharacter.prototype.collisionBox = function () {
     // TODO: Make it based on frame size;
     var cb = this.lastCollisionBox;
 
-    cb[0] = this.location[0];
+    cb[0] = this.location[0] + 2;
     cb[1] = this.location[1] + this.size[3]; // Verticle center
-    cb[2] = this.size[0];
+    cb[2] = this.size[0] - 4;
     cb[3] = this.size[3];
 
     return cb;
@@ -1080,7 +1080,7 @@ QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, heig
     }
 };
 QuadTree.prototype.click = function(x, y){
-    let args = arguments;
+    var args = arguments;
     let objects = this.getObjects(x, y, 1, 1, [], function(obj){
         if(obj.clickEnabled && obj.inLocation(x, y, x, y)){
             obj.click.apply(obj, args);
@@ -1088,7 +1088,7 @@ QuadTree.prototype.click = function(x, y){
     });
 };
 QuadTree.prototype.interact = function(left, top, right, bottom){
-    let args = arguments;
+    var args = arguments;
     let objects = this.getObjects(left, top, right, bottom, [], function(obj){
         if(obj.interactEnabled && obj.inLocation(left, top, right, bottom)){
             obj.interact.apply(obj, args)
