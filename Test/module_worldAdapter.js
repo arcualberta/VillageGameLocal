@@ -1,3 +1,15 @@
+// Start Google Analytics
+if(VillageConfig.googleAnalytics){
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', VillageConfig.googleAnalytics, 'auto');
+  ga('send', 'pageview');
+}
+// End Google Analytics
+
 var testSpriteList = [
     "./Resources/Charactersets/dancer_male_palette.png",
     "./Resources/Charactersets/dancer_male_large2.png",
@@ -58,7 +70,7 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
         }
     }
 
-    this.module = new VillageModule("http://127.0.0.1:8281/" + arcGetParameter("module"), arcGetParameter("mapname"), gameContext, mapChangeFunction, mapChangeFunction);
+    this.module = new VillageModule(VillageConfig.baseUrl + arcGetParameter("module"), arcGetParameter("mapname"), gameContext, mapChangeFunction, mapChangeFunction);
     
     this.showMessage = function(message, lineNumber, player, speaker, onComplete){
         messageFunction(_this.module.dialog, message, lineNumber, player, speaker, onComplete);
