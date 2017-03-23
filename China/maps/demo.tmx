@@ -808,7 +808,7 @@
   </object>
   <object id="23" name="DrawTest" type="Object" gid="305" x="339.333" y="319.333" width="160" height="160">
    <properties>
-    <property name="oninteract" value="var t = this.TriggerTask('PaintBrush2', worldAdapter); t.bgImage = new Image(); t.bgImage.src = worldAdapter.module.path + &quot;/tasks/perch_outline_dash.png&quot;;"/>
+    <property name="oninteract" value="var t = this.TriggerTask('PaintBrush2', worldAdapter); t.setBackground( worldAdapter.module.path + &quot;/tasks/perch_outline_dash.png&quot;);"/>
    </properties>
   </object>
  </objectgroup>
@@ -821,12 +821,6 @@
    <properties>
     <property name="Follow" value="Wukong"/>
     <property name="Message" value="DIALOGUE_4"/>
-   </properties>
-  </object>
-  <object id="4" name="Paint1Trigger" type="ClickTask" x="660" y="488" width="60" height="61">
-   <properties>
-    <property name="task" value="PaintBrush1"/>
-    <property name="title" value="Test Painting"/>
    </properties>
   </object>
  </objectgroup>

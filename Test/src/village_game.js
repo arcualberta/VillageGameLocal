@@ -186,33 +186,15 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
     // Create the task functions
     this.currentTask = null;
-    this.taskWorker = new Worker(javascriptPath + "/village_task_worker.js");
-    this.taskWorker.onerror = function (e) {
-        console.log(e.message + " (" + e.filename + ":" + ")");
-    };
-    this.taskWorker.onmessage = function (e) {
-        var data = e.data;
-        switch (data[0]) {
-            case WORKER_DRAW_SCENE:
-                __this.currentTask.draw(__this.currentTask.displayAdapter, data[1], __this.currentTask.drawModel);
-                break;
-
-            case WORKER_CLOSE_TASK_FUNCTION:
-                if (__this.currentTask.done(__this.currentTask.displayAdapter, data[1], __this.currentTask.drawModel)) {
-                    // Add the item to the student
-
-                    // Close the menu
-                    menu.close();
-                    menu = false;
-                }
-        }
-    };
-
     this.loadTask = function (title, url, onclose) {
         menu = new TaskMenu(title, canvas.width - 100, canvas.height - 50);
 
         __this.currentTask = new TaskScript(menu.canvas, title, url, worldAdapter.module.path, __this.taskWorker);
         menu.task = __this.currentTask;
+        menu.task.close = function(){
+            menu.close();
+            menu = false;
+        }
 
         menu.closeComplete = function(){
             if(onclose){

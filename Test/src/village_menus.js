@@ -38,7 +38,11 @@ function GameMenu(title, width, height, backgroundImageUrl, classes) {
         // Attach the node
         $(parent).parent().append(popup);
 
-        popup.show('fast');
+        popup.show('fast', function(){
+            if(_this.onresize){
+                _this.onresize();
+            }
+        });
     };
 
     this.close = function () {
@@ -540,8 +544,15 @@ function TaskMenu(title, width, height) {
     // Update the task as needed
     menu.animate = function (timeSinceLast) {
         if (menu.task != null) {
+            let task = menu.task;
+
             menu.task.update(timeSinceLast);
+            menu.task.draw(task.displayAdapter, task.drawModel)
         }
+    }
+
+    menu.onresize = function(){
+        menu.task.resize(menu.body.innerWidth(), menu.body.innerHeight());
     }
 
     return menu;

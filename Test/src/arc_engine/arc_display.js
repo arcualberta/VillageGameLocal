@@ -341,11 +341,8 @@ ArcCanvasAdapter.prototype.requestFullscreen = function () {
 ArcCanvasAdapter.prototype.clear = function () {
     var context = this.context;
     var canvas = this.canvas;
-
-    context.beginPath();
-    context.fillStyle = "black";
-    context.rect(0, 0, canvas.width, canvas.height);
-    context.fill();
+    
+    context.clearRect(0, 0, canvas.width, canvas.height);
 };
 ArcCanvasAdapter.prototype.drawTileLayer = function(tiles){
     this.camera.offset[0] |= 0;

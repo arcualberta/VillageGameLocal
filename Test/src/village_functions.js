@@ -240,31 +240,17 @@ function createMapCanvas(canvasWidth, canvasHeight, village){
  * Basic task script.
  * Update functions will occur on the worker thread while the draw and resize functions happen on the main thread.
  **/
-function TaskScript(canvas, title, scriptLocation, resourcePath, worker){
+var TaskScript = ArcBaseObject();
+TaskScript.prototype.init = function(canvas, title, scriptLocation, resourcePath, worker){
     var __this = this;
     this.displayAdapter = null;
     this.controlAdapter = arcGetControlAdapter(canvas);
-    this.drawModel = {
+    this.model = {
         state: 0
     };
+    this.resourcePath = resourcePath;
     
     this.title = title;
-    
-    this.draw = function(display, model, drawModel){};
-    this.done = function(display, model, drawModel){};
-    
-    this.update = function(time){
-        worker.postMessage([WORKER_RUN_TASK_FUNCTION, "update", {
-            time: time,
-            actions: __this.controlAdapter.pullActionList(),
-            resourcePath: resourcePath,
-            drawModel: __this.drawModel
-        }]);
-    };
-    
-    this.resize = function(width, height){
-        displayAdapter.resize(width, height);
-    };
     
     // Load the javascript
     $.ajax({
@@ -272,20 +258,39 @@ function TaskScript(canvas, title, scriptLocation, resourcePath, worker){
         dataType: "text",
         cache: false,
         success: function(data){
-            var object = eval(data.replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, ''))();
-            __this.draw = object.draw;
-            __this.done = object.done;
+            var fn, object;
+
+            data = data.replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '');
+
+            try{
+                fn = eval(data);
+                object = fn(__this, resourcePath);
+            }catch(e){
+                var err = e.constructor('Error loading task script: ' + e.message);
+                err.lineNumber = e.lineNumber - err.lineNumber + 3;
+                throw err;
+            }
+
             __this.displayAdapter = arcGetDisplayAdapter(canvas, object.allowGL);
-            
-            worker.postMessage([WORKER_SET_MODEL, {
-                title: title,
-                size: [canvas.width, canvas.height]
-            }]);
-        
-            worker.postMessage([WORKER_LOAD_TASK_FUNCTION, "update", "(" + object.update + ")"]); // Set the update method on the worker.
-        }
+            __this.resize(canvas.width, canvas.height);
+        },
+        async: false
     });
 }
+TaskScript.prototype.resize = function(width, height){
+
+};
+TaskScript.prototype.draw = function(){};
+TaskScript.prototype.done = function(){};
+TaskScript.prototype.reward = function(){
+    return null;
+};
+TaskScript.prototype.update = function(time) {
+
+};
+TaskScript.prototype.close = function(){
+
+};
 
 /*
  * A basic Tile Sheet script. This generates some default functions which can be used by the file script.
