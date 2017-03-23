@@ -45,6 +45,7 @@
 	
 		model.brushUrl = resourcePath + "/tasks/Brush.png";
 		model.acceptUrl = resourcePath + "/images/accept.png";
+		model.clearUrl = resourcePath + "/images/decline.png";
 		
 		// Load the brush
 		var brushImage = new Image();
@@ -64,6 +65,10 @@
 		var acceptImage = new Image();
 		acceptImage.src = model.acceptUrl;
 		model.acceptImage = acceptImage;
+		
+		var clearImage = new Image();
+		clearImage.src = model.clearUrl;
+		model.clearImage = clearImage;
 	};
 	
 	// Public Params
@@ -109,6 +114,9 @@
 						if(!(action.data.x < model.buttonAccept[0] || action.data.x > model.buttonAccept[2]
 							|| action.data.y < model.buttonAccept[1] || action.data.y > model.buttonAccept[3])){
 							this.close();
+						}else if(!(action.data.x < model.buttonClear[0] || action.data.x > model.buttonClear[2]
+							|| action.data.y < model.buttonClear[1] || action.data.y > model.buttonClear[3])){
+							drawContext.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
 						}
 						break;
 				}
@@ -127,6 +135,10 @@
 		model.buttonAccept[2] += model.buttonAccept[0];
 		model.buttonAccept[3] += model.buttonAccept[1];
 		
+		model.buttonClear = [10 +model.buttonAccept[2], display.size[1] - 10 - 32, 32, 32];
+		model.buttonClear[2] += model.buttonClear[0];
+		model.buttonClear[3] += model.buttonClear[1];
+		
 		// Resize the draw area
 		drawCanvas.width = display.size[0];
 		drawCanvas.height = display.size[1];
@@ -144,6 +156,13 @@
 				model.buttonAccept[0], model.buttonAccept[1], 
 				model.buttonAccept[2] - model.buttonAccept[0], 
 				model.buttonAccept[3] - model.buttonAccept[1]);
+		}
+		
+		if(model.clearImage){	
+			display.drawImage(model.clearImage, 0, 0, model.clearImage.width, model.clearImage.height, 
+				model.buttonClear[0], model.buttonClear[1], 
+				model.buttonClear[2] - model.buttonClear[0], 
+				model.buttonClear[3] - model.buttonClear[1]);
 		}
 		
 		

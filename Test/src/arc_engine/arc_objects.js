@@ -885,6 +885,33 @@ QuadTree.prototype.getIndex = function (x, y, width, height) {
 QuadTree.prototype.isInside = function(value){
     return value.inLocation(this.location[0], this.location[1], this.location[3], this.location[4]);
 };
+/**
+* @override
+*/
+QuadTree.prototype.removeChild = function(name){
+    let i, obj, nodes;
+
+    if(this.objects.length > 0){
+        for(i = this.objects.length - 1; i >= 0; --i){
+            obj = this.objects[i];
+
+            if(obj.name == name){
+                obj.clear();
+                this.objects.splice(i, 1);
+                return obj;
+            }
+        }
+    }
+
+    nodes = this.nodes;
+    for(i = 0; i < 4; ++i){
+        if((obj = nodes[i].removeChild[name]) !== null){
+            return obj;
+        }
+    }
+
+    return null;
+};
 QuadTree.prototype.recalculate = function(buffer) {
     let nodes = this.nodes;
     let isEmpty = true;

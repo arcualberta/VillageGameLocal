@@ -602,7 +602,7 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
 
                         // Load the properties
                         $object.find("properties > property").each(function () {
-                            objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value");
+                            objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
                         });
 
                         // Find the matching tile if needed
