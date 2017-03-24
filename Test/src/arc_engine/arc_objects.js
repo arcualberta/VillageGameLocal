@@ -1140,8 +1140,15 @@ ArcTileQuadTree_Tile.prototype.init = function(tile, x, y, tileWidth, tileHeight
 
     this.tile = tile;
 };
-ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom){
+ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom, width, height, coverBuffer){
     if(this.inLocation(left, top, right, bottom)){
+        if(coverBuffer){
+            if(this.location[0] < coverBuffer[0] && this.location[2] < coverBuffer[2]){
+                coverBuffer[2] = this.location[2];
+            }else if(this.location[0] > coverBuffer[0] && this.location[2] > coverBuffer[2]){
+                coverBuffer[0] = this.location[0];
+            }
+        }
         return !this.tile.walkable;
     }
 
@@ -1311,13 +1318,23 @@ ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjec
         }
     }
 };
-ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height, coverBuffer) {
+    if(!(coverBuffer)){
+        coverBuffer = QuadTree.ArrayBuffer;
+        coverBuffer.length = 0;
+        coverBuffer.push(x1);
+        coverBuffer.push(y1);
+        coverBuffer.push(x2);
+        coverBuffer.push(y2);
+    }
+
     const nodes = this.nodes;
-    let i, r;
+    let i, r, obj;
     let result = null;
 
     for (i = 0; i < this.objects.length; ++i) {
-        r = this.objects[i].isBlocked(x1, y1, x2, y2, width, height);
+        obj = this.objects[i];
+        r = obj.isBlocked(x1, y1, x2, y2, width, height, coverBuffer);
 
         if(r !== null){
             if(r){
@@ -1331,7 +1348,7 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
     if (nodes[0] !== null) {
         i = this.getIndex(x1, y1, width, height);
         if (i > -1) {
-            r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+            r = nodes[i].isBlocked(x1, y1, x2, y2, width, height, coverBuffer);
 
             if(r !== null){
                 if(r){
@@ -1342,7 +1359,7 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
             }
         } else {
             for (i = 0; i < 4; ++i) {
-                r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+                r = nodes[i].isBlocked(x1, y1, x2, y2, width, height, coverBuffer);
 
                 if(r !== null){
                     if(r){
@@ -1355,7 +1372,7 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
         }
     }
 
-    return result;
+    return coverBuffer[0] >= coverBuffer[1] ? null : result;
 };
 ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
     if (this.scroll !== null) {
