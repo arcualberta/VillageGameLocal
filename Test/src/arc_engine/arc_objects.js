@@ -889,14 +889,15 @@ QuadTree.prototype.isInside = function(value){
 * @override
 */
 QuadTree.prototype.removeChild = function(name){
-    let i, obj, nodes;
+    let i, nodes;
+    let obj = null;
 
     if(this.objects.length > 0){
         for(i = this.objects.length - 1; i >= 0; --i){
             obj = this.objects[i];
 
             if(obj.name == name){
-                obj.clear();
+                obj.unload();
                 this.objects.splice(i, 1);
                 return obj;
             }
@@ -904,9 +905,11 @@ QuadTree.prototype.removeChild = function(name){
     }
 
     nodes = this.nodes;
-    for(i = 0; i < 4; ++i){
-        if((obj = nodes[i].removeChild[name]) !== null){
-            return obj;
+    if(nodes[0] !== null){
+        for(i = 0; i < 4; ++i){
+            if((obj = nodes[i].removeChild(name)) !== null){
+                return obj;
+            }
         }
     }
 

@@ -56,6 +56,11 @@
     <property name="minimap" value="#9ca6ae"/>
    </properties>
   </tile>
+  <tile id="7">
+   <properties>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
   <tile id="8">
    <properties>
     <property name="walkable" value="false"/>
