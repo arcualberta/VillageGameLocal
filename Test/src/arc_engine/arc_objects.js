@@ -1,3 +1,9 @@
+/** Tries to merge the map tiles about the x-axis.
+ * @param {Array}
+ * @param {Number} i1
+ * @param {Number} i2
+* Sorts tiles on the screen so that they appear in a top down fashion. This makes objects closer to the bottom of the screen occlude objects near the top.
+*/
 var sortOutputTiles = (function(){ // NOTE: This currently does not work because it requires overwriting the check value.
     function horizontalMerge(array, i1, i2){
         let o1 = array[i1];
@@ -26,7 +32,15 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
 
         return o1.x - o2.x;// o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
     }
-    
+
+    /**
+     *Tries to merge map tiles about the y-axis
+     * @param {Array}
+     * @param {Number} i1
+     * @param {Number} i2
+     * @returns {int}
+     */
+    // merge tiles about the y-axis
     function verticalMerge(array, i1, i2){
         let o1 = array[i1];
         let o2 = array[i2];
@@ -53,7 +67,15 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
 
         return o1.y - o2.y;// o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
     }
-    
+
+    /**
+     * Partitioning task
+     * @param {Array}
+     * @param {Number} left
+     * @param {Number} right
+     * @param {Function} compareFunc
+     * @returns {int}
+     */
     function partition(array, left, right, compareFunc){
         let compare = right - 1;
         let minEnd = left;
@@ -69,14 +91,30 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
         swap(array, minEnd, compare);
         return minEnd;
     }
-    
+
+    /**
+     * Swaps map tiles
+     * @param {Array}
+     * @param {Number} i
+     * @param {Number} j
+     * @returns {int}
+     */
+    //swap array of tiles
     function swap(array, i, j){
         let temp = array[i];
         array[i] = array[j];
         array[j] = temp;
         return array;
     }
-    
+
+    /**
+     *Sorts the map tiles via Compare function
+     * @param {Array}
+     * @param left
+     * @param right
+     * @param compareFunc
+     * @returns {int}
+     */
     function quickSort(array, left, right, compareFunc){
         let p = null;
         
@@ -88,7 +126,12 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
         
         return array;
     }
-    
+
+    /**
+     *Removes not needed tiles for the tile list
+     * @param {Array}
+     */
+    //removes None, unsed tiles that are generated
     function removeNulls(array){
         let index = 0;
         let count = 0;
@@ -104,7 +147,11 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
             }
         }
     }
-    
+
+    /**
+     * @constructor {Array}
+     * // sort tiles using QuickSort method
+     */
     return function(array){
         quickSort(array, 0, array.length, horizontalMerge);
 //        removeNulls(array);
@@ -112,7 +159,12 @@ var sortOutputTiles = (function(){ // NOTE: This currently does not work because
         return array;
     }
 }());
-
+/**
+ *
+ * @param {Number} o1 tile 1
+ * @param {Number} o2 tile 2
+ * @returns {number}
+ */
 function arcVerticalMergeOutputTiles(o1, o2){
     if(o1 == null || o2 == null){
         return 0;
@@ -136,7 +188,12 @@ function arcVerticalMergeOutputTiles(o1, o2){
     
     return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
 }
-
+/**
+ *Returns the sorted map tiles
+ * @param {Number} o1 tile 1
+ * @param {Number} o2 tile 2
+ * @returns {number}
+ */
 function arcSortOutputTiles(o1, o2){
     if(o1 == null || o2 == null){
         return 0;
@@ -145,8 +202,12 @@ function arcSortOutputTiles(o1, o2){
     return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
 }
 
-// // NOTE: Prototype methods were used for frequently used functions in order to speed up creation
-// Object Base Creator. Code inspired from: http://ejohn.org/blog/simple-class-instantiation/#postcomment
+/**
+* Represents the base object in the arc engine. Code inspired from: http://ejohn.org/blog/simple-class-instantiation/#postcomment
+* @class
+ * @returns {Function}
+ * @constructor
+ */
 function ArcBaseObject() {
     return function (args) {
         if (this instanceof arguments.callee) {
@@ -162,47 +223,316 @@ function ArcBaseObject() {
     };
 }
 
-// All objects that are renderable to the scene
+/**
+* An object used to attach multiple scripting funcitons to a class.
+* @class
+* @implements {ArcBaseObject}
+* @param {Object} attachObject The base object type to attache the script functions to.
+ * @type {ArcBaseObject}
+*/
+var ArcScriptObject = new ArcBaseObject();
+ArcScriptObject.prototype.init = function(attachObject){
+    /**
+    * The base object to link all functions to.
+    * @member
+    */
+	this.attachObject = attachObject;
+};
+/**
+* Adds a scriptable function to the list of all functions viable to the attached object.
+* @param {string} func The name of the function to attach.
+ * @constructor
+*/
+ArcScriptObject.prototype.AttachFunction = function(func){
+	this.attachObject[func] = this[func];
+};
+
+/**
+* The base interface to handle draw, tick, interact, unload and click events.
+* @interface
+ * @type {ArcBaseObject}
+*/
+var ArcEventObject = new ArcBaseObject();
+ArcEventObject.prototype.init = function(){
+
+};
+/**
+* Checks if a rectangular area overlaps with this object.
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+ * @returns {boolean}
+*/
+ArcEventObject.prototype.inLocation = function(left, top, right, bottom){
+    return true;
+};
+/**
+* Event triggered before the object is deleted.
+*/
+ArcEventObject.prototype.unload = function(){
+
+};
+/**
+* Draws the object.
+* @param {ArcGraphicsAdapter} displayContext The display context used for drawing
+* @param {Number} xOffset The horizontal screen offset. 
+* @param {Number} yOffset The verticle screen offset. 
+* @param {int} width The visible width.
+* @param {int} height The visible height.
+*/
+ArcEventObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
+
+};
+/**
+* An operation to be performed on the object for every frame tick.
+* @param {Number} deltaMilliseconds The time between this frame and the last in milliseconds.
+*/
+entObject.prototype.tick = function(deltaMilliseconds){
+
+};
+/**
+* An operation to handle the click event for the object at the given scoordinates.
+* @param {Number} x Map space x coordinate.
+* @param {Number} y Map space y coordinate.
+*/
+ArcEventObject.prototype.click = function(x, y){
+
+};
+/**
+* An operation fo handle the interact event given a specified area.
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+*/
+ArcEventObject.prototype.interact = function(left, top, right, bottom){
+
+};
+
+/**
+* All objects that are renderable to the scene.
+* @class
+* @implements {ArcEventObject}
+* @param {bool} tickEnabled States if the tick function is enabled.
+* @param {bool} drawEnabled States if the draw function is enabled.
+*/
 var ArcRenderableObject = new ArcBaseObject();
 ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
-    this.children = {};
+    this.children = [];
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+    this.clickEnabled = false;
+    this.interactEnabled = false;
+    this.name = null;
+    this.location = new Float32Array(6);
+    this.size = new Uint16Array(4);
 };
-ArcRenderableObject.prototype.setChild = function(child, name){
-    this.children[name] = child;
+/**
+* @override
+*/
+ArcRenderableObject.prototype.inLocation = function(left, top, right, bottom){
+    let loc = this.location;
+    return !(
+        right < loc[0] ||
+        left > loc[2] ||
+        bottom < loc[1] ||
+        top > loc[3]
+    ); 
 };
+/**
+* Sets the location of the object. This will reset the location member.
+* @param {Number} x
+* @param {Number} y
+*/
+ArcRenderableObject.prototype.updateLocation = function(x, y){
+    let loc = this.location;
+    let size = this.size;
+
+    loc[0] = x - size[2];
+    loc[1] = y - size[3];
+    loc[2] = loc[0] + size[0];
+    loc[3] = loc[1] + size[1];
+    loc[4] = x;
+    loc[5] = y;
+};
+/**
+* Set the size of the object. The location is then updated to reflect the new size.
+* @param {int} width
+* @param {int} height
+*/
+ArcRenderableObject.prototype.updateSize = function(width, height){
+    this.size[0] = width;
+    this.size[1] = height;
+    this.size[2] = width >> 1;
+    this.size[3] = height >> 1;
+
+    this.updateLocation(this.location[4], this.location[5]);
+};
+/**
+* Adds a child element to the object.
+* @param {ArcRenderableObject} child The child to be added
+* @param {string} name The unique name of the child object.
+*/
+ArcRenderableObject.prototype.addChild = function(child, name){
+    var c = this.indexOfChild(name);
+    child.name = name;
+
+    if(c < 0){
+        this.children.push(child);
+    }else{
+        this.children[c] = child;
+    }
+};
+/**
+* @param {string} name The unique name of the child object
+* @return {int} The index location of the child object. If no object exists then -1 is returned.
+*/
+ArcRenderableObject.prototype.indexOfChild = function(name){
+    for(var i in this.children){
+        if(this.children[i].name === name){
+            return i;
+        }
+    }
+
+    return -1;
+};
+/**
+* @param {string} name The unique name of the child object
+* @return {ArcRenderableObject} The child with the specified name. If no child exists, null is returned.
+*/
 ArcRenderableObject.prototype.getChild = function(name){
-  return this.children[name];  
+    for(var i in this.children){
+        if(this.children[i].name === name){
+            return this.children[i];
+        }
+    }
+
+    return null;
 };
+/**
+* Removes the child object with the given name.
+* @param {string} name The unique name of the child object
+*/
 ArcRenderableObject.prototype.removeChild = function(name){
     //delete this.children[i];
-    this.children[i] = null; //TODO: Find out the better method
+    var childIndex = this.indexOfChild(name);
+    if(childIndex > 0){
+        var child = this.children[childIndex];
+        child.unload();
+        this.children.splice(childIndex, 1);
+    }
 };
-ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
+/**
+* Performs any operations that must be done on this object and its children when removing.
+* @override
+*/
+ArcRenderableObject.prototype.unload = function(){
     for (let key in this.children){
         let child = this.children[key];
+        if(child.drawEnabled){
+            child.unload();
+        }
+    }
+};
+/**
+* Draws the object and all child objects.
+* @param {ArcGraphicsAdapter} displayContext The display context used for drawing
+* @param {Number} xOffset The horizontal screen offset. 
+* @param {Number} yOffset The verticle screen offset. 
+* @param {int} width The visible width.
+* @param {int} height The visible height.
+* @override
+*/
+ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
         if(child.drawEnabled){
             child.draw(displayContext, xOffset, yOffset, width, height);
         }
     }
 };
+/**
+* An operation to be performed on the object and it's children for every frame tick.
+* @param {Number} deltaMilliseconds The time between this frame and the last in milliseconds.
+* @override
+*/
+
 ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
-    for (let key in this.children){
-        let child = this.children[key];
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
         if(child.tickEnabled){
-            child.tick(deltaMilliseconds);
+            child.tick.apply(child, arguments);
         }
     }
 };
+/**
+* An operation to handle the click event for the object and children at the given scoordinates.
+* @param {Number} x Map space x coordinate.
+* @param {Number} y Map space y coordinate.
+* @override
+*/
+ArcRenderableObject.prototype.click = function(x, y){
+    let child, key;
 
+    for (key in this.children){
+        child = this.children[key];
+        if(child.clickEnabled){
+            child.click.apply(child, arguments);
+        }
+    }
+};
+/**
+* @override
+*/
+ArcRenderableObject.prototype.interact = function(left, top, right, bottom){
+    let child, key;
+
+    for (key in this.children){
+        child = this.children[key];
+        if(child.interactEnabled){
+            child.interact.apply(child, arguments);
+        }
+    }
+};
+/**
+ *
+ * @type {Function}
+ */
 var ArcRenderableObjectCollection = ArcBaseObject();
 ArcRenderableObjectCollection.prototype = Object.create(ArcRenderableObject.prototype);
 ArcRenderableObjectCollection.prototype.init = function(tickEnabled, drawEnabled){
     ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
 };
+/**
+ *
+ * @param sortFunction Not to sure the purpose of this is.
+ */
+ArcRenderableObjectCollection.prototype.sort = function(sortFunction){
+    this.children.sort(sortFunction);
+};
+ArcRenderableObjectCollection.prototype.drawWhile = function(drawFunction){
+    let child = null;
+    let index = 0;
+    while(index < this.children.length && drawFunction(child = this.children[index])){
+       ++index;
+    }
+    
+    return child(index - 1);
+};
 
-// Basic text renderable
+
+/**
+* Basic text renderable
+* @class
+* @implements {ArcRenderableObject}
+* @param {string} text The string of text to be rendered.
+* @param {string} fontInfo The css style used to display the text. 
+*/
 var ArcRenderableText = ArcBaseObject();
 ArcRenderableText.prototype = Object.create(ArcRenderableObject.prototype);
 ArcRenderableText.prototype.init = function(text, fontInfo){
@@ -211,62 +541,125 @@ ArcRenderableText.prototype.init = function(text, fontInfo){
     this.fontInfo = fontInfo;
     this.offset = [0, 0];
 };
+/**
+* @override
+*/
 ArcRenderableText.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     displayContext.drawMessage(this.text, xOffset + this.offset[0], yOffset + this.offset[1], this.fontInfo);
 };
 
-// Character waypoints
+/**
+* Character waypoints
+* @class
+* @implements {ArcRenderableObject}
+*/
 var ArcWaypoint = ArcBaseObject();
 ArcWaypoint.prototype = Object.create(ArcRenderableObject.prototype);
 ArcWaypoint.prototype.init = function(){
     ArcRenderableObject.prototype.init.call(this, false, true);
-    this.location = [0, 0];
     this.isVisible = false;
 };
+/**
+* @override
+*/
 ArcWaypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     if(this.isVisible){
         displayContext.drawWaypoint(this.location);
     }
 };
 
-// Basic Character objects
-var ArcCharacter = ArcBaseObject();
-ArcCharacter.prototype = Object.create(ArcRenderableObject.prototype);
-ArcCharacter.prototype.init = function(){
-    ArcRenderableObject.prototype.init.call(this, true, true);
+/**
+* We are using actor to define any noun object on a Renderable Object.
+* @class
+* @implements {ArcRenderableObject}
+*/
+var ArcActor = ArcBaseObject();
+ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
+ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
+    ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
     
-    this.location = [-100, -100];
+    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
+    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+    this.interactRad = 8;
+    this.dynamicInteract = true;
+
+    // TODO: check if objects interect through the circle.
+};
+/**
+* @override
+*/
+ArcActor.prototype.updateSize = function(w, h){
+    ArcRenderableObject.prototype.updateSize.apply(this, arguments);
+
+    if(this.dynamicInteract){
+        let a = this.size[2];
+        let b = this.size[3];
+
+        this.interactRad = Math.sqrt((a * a) + (b * b));
+    }
+};
+
+
+/**
+* Basic Character objects
+* @class
+* @implements {ArcActor}
+*/
+
+var ArcCharacter = ArcBaseObject();
+ArcCharacter.prototype = Object.create(ArcActor.prototype);
+ArcCharacter.prototype.init = function(){
+    ArcActor.prototype.init.call(this, true, true);
     this.animation = "stand_down";
     this.frame = 0;
     this.frameTime = 0;
     this.spriteSheet = null;
     this.lastCollisionBox = [0, 0, 0, 0];
 };
+/**
+* @override
+*/
+ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
+    var x = this.location[4];
+    var y = this.location[5];
+
+    if(x > right) x = right;
+    if(x < left) x = left;
+    if(y > bottom) y = bottom;
+    if(y < top) y = top;
+
+    x -= this.location[4];
+    y -= this.location[5];
+
+    return Math.sqrt((x * x) + (y * y)) < this.interactRad;
+};
+/**
+* @override
+*/
+ArcCharacter.prototype.updateSize = function(width, height){
+    if(width != this.size[0] || height != this.size[1]){
+        ArcActor.prototype.updateSize.call(this, width, height);
+    }
+};
+/**
+* @return {Array|[number,number,number,number]} The collision box for the character at the current location.
+*/
 ArcCharacter.prototype.collisionBox = function () {
     // TODO: Make it based on frame size;
     var cb = this.lastCollisionBox;
 
-    let frame = false;
-
-    try {
-        frame = this.spriteSheet.getAnimation(this.animation).frames[this.frame];
-    } catch (ex) {
-        console.log(ex);
-    }
-
-    if (frame) {
-        let tileWidth = frame.width;
-        let tileHalfWidth = (tileWidth >> 1) - 1;
-        let tileHalfHeight = frame.height;
-
-        cb[0] = this.location[0] - tileHalfWidth;
-        cb[1] = this.location[1];
-        cb[2] = tileWidth;
-        cb[3] = tileHalfHeight;
-    }
+    cb[0] = this.location[0] + 2;
+    cb[1] = this.location[1] + this.size[3]; // Verticle center
+    cb[2] = this.size[0] - 4;
+    cb[3] = this.size[3];
 
     return cb;
 };
+/**
+* Calculates which frame of animation the character is in.
+* @param {Number} timeSinceLastFrame The time, in milliseconds, since the last page refresh.
+*/
+
 ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
     let frames = this.spriteSheet.getAnimation(this.animation).frames;
     let frame = frames[this.frame];
@@ -281,7 +674,15 @@ ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
         this.frameTime -= this.frameTime;
         frame = frames[this.frame];
     }
+
+    if(frame){
+        this.updateSize(frame.drawWidth, frame.drawHeight);
+    }
 };
+/**
+ *
+ * @param {String} animationName is the name chosen by user
+ */
 ArcCharacter.prototype.setAnimation = function (animationName) {
     if (this.animation !== animationName) {
         this.animation = animationName;
@@ -289,24 +690,40 @@ ArcCharacter.prototype.setAnimation = function (animationName) {
         this.frameTime = 0;
     }
 };
+/**
+ * Draws the NPC's for the game
+ * @param {ArcGraphicsAdapter} displayContext
+ * @param {Number} xOffset
+ * @param {Number} yOffset
+ * @param {Number} width
+ * @param {Number} height
+ */
 ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
     var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
     
-    var frameCenter = this.location[0] - xOffset;
-    var frameTop = this.location[1] - frame.hHalf - yOffset;
     
     displayContext.drawImage(spriteSheet.image,
             frame.x, frame.y, frame.width, frame.height,
-            frameCenter - frame.wHalf, frameTop,
+            this.location[0], this.location[1],
             frame.drawWidth, frame.drawHeight);
 };
+/**
+ *
+ * @param {Number} deltaMilliseconds The time between the frames in milliseconds
+ */
 ArcCharacter.prototype.tick = function(deltaMilliseconds){
     this.animateFrame(deltaMilliseconds);
     
-    ArcRenderableObject.prototype.tick.call(this, deltaMilliseconds);
+    ArcActor.prototype.tick.apply(this, arguments);
 };
-
+/**
+ *
+ * @param data
+ * @param {Number} drawWidth draws the width of the map
+ * @param {Number} drawHeight draws the height of map
+ * @returns {{tileset: null, layers: Array}}
+ */
 // ARC Generate TileMap from TiledCode
 function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {
     var output = {
@@ -395,7 +812,15 @@ function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {
 
     return output;
 }
-
+/**
+ *
+ * @param {Input} input given
+ * @param {Number} x Given x int for map
+ * @param {Number} y Given y int for map
+ * @param {Number} outsideX the pixel distance outside  of the designated map, x-axis
+ * @param {Number} outsideY the pixel distance outside  of the designated map, y-axis
+ * @returns {int}
+ */
 // Code to upcale image
 function arcGetPixel(input, x, y, outsideX, outsideY) {
     if (x < 0 || y < 0 || x >= outsideX || y >= outsideY || x >= input.width || y >= input.height) {
@@ -410,7 +835,24 @@ function arcGetPixel(input, x, y, outsideX, outsideY) {
         input.data[index + 3]
     ];
 }
-
+/**
+ * Finds the distance between 2 given pixels
+ * @param {Number} loc1 local pixel 1
+ * @param {Number} loc2 local pixel  2
+ * @returns {int}
+ */
+function arcDistance(loc1, loc2){
+    return Math.sqrt(Math.pow(loc1[0] - loc2[0], 2.0) + Math.pow(loc1[1] - loc2[1], 2.0));
+}
+/**
+ *
+ * @param {Number} input map size given by window
+ * @param {Number} output map size given out after operations
+ * @param {Number} x internal x-axis pixel number
+ * @param {Number} y internal y-axis pixel number
+ * @param {Number} width external x-axis pixel number
+ * @param {Number} height external y-axis pixel number
+ */
 function arcScale2(input, output, x, y, width, height) {
     var outsideX = x + width;
     var outsideY = y + height;
@@ -437,7 +879,14 @@ function arcScale2(input, output, x, y, width, height) {
         }
     }
 }
-
+/**
+ *
+ * @param amount
+ * @param image
+ * @param {Number} gridX
+ * @param {Number} gridY
+ * @returns {int}
+ */
 function arcUpscaleImage(amount, image, gridX, gridY) {
     var canvasIn = $("<canvas></canvas>")[0];
     canvasIn.width = image.width;
@@ -462,45 +911,50 @@ function arcUpscaleImage(amount, image, gridX, gridY) {
     canvasOut.getContext("2d").putImageData(output, 0, 0);
     return canvasOut;
 }
-
-// We are using actor to define any noun object on a quad tree.
-var ArcActor = ArcBaseObject();
-ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
-ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
-    if(useChildren){
-        this.children = {}
-    }
-    
-    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
-    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
-};
-ArcActor.prototype.tick = function (timeSinceLastFrame) {
-    if(this.children){
-        ArcRenderableObject.prototype.tick.call(this, timeSinceLastFrame);
-    }
-};
-ArcActor.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    if(this.children){
-        ArcRenderableObject.prototype.draw.call(this, displayContext, xOffset, yOffset, width, height);
-    }
-};
-
-
+/**
+ *
+ * @type {Function}
+ */
 // Defining the quadtree class
 // Tutorial from: http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 var QuadTree = ArcBaseObject();
 QuadTree.prototype = Object.create(ArcRenderableObject.prototype);
 QuadTree.prototype.init = function (x, y, width, height, level) {
+    ArcRenderableObject.prototype.init.call(this, true, true);
     // We don't use the parent init because we do not wish to create more arrays
     this.tickEnabled = true;
     this.drawEnabled = true;
+    this.clickEnabled = true;
+    this.interactEnabled = true;
     
     this.level = level ? level : 0;
-    this.bounds = [x, y, width, height, width / 2, height / 2];
     this.nodes = [null, null, null, null]; //Northwest, Northeast, Southeast, Southwest
     this.objects = []; // Objects fully contained in this area
+    this.halfSize = [width / 2, height / 2];
 
+    this.updateSize(width, height);
+
+    this.updateLocation(x, y)
 };
+/**
+ * Player coordinates on grid
+ * @param {Number} x
+ * @param {Number} y
+ */
+QuadTree.prototype.updateLocation = function(x, y){
+    this.location[0] = x;
+    this.location[1] = y;
+    this.location[2] = x + this.size[0];
+    this.location[3] = y + this.size[1];
+    this.location[4] = x + this.size[2];
+    this.location[5] = y + this.size[3];
+};
+/**
+ * Clears the tree data structure
+ */
+QuadTree.prototype.unload = function(){
+    this.clear();
+}
 QuadTree.prototype.MAX_OBJECTS = 5;
 QuadTree.prototype.MAX_LEVELS = 10;
 QuadTree.prototype.clear = function (onObjectClear) {
@@ -522,21 +976,32 @@ QuadTree.prototype.clear = function (onObjectClear) {
         }
     }
 };
+/**
+ * splits the tree data structure
+ */
 QuadTree.prototype.split = function () {
-    var halfWidth = this.bounds[4];
-    var halfHeight = this.bounds[5];
-    var x = this.bounds[0];
-    var y = this.bounds[1];
+    var halfWidth = this.halfSize[0];
+    var halfHeight = this.halfSize[1];
+    var x = this.location[0];
+    var y = this.location[1];
     var level = this.level + 1;
     this.nodes[0] = new QuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
     this.nodes[1] = new QuadTree(x, y, halfWidth, halfHeight, level);
     this.nodes[2] = new QuadTree(x, y + halfHeight, halfWidth, halfHeight, level);
     this.nodes[3] = new QuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
 };
+/**
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @returns {int}
+ */
 QuadTree.prototype.getIndex = function (x, y, width, height) {
-    let bounds = this.bounds;
-    let hMid = bounds[0] + bounds[4];
-    let vMid = bounds[1] + bounds[5];
+    let bounds = this.location;
+    let hMid = bounds[0] + this.halfSize[0];
+    let vMid = bounds[1] + this.halfSize[1];
     
     // Check if the object fits in the top and bottom quadtrants
     let fitNorth = (y + height) < vMid;
@@ -559,10 +1024,109 @@ QuadTree.prototype.getIndex = function (x, y, width, height) {
 
     return -1;
 };
+/**
+ *
+ * @param value
+ * @returns {boolean}
+ */
+QuadTree.prototype.isInside = function(value){
+    return value.inLocation(this.location[0], this.location[1], this.location[3], this.location[4]);
+};
+/**
+* @override
+*/
+QuadTree.prototype.removeChild = function(name){
+    let i, nodes;
+    let obj = null;
+
+    if(this.objects.length > 0){
+        for(i = this.objects.length - 1; i >= 0; --i){
+            obj = this.objects[i];
+
+            if(obj.name == name){
+                obj.unload();
+                this.objects.splice(i, 1);
+                return obj;
+            }
+        }
+    }
+
+    nodes = this.nodes;
+    if(nodes[0] !== null){
+        for(i = 0; i < 4; ++i){
+            if((obj = nodes[i].removeChild(name)) !== null){
+                return obj;
+            }
+        }
+    }
+
+    return null;
+};
+/**
+ *
+ * @param buffer
+ * @returns {boolean}
+ */
+QuadTree.prototype.recalculate = function(buffer) {
+    let nodes = this.nodes;
+    let isEmpty = true;
+    let i;
+    let addedToBuffer = false;
+    var obj;
+
+    // Recalcualte nodes
+    if (nodes[0] !== null) {
+        isEmpty = nodes[0].recalculate(buffer);
+        isEmpty = nodes[1].recalculate(buffer) && isEmpty;
+        isEmpty = nodes[2].recalculate(buffer) && isEmpty;
+        isEmpty = nodes[3].recalculate(buffer) && isEmpty;
+
+        if(isEmpty){
+            nodes[0] = null;
+            nodes[1] = null;
+            nodes[2] = null;
+            nodes[3] = null;
+        }
+    }
+
+    // Calculate if our objects are still inside
+    if(this.objects.length > 0){
+        for(i = this.objects.length - 1; i >= 0; --i){
+            obj = this.objects[i];
+
+            if(!this.isInside(obj)){
+                buffer.push(obj);
+                this.objects.splice(i, 1);
+                addedToBuffer = true;
+            }
+        }
+    }
+
+    if(!addedToBuffer && buffer.length > 0){
+        for(i = buffer.length - 1; i >= 0; --i){
+            obj = buffer.pop();
+
+            // Go until we find one that we cannot insert.
+            if(this.isInside(obj)){
+                this.insert(obj);
+            }else{
+                buffer.push(obj)
+                break;
+            }
+        }
+    }
+
+
+    return nodes[0] === null && this.objects.length < 1;
+};
+/**
+ *
+ * @param {Number} value the index of the object
+ */
 QuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
     if (nodes[0] !== null) {
-        var index = this.getIndex(value.position[0], value.position[1], value.size[0], value.size[1]);
+        var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
         if (index > -1) {
             nodes[index].insert(value);
             return;
@@ -576,11 +1140,9 @@ QuadTree.prototype.insert = function (value) {
         }
 
         var i = 0;
-        alert(i);
         while (i < this.objects.length) {
             var o = this.objects[i];
-            var index = this.getIndex(o.position[0], o.position[1], o.size[0], o.size[1]);
-            alert(index);
+            var index = this.getIndex(o.location[0], o.location[1], o.size[0], o.size[1]);
             if (index > -1) {
                 this.objects.splice(i, 1);
                 this.nodes[index].insert(o);
@@ -590,6 +1152,16 @@ QuadTree.prototype.insert = function (value) {
         }
     }
 };
+/**
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Number} returnObjects
+ * @param {Number} executeFunction
+ * @returns {int}
+ */
 QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, executeFunction) {
     for (var i = 0; i < this.objects.length; ++i) {
         returnObjects.push(this.objects[i]);
@@ -603,17 +1175,22 @@ QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, ex
     if (nodes[0] !== null) {
         var index = this.getIndex(x, y, width, height);
         if (index > -1) {
-            returnObjects = returnObjects.concat(nodes[index].getObjects(x, y, width, height, returnObjects));
+            returnObjects = returnObjects.concat(nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction));
         } else {
-            nodes[0].getObjects(x, y, width, height, returnObjects);
-            nodes[1].getObjects(x, y, width, height, returnObjects);
-            nodes[2].getObjects(x, y, width, height, returnObjects);
-            nodes[3].getObjects(x, y, width, height, returnObjects);
+            nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
+            nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
+            nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
+            nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
         }
     }
 
     return returnObjects;
 };
+/**
+ *
+ * @param name
+ * @returns {int}
+ */
 QuadTree.prototype.getByName = function (name) {
     var i = 0;
     for (; i < this.objects.length; ++i) {
@@ -633,22 +1210,160 @@ QuadTree.prototype.getByName = function (name) {
 
     return null;
 };
+/**
+ *
+ * @param {Number} timeSinceLastFrame the time of the last frame in milliseconds
+ */
 QuadTree.prototype.tick = function (timeSinceLastFrame) {
+    let index;
+    let node;
+
+    if(this.nodes){
+        for(index = 0; index < 4; ++index){
+            node = this.nodes[index];
+            if(node){
+                node.tick.apply(node, arguments);
+            }
+        }
+    }
+
+    for(index = 0; index < this.objects.length; ++index){
+        node = this.objects[index];
+        node.tick.apply(node, arguments);
+    }
+
+    if(this.level == 0){
+        let buffer = QuadTree.ArrayBuffer;
+        buffer.length = 0;
+        this.recalculate(buffer);
+
+        for(index = 0; index < buffer.length; ++index){
+            this.insert(buffer[index]);
+        }
+    }
 };
+/**
+ *
+ * @param {ArcRenderableObject} displayContext
+ * @param {Number} xOffset of size
+ * @param {Number} yOffset of size
+ * @param {Number} width of grid
+ * @param {Number} height of grid
+ */
+QuadTree.prototype.drawGrid = function(displayContext, xOffset, yOffset, width, height){
+    let color = "#00F";
+    let x1 = this.location[0];
+    let y1 = this.location[1];
+    let x2 = this.location[2];
+    let y2 = this.location[3];
+
+    displayContext.drawLine(x1, y1, x1, y2, color);
+    displayContext.drawLine(x1, y1, x2, y1, color);
+    displayContext.drawLine(x2, y2, x1, y2, color);
+    displayContext.drawLine(x2, y2, x2, y1, color);
+
+    let nodes = this.nodes;
+    if (nodes[0] !== null) {
+        let index = this.getIndex(xOffset, yOffset, width, height);
+        if (index > -1) {
+            nodes[index].drawGrid(displayContext, xOffset, yOffset, width, height);
+        } else {
+            nodes[0].drawGrid(displayContext, xOffset, yOffset, width, height);
+            nodes[1].drawGrid(displayContext, xOffset, yOffset, width, height);
+            nodes[2].drawGrid(displayContext, xOffset, yOffset, width, height);
+            nodes[3].drawGrid(displayContext, xOffset, yOffset, width, height);
+        }
+    }
+};
+/**
+ * Implementing the map into the tree data structure
+ * @param {ArcRenderableObject} displayContext
+ * @param {Number} xOffset of size
+ * @param {Number} yOffset of size
+ * @param {Number} width of map
+ * @param {Number} height of map
+ */
+// is this @override??
 QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer= QuadTree.ArrayBuffer;
     let index;
     buffer.length = 0;
     
     this.getObjects(xOffset, yOffset, width, height, buffer);
-   
+
+    buffer.sort(function(a, b){ return a.location[3] - b.location[3]; });
+
     for(index = 0; index < buffer.length; ++index){
         buffer[index].draw(displayContext, xOffset, yOffset, width, height);
     }
+
+    if(window.debugMode){
+        this.drawGrid(displayContext, xOffset, yOffset, width, height);
+    }
 };
+/**
+ *
+ * @param {Number} x of mouse click
+ * @param {Number} y of mouse click
+ */
+QuadTree.prototype.click = function(x, y){
+    var args = arguments;
+    let objects = this.getObjects(x, y, 1, 1, [], function(obj){
+        if(obj.clickEnabled && obj.inLocation(x, y, x, y)){
+            obj.click.apply(obj, args);
+        }
+    });
+};
+/**
+ * @override
+ */
+QuadTree.prototype.interact = function(left, top, right, bottom){
+    var args = arguments;
+    let objects = this.getObjects(left, top, right, bottom, [], function(obj){
+        if(obj.interactEnabled && obj.inLocation(left, top, right, bottom)){
+            obj.interact.apply(obj, args)
+        }
+    });
+};
+/**
+ *
+ * @type {Array}
+ */
 QuadTree.ArrayBuffer = [];
 QuadTree.StackBuffer = [];
 
+var ArcTileQuadTree_Tile = ArcBaseObject();
+ArcTileQuadTree_Tile.prototype = Object.create(ArcRenderableObject());
+ArcTileQuadTree_Tile.prototype.init = function(tile, x, y, tileWidth, tileHeight){
+    ArcRenderableObject.prototype.init.call(this, false, false);
+
+    this.location[4] = x + (tileWidth >> 1);
+    this.location[5] = y + (tileWidth >> 1);
+
+    this.updateSize(tileWidth, tileHeight);
+
+    this.tile = tile;
+};
+/**
+ *
+ * @param {Number} left of tile
+ * @param {Number} top of tile
+ * @param {Number} right of tile
+ * @param {Number} bottom of tile
+ * @returns {int}
+ */
+// another override??
+ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom){
+    if(this.inLocation(left, top, right, bottom)){
+        return !this.tile.walkable;
+    }
+
+    return null;
+};
+/**
+ *
+ * @type {Function}
+ */
 // Special Quadtree for tiles
 var ArcTileQuadTree = ArcBaseObject();
 ArcTileQuadTree.prototype = Object.create(QuadTree.prototype);
@@ -660,6 +1375,10 @@ ArcTileQuadTree.prototype.init = function (x, y, width, height, level, scroll) {
     this.repeat = scroll && scroll !== null && (scroll[0] !== 0 || scroll[1] !== 0);
     this.searchStack = [];
 };
+/**
+ *
+ * @type {number}
+ */
 ArcTileQuadTree.prototype.MIN_WIDTH = 80; // Min Patch size in pixels
 ArcTileQuadTree.prototype.MIN_HEIGHT = 60; // Min Patch size in pixels
 ArcTileQuadTree.prototype.SPLIT_CHECK = {
@@ -667,11 +1386,14 @@ ArcTileQuadTree.prototype.SPLIT_CHECK = {
     xSplits: [],
     ySplits: []
 };
+/**
+ * Tree split function
+ */
 ArcTileQuadTree.prototype.split = function () {
-    var halfWidth = this.bounds[4];
-    var halfHeight = this.bounds[5];
-    var x = this.bounds[0];
-    var y = this.bounds[1];
+    var halfWidth = this.halfSize[0];
+    var halfHeight = this.halfSize[1];
+    var x = this.location[0];
+    var y = this.location[1];
     var level = this.level + 1;
 
     this.nodes[0] = new ArcTileQuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
@@ -685,17 +1407,21 @@ ArcTileQuadTree.prototype.split = function () {
         }
     }
 };
+/**
+ *
+ * @param tile
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} tileWidth
+ * @param {Number} tileHeight
+ */
 ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeight) {
-    this.insert({
-        position: [x, y, x + tileWidth, y + tileHeight],
-        size: [tileWidth, tileHeight],
-        tile: tile
-    });
+    this.insert(new ArcTileQuadTree_Tile(tile, x, y, tileWidth, tileHeight));
 };
 ArcTileQuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
     if (nodes[0] !== null) {
-        var index = this.getIndex(value.position[0], value.position[1], value.size[0], value.size[1]);
+        var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
         if (index > -1) {
             nodes[index].insert(value);
             return;
@@ -704,6 +1430,16 @@ ArcTileQuadTree.prototype.insert = function (value) {
 
     this.objects.push(value);
 };
+/**
+ * finds the distance for the split
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Number} offset
+ * @param {Function} split
+ */
+// Thought the numbers were self explanatory
 ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, offset, split) {
     // TODO: this needs to be calculated for repeating
     /*split.isSplit = false;
@@ -726,6 +1462,17 @@ ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, of
      
      }*/
 };
+/**
+ * returns the wanted object in the tree data structure
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param returnObjects
+ * @param {Number} offset
+ * @param {Function) repeat
+ * @returns {Number}
+ */
 ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, offset, repeat) {
     let nodeStack = this.searchStack;
     nodeStack.push(this);
@@ -743,20 +1490,20 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
 
         // If this repeatable, split it up as needed
         if (repeat) {
-            var bounds = node.bounds;
+            var bounds = node.location;
             var xCheck = x + node.offset[0];
             var yCheck = y + node.offset[1];
 
             if (xCheck < bounds[0]) {
-                x += node.bounds[2];
-            } else if (xCheck > node.bounds[0] + node.bounds[2]) {
-                x -= node.bounds[2];
+                x += node.size[0];
+            } else if (xCheck > node.location[2]) {
+                x -= node.size[0];
             }
 
             if (yCheck < bounds[1]) {
-                y += node.bounds[3];
-            } else if (yCheck > node.bounds[1] + node.bounds[3]) {
-                y -= node.bounds[3];
+                y += node.size[1];
+            } else if (yCheck > node.location[3]) {
+                y -= node.size[1];
             }
         }
 
@@ -764,8 +1511,8 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
             object = node.objects[i];
             if (object.tile.isDrawable) {
                 returnObjects.push({
-                    x: object.position[0] - node.offset[0],
-                    y: object.position[1] - node.offset[1],
+                    x: object.location[0] - node.offset[0],
+                    y: object.location[1] - node.offset[1],
                     width: object.size[0],
                     height: object.size[1],
                     tile: object.tile.drawable(),
@@ -791,41 +1538,105 @@ ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObje
 
     return returnObjects;
 };
-ArcTileQuadTree.prototype.isBlocked = function (x, y, width, height) {
-    var i = 0;
-    var checkObject = null;
-    for (; i < this.objects.length; ++i) {
-        checkObject = this.objects[i];
-        if (!checkObject.tile.walkable) { //If not walkable, check if we overlap with it.
-            if (x > checkObject.position[2] || (x + width) < checkObject.position[0]
-                    || y > checkObject.position[3] || (y + height) < checkObject.position[1]) {
-                // Does not overlap
-            } else {
+/**
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param (Function} returnObjects
+ * @param {Number}offset
+ * @param {Function} repeat
+ */
+ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjects, offset, repeat){
+    let i, nodes, obj;
+
+    for(i = 0; i < this.objects.length; ++i){
+        obj = this.objects[i];
+        if(obj.tile.isDrawable){
+            // TODO: Find a way around this. We shouldnt need to create a new object.
+            returnObjects.push(obj);
+        }
+    }
+
+    nodes = this.nodes;
+    if(nodes[0] !== null){
+        i = this.getIndex(x, y, width, height);
+
+        if(i >= 0){
+            nodes[i].getObjects(x, y, width, height, returnObjects, offset, repeat);
+        }else{
+            nodes[0].getObjects(x, y, width, height, returnObjects, offset, repeat);
+            nodes[1].getObjects(x, y, width, height, returnObjects, offset, repeat);
+            nodes[2].getObjects(x, y, width, height, returnObjects, offset, repeat);
+            nodes[3].getObjects(x, y, width, height, returnObjects, offset, repeat);
+        }
+    }
+};
+/**
+ *
+ * @param {Number} x1 of tile 1
+ * @param {Number} y1 of tile 1
+ * @param {Number} x2 of tile 2
+ * @param {Number} y2 of tile 2
+ * @param {Number} width of map
+ * @param {Number} height of map
+ * @returns {int}
+ */
+ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+    const nodes = this.nodes;
+    let i, r;
+    let result = null;
+
+    for (i = 0; i < this.objects.length; ++i) {
+        r = this.objects[i].isBlocked(x1, y1, x2, y2, width, height);
+
+        if(r !== null){
+            if(r){
                 return true;
+            }else{
+                result = false;
             }
         }
     }
 
-    var nodes = this.nodes;
     if (nodes[0] !== null) {
-        var index = this.getIndex(x, y, width, height);
-        if (index > -1) {
-            return nodes[index].isBlocked(x, y, width, height);
+        i = this.getIndex(x1, y1, width, height);
+        if (i > -1) {
+            r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+
+            if(r !== null){
+                if(r){
+                    return true;
+                }else{
+                    result = false;
+                }
+            }
         } else {
             for (i = 0; i < 4; ++i) {
-                if (nodes[i].isBlocked(x, y, width, height)) {
-                    return true;
+                r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+
+                if(r !== null){
+                    if(r){
+                        return true;
+                    }else{
+                        result = false;
+                    }
                 }
             }
         }
     }
 
-    return false;
+    return result;
 };
+/**
+ *
+ * @param {Number} timeSinceLastFrame the time between the last frame played in milliseconds
+ */
 ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
     if (this.scroll !== null) {
-        let width = this.bounds[2];
-        let height = this.bounds[3];
+        let width = this.size[0];
+        let height = this.size[1];
         let offset = this.offset;
         let seconds = timeSinceLastFrame / 1000.0;
         offset[0] += (seconds * this.scroll[0]);
@@ -846,6 +1657,9 @@ ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
         }
     }
 };
+/**
+ * @override
+ */
 ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer= QuadTree.ArrayBuffer;
     buffer.length = 0;
@@ -863,25 +1677,39 @@ ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, widt
  *  Used to Describe a sound on the map.
  *  @param radius The radius of the sound. A radius of 0 or less means that the sound can be heard at all times.
  *  @param repeat A boolean value used to  describe whether or not the sound repeats.
- *  @param location The x and y location of the sound.
+ *  @param url The file location of the sound.
  **/
 var ArcSound = ArcBaseObject();
-ArcSound.prototype.init = function (name, radius, repeat, location, url) {
+ArcSound.prototype.init = function (name, repeat, url) {
     this.name = name;
-    this.radius = 1.0 / radius;
     this.loop = repeat;
-    this.location = location;
     this.volume = 1.0;
     this.url = url;
     this.source = null;
     this.gain = null;
 };
+/**
+ *
+ * @type {Function}
+ */
 // Used to describe one frame of animation
 var ArcAnimation = ArcBaseObject();
 ArcAnimation.prototype.init = function () {
     this.frames = [];
     this.length = this.frames.length;
 };
+/**
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {function} frameTime
+ * @param flipX // not sure if int or function
+ * @param flipY // not sure if int or function
+ * @param {Number} drawWidth
+ * @param {Number}  drawHeight
+ */
 ArcAnimation.prototype.addFrame = function (x, y, width, height, frameTime, flipX, flipY, drawWidth, drawHeight) {
     this.frames.push({
         x: x, // X location on the sprite sheet
@@ -898,6 +1726,10 @@ ArcAnimation.prototype.addFrame = function (x, y, width, height, frameTime, flip
     });
     this.length = this.frames.length;
 };
+/**
+ *
+ * @type {Function}
+ */
 // An image containing all animation frames of an object
 var ArcSpriteSheet = ArcBaseObject();
 ArcSpriteSheet.prototype.init = function (imageUrl, imageUpdateFunc, palette) {
@@ -927,21 +1759,42 @@ ArcSpriteSheet.prototype.init = function (imageUrl, imageUpdateFunc, palette) {
         this.baseImage.src = imageUrl;
     }
 };
+/**
+ * copy a sprite
+ */
 ArcSpriteSheet.prototype.copy = function () {
     var spriteSheet = new ArcSpriteSheet(this.baseImage.src, false, JSON.parse(JSON.stringify(this.palette)));
     spriteSheet.id = this.id;
     spriteSheet.animations = this.animations;
     return spriteSheet;
 };
+/**
+ *
+ * @param {palette}
+ */
 ArcSpriteSheet.prototype.setPalette = function (palette) {
     this.palette = palette;
 };
+/**
+ * sets an animation for a given object name
+ * @param {String} name
+ * @param animation
+ */
 ArcSpriteSheet.prototype.setAnimation = function (name, animation) {
     this.animations[name] = animation;
 };
+/**
+ * get the animation from the correct name object
+ * @param {String} name
+ * @returns {int}
+ */
 ArcSpriteSheet.prototype.getAnimation = function (name) {
     return this.animations[name];
 };
+/**
+ * such as animations for grass
+ * @returns {{animation}}
+ */
 ArcSpriteSheet.prototype.getSimpleAnimations = function () {
     var animations = {};
     for (var key in this.animations) {
@@ -953,6 +1806,10 @@ ArcSpriteSheet.prototype.getSimpleAnimations = function () {
 
     return animations;
 };
+/**
+ *
+ * @returns {{id: *, image, animations: {animation}, palette: *}}
+ */
 ArcSpriteSheet.prototype.getSimple = function () {
     return {
         id: this.id,
@@ -961,6 +1818,9 @@ ArcSpriteSheet.prototype.getSimple = function () {
         palette: this.palette
     };
 };
+/**
+ * updates the color of the player object
+ */
 ArcSpriteSheet.prototype.updateColorset = function () {
     var image = this.baseImage;
     if (image !== null) {
@@ -987,6 +1847,10 @@ ArcSpriteSheet.prototype.updateColorset = function () {
     }
     ;
 };
+/**
+ *
+ * @type {Function}
+ */
 // An image containing all possible tile images
 var ArcTileSheet = ArcBaseObject();
 ArcTileSheet.prototype.init = function (name, imageUrl, tiles, imageLoadFunc, firstGid, tileWidth, tileHeight, doNotLoadImage, imageWidth, imageHeight) {
@@ -1014,6 +1878,9 @@ ArcTileSheet.prototype.init = function (name, imageUrl, tiles, imageLoadFunc, fi
         this.image.src = imageUrl;
     }
 };
+/**
+* @param {Number} timeSinceLastFrame time between the last frame played milliseconds
+*/
 ArcTileSheet.prototype.update = function (timeSinceLastFrame) {
     for (var i = 0; i < this.tiles.length; ++i) {
         var tile = this.tiles[i];
@@ -1026,6 +1893,10 @@ ArcTileSheet.prototype.update = function (timeSinceLastFrame) {
         }
     }
 };
+/**
+ * The single tile created/generated
+ * @type {Function}
+ */
 // A single tile
 var ArcTile = ArcBaseObject();
 ArcTile.prototype.init = function (x, y, width, height, walkable, deleted, name) {
@@ -1038,21 +1909,33 @@ ArcTile.prototype.init = function (x, y, width, height, walkable, deleted, name)
     this.name = name;
     this.tileSheetName = "";
     this.isDrawable = true;
+    this.properties = {};
 };
+/**
+ *
+ * @returns {ArcTile}
+ */
 ArcTile.prototype.drawable = function () {
-    return {
-        x: this.x,
-        y: this.y,
-        width: this.width,
-        height: this.height
-    };
+    return this;
 };
+/**
+ *
+ * @param {Number} timeSinceLastFrame time between the last frame played milliseconds
+ */
 ArcTile.prototype.update = function (timeSinceLastFrame) {
 
 };
+/**
+ * get the current state of the tile
+ * @returns {ArcTile}
+ */
 ArcTile.prototype.getState = function () {
     return this;
 };
+/**
+ * animated tile
+ * @type {Function}
+ */
 // A single animated tile.
 var ArcAnimatedTile = ArcBaseObject();
 ArcAnimatedTile.prototype.init = function (animation, walkable, deleted, name) {
@@ -1064,7 +1947,12 @@ ArcAnimatedTile.prototype.init = function (animation, walkable, deleted, name) {
     this.name = name;
     this.tileSheetName = "";
     this.isDrawable = true;
+    this.properties = {};
 };
+/**
+ *
+ * @param {Number} timeSinceLastFrame time between the last frame played milliseconds
+ */
 ArcAnimatedTile.prototype.update = function (timeSinceLastFrame) {
     var frame = this.animation.frames[this.frame];
     this.frameTime += timeSinceLastFrame;
@@ -1077,18 +1965,25 @@ ArcAnimatedTile.prototype.update = function (timeSinceLastFrame) {
         this.frameTime -= frame.frameTime;
     }
 };
+/**
+ * returns the frame from an animated tile
+ * @returns {frame}
+ */
 ArcAnimatedTile.prototype.getState = function () {
     return this.animation.frames[this.frame];
 };
+/**
+ *
+ * @returns {frame}
+ */
 ArcAnimatedTile.prototype.drawable = function () {
     var frame = this.getState();
-    return {
-        x: frame.x,
-        y: frame.y,
-        width: frame.width,
-        height: frame.height
-    };
+    return frame;
 };
+/**
+ *
+ * @type {ArcBaseObject}
+ */
 // The base object for a tiled image.
 // Note: This will be used for the village.
 var ArcTileMap = new ArcBaseObject();
@@ -1116,17 +2011,43 @@ ArcTileMap.prototype.init = function (name, width, height, tileWidth, tileHeight
 
     this.data.split();
 };
+/**
+ * sets the tile at a given location
+ * @param {Number} tile
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} tileWidth
+ * @param {Number} tileHeight
+ */
 ArcTileMap.prototype.setTile = function (tile, x, y, tileWidth, tileHeight) {
     this.data.insertTile(tile, x, y, tileWidth, tileHeight);
 };
+/**
+ *
+ * @param tileSheets
+ * @param tileWidth
+ * @param tileHeight
+ */
 ArcTileMap.prototype.setTileSheet = function (tileSheets, tileWidth, tileHeight) {
     this.tileSheets = tileSheets;
     this.tileDimension[0] = tileWidth;
     this.tileDimension[1] = tileHeight;
 };
+/**
+ * get the current tile coordinates  of closest
+ * @param {Number} pixelX
+ * @param {Number} pixelY
+ * @returns {[int,int]}
+ */
 ArcTileMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
     return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
 };
+/**
+ * get the tile specified
+ * @param {Number} x
+ * @param {Number} y
+ * @returns {int}
+ */
 ArcTileMap.prototype.getTile = function (x, y) {
     var i = (y * this.dimension[0]) * x;
     var index = this.data[i];
@@ -1136,14 +2057,26 @@ ArcTileMap.prototype.getTile = function (x, y) {
 
     return null;
 };
-ArcTileMap.prototype.isBlocked = function (x, y, width, height) {
-    return this.data.isBlocked(x, y, width, height);
+/**
+ * @override
+ */
+ArcTileMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+    return this.data.isBlocked(x1, y1, x2, y2, width, height);
 };
+/**
+ * @override
+ */
 ArcTileMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     this.data.draw(displayContext, xOffset, yOffset, width, height);
 }
+/**
+ *
+ * @param {Number} deltaMilliseconds
+ */
 ArcTileMap.prototype.tick = function(deltaMilliseconds){
-    this.data.tick(deltaMilliseconds);
+    if(this.data){
+        this.data.tick.apply(this.data, arguments);
+    }
 }
 /*ArcTileMap.prototype.isBlocked = function (x, y, w, h) {
  var tileSheet = this.tileSheet;
@@ -1175,3 +2108,102 @@ ArcTileMap.prototype.tick = function(deltaMilliseconds){
  
  return false; //[ex, ey];
  };*/
+
+/**
+* Basic map stucture to have a single actor treevar
+* @class
+* @implements {ArcRenderableObject} 
+*/
+var ArcMap = ArcBaseObject();
+ArcMap.prototype = Object.create(ArcRenderableObject.prototype);
+ArcMap.prototype.init = function(parent, mapName){
+    ArcRenderableObject.prototype.init.call(this, true, true);
+    this.parent = parent;
+    this.name = mapName;
+    this.tileSheets = {};
+    this.width = 100;
+    this.height = 100;
+    this.tileWidth = 16;
+    this.tileHeight = 16;
+    this.tiles = [];
+    this.loaded = false;
+
+    // TODO: Use the children object to render the map as a single tree.
+};
+/**
+* @override
+*/
+ArcMap.prototype.unload = function(){
+    this.loaded = false;
+    ArcRenderableObject.prototype.unload.call(this);
+
+    this.tiles.length = 0;
+};
+/**
+* @param {index} name The index of the tile to obtain the tilesheet for.
+* @return The tilesheet for a specified tile. If no tilesheet is found, null is returned.  
+*/
+ArcMap.prototype.getTileSheetForTile = function (index) {
+    var currentTilesheet = null;
+    for (var i in this.tileSheets) {
+        var tileSheet = this.tileSheets[i];
+        if (tileSheet.firstGid <= index && (currentTilesheet == null || currentTilesheet.firstGid < tileSheet.firstGid)) {
+            currentTilesheet = tileSheet;
+        }
+    }
+
+    return currentTilesheet;
+};
+
+// Triggers that can be used on the map
+
+/**
+* The base trigger for the map
+* @class
+* @implements {ArcEventObject}
+*/
+var ArcTrigger = ArcBaseObject();
+ArcTrigger.prototype = Object.create(ArcEventObject.prototype);
+ArcTrigger.prototype.init = function (name, type, position, size, rotation) {
+    this.name = name;
+    this.location = new Float32Array([position[0], position[1], position[0] + size[0], position[1] + size[1]]);
+    this.centre = new Float32Array([position[0] + size[0] / 2, position[1] + size[1] / 2]);
+    this.size = size.slice();
+    this.rotation = rotation;
+    this.type = type;
+    this.followObject = null;
+    this.interactEnabled = true;
+};
+ArcTrigger.prototype.setProperty = function (name, value) {
+    this.properties[name] = value;
+};
+ArcTrigger.prototype.update = function(map, timeSinceLast){
+    if(typeof(this.followObject) === "string"){
+        console.log(this.followObject);
+    }
+};
+/**
+* @override
+*/
+ArcTrigger.prototype.inLocation = function(left, top, right, bottom){
+    let loc = this.location;
+    return !(
+        right < loc[0] ||
+        left > loc[2] ||
+        bottom < loc[1] ||
+        top > loc[3]
+    ); 
+};
+/**
+ *
+ * @param {Number} left
+ * @param {Number} top
+ * @param {Number} right
+ * @param {Number} bottom
+ * @param {Number} player
+ * @param {Number} world
+ * @param {ArcEventObject} worldAdapter
+ */
+ArcTrigger.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
+
+};
