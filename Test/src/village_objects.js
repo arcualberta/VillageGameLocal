@@ -2,6 +2,11 @@ var Character = ArcBaseObject();
 Character.prototype = Object.create(ArcCharacter.prototype);
 new CharacterScripts(Character.prototype);
 new DialogScripts(Character.prototype);
+/**
+ *
+ * @param id
+ * @param name
+ */
 Character.prototype.init = function (id, name) {
     ArcCharacter.prototype.init.call(this);
     this.id = id;
@@ -17,50 +22,155 @@ Character.prototype.init = function (id, name) {
 
     this.lastStep = [0, 0, false];
     this.waypoint = [0, 0];
-    this.speed = 0.05;
+    this.speed = 0.1;
     this.action = 0;
     this.direction = 0;
 
     this.updateSize(16, 16);
 };
+/**
+ *
+ * @type {[*]}
+ */
 Character.directions = ["down", "left", "up", "right"];
 Character.actions = ["stand", "walk"];
 Character.prototype.stop = function(){
 
 };
-Character.prototype.calculateNextStep = function (village, speed, time, goal, output) {
+/**
+ *
+ * @param village
+ * @param speed
+ * @param time
+ * @param goal
+ * @param output
+ * @returns {*}
+ */
+Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
     var start = village.getClosestTileCoord(this.location[4], this.location[5]);
     var end = village.getClosestTileCoord(goal[0], goal[1]);
+    var xDif = Math.abs(start[0] - end[0]);
+    var yDif = Math.abs(start[1] - end[1]);
+    var dist = 1.0 / (speed * time);
+    
+    // Check if we are moving
+    if(xDif < 1 && yDif < 1){
+        output[0] = this.location[4];
+        output[1] = this.location[5];
+        output[2] = false;
 
-    var xDif = start[0] - end[0];
-    var yDif = start[1] - end[1];
+        return output;
+    }
+    /**
+     * 
+     * @type {number}
+     */
+    // Find the movement vector
+    xDif = goal[0] - this.location[4];
+    yDif = goal[1] - this.location[5];
+    dist *= Math.sqrt((xDif * xDif) + (yDif * yDif));
+    xDif = (xDif / dist);
+    yDif = (yDif / dist);
 
-    var newX = 0;//this.location[0];
-    var newY = 0;//this.location[1];
+    // Set the new values
+    var isChanged = true;
+    var tileBox = this.collisionBox();
+    var x = 0;
+    var y = 0;
 
-    var distance = speed * time;
-    var isChanged = false;
+    // Set to find where we intersect in the x direction.
+    if(xDif < 0){
+        for(x = -1; x > xDif; --x){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                break;
+            }
+        }
+
+        ++x;
+    }else if(xDif > 0){
+        for(x = 1; x < xDif; ++x){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                break;
+            }
+        }
+
+        --x;
+    }
+    
+    // Step in the y direction to see where we intersect.
+    if(yDif < 0){
+        for(y = -1; y > yDif; --y){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                break;
+            }
+        }
+
+        ++y;
+    }else if(yDif > 0){
+        for(y = 1; y < yDif; ++y){
+            if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+
+                break;
+            }
+        }
+
+        --y;
+    }
+
+    output[0] = this.location[4] + x;
+    output[1] = this.location[5] + y;
+    output[2] = isChanged;
+
+    return output;
+}
+/**
+ * 
+ * @param village
+ * @param speed
+ * @param time
+ * @param goal
+ * @param output
+ * @returns {*}
+ */
+Character.prototype.calculateNextStep_old = function (village, speed, time, goal, output) {
+    let start = village.getClosestTileCoord(this.location[4], this.location[5]);
+    let end = village.getClosestTileCoord(goal[0], goal[1]);
+    let xDif = start[0] - end[0];
+    let yDif = start[1] - end[1];
+    let finalX = 0;//this.location[0];
+    let finalY = 0;//this.location[1];
+    let distance = speed * time;
+    let isChanged = false;
+    let newX = 0;
+    let newY = 0;
+    let xInc = 0;
+    let yInc = 0;
+    let nextX, nextY;
 
     // TODO: check if we are going diagonally.
 
     //if(Math.abs(xDif) > Math.abs(yDif)){
     if (xDif > 0.0) {
-        newX -= distance;
+        finalX -= distance;
+        xInc = -Character.STEP;
         isChanged = true;
     } else if (xDif < 0.0) {
-        newX += distance;
+        finalX += distance;
+        xInc = Character.STEP;
         isChanged = true;
     }
     //}else{
     if (yDif > 0) {
-        newY -= distance;
+        finalY -= distance;
+        yInc = -Character.STEP;
         isChanged = true;
     } else if (yDif < 0) {
-        newY += distance;
+        finalY += distance;
+        yInc = Character.STEP;
         isChanged = true;
     }
     //}
-
+    
     if (!isChanged) {
         output[0] = this.location[4];
         output[1] = this.location[5];
@@ -89,6 +199,11 @@ Character.prototype.calculateNextStep = function (village, speed, time, goal, ou
 
     return output;
 };
+/**
+ * 
+ * @param displayContext
+ * @returns {*}
+ */
 Character.prototype.getSpriteSheet = function(displayContext){
     var spriteSheet = null;
 
@@ -98,6 +213,10 @@ Character.prototype.getSpriteSheet = function(displayContext){
 
     return spriteSheet;
 };
+/**
+ * 
+ * @param displayContext
+ */
 Character.prototype.drawBounds = function(displayContext){
     let color = "#FF0";
     let x1 = this.location[0];
@@ -109,7 +228,26 @@ Character.prototype.drawBounds = function(displayContext){
     displayContext.drawLine(x1, y1, x2, y1, color);
     displayContext.drawLine(x2, y2, x1, y2, color);
     displayContext.drawLine(x2, y2, x2, y1, color);
+
+    color = "#F80";
+    x1 = this.lastCollisionBox[0];
+    y1 = this.lastCollisionBox[1];
+    x2 = x1 + this.lastCollisionBox[2];
+    y2 = y1 + this.lastCollisionBox[3];
+
+    displayContext.drawLine(x1, y1, x1, y2, color);
+    displayContext.drawLine(x1, y1, x2, y1, color);
+    displayContext.drawLine(x2, y2, x1, y2, color);
+    displayContext.drawLine(x2, y2, x2, y1, color);
 }
+/**
+ * 
+ * @param displayContext
+ * @param xOffset
+ * @param yOffset
+ * @param width
+ * @param height
+ */
 Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     var spriteSheet = this.getSpriteSheet(displayContext);
 
@@ -132,6 +270,12 @@ Character.prototype.draw = function(displayContext, xOffset, yOffset, width, hei
         }
     }
 };
+/**
+ * 
+ * @param timeSinceLast
+ * @param worldAdapter
+ * @param village
+ */
 Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
     // Calculate new location
     var newLoc = this.calculateNextStep(village, this.speed, timeSinceLast, this.waypoint, this.lastStep);
@@ -183,7 +327,10 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
         parent.waypointLoc[1] = this.location[2];
     }
 };
-
+/**
+ * 
+ * @type {Function}
+ */
 // A non playable character
 var NPC = ArcBaseObject();
 NPC.STATE = [
@@ -191,6 +338,10 @@ NPC.STATE = [
     "talk", // randomly walk around
     "path", // The character follows a given path
 ];
+/**
+ * 
+ * @type {Character}
+ */
 NPC.prototype = Object.create(Character.prototype);
 NPC.prototype.init = function (id, name, state, location, properties) {
     Character.prototype.init.call(this, id, name);
@@ -217,9 +368,20 @@ NPC.prototype.init = function (id, name, state, location, properties) {
 
     if(f){ f.call(this); }
 };
+/**
+ * 
+ * @param state
+ */
 NPC.prototype.setState = function(state){
     this.state = "on" + state;
 }
+/**
+ * 
+ * @param timeSinceLast
+ * @param worldAdapter
+ * @param village
+ * @param player
+ */
 NPC.prototype.tick = function (timeSinceLast, worldAdapter, village, player) {
 
     // Check for functions
@@ -230,6 +392,13 @@ NPC.prototype.tick = function (timeSinceLast, worldAdapter, village, player) {
     // Execute parent functions
     Character.prototype.tick.apply(this, arguments);
 };
+/**
+ * 
+ * @param x
+ * @param y
+ * @param player
+ * @param world
+ */
 NPC.prototype.click = function(x, y, player, world){
     // Set as the active object
     player.activeObject = this;
@@ -239,6 +408,16 @@ NPC.prototype.click = function(x, y, player, world){
 
     if(f){ f.call(this, null, player, world); }
 };
+/**
+ * 
+ * @param left
+ * @param top
+ * @param right
+ * @param bottom
+ * @param player
+ * @param world
+ * @param worldAdapter
+ */
 NPC.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
     var f = this['oninteract'];
 
@@ -256,24 +435,33 @@ NPC.prototype.interact = function(left, top, right, bottom, player, world, world
         player.activeObject = null;
     }
 };
-
+/**
+ * 
+ * @type {Function}
+ */
 // An idividual on the screen controlled by a human
 var User = ArcBaseObject();
 User.prototype = Object.create(Character.prototype);
 User.prototype.init = function (id, name) {
     Character.prototype.init.call(this, id, name);
 };
+/**
+ * 
+ * @param timeSinceLast
+ */
 User.prototype.tick = function(timeSinceLast){
     this.animateFrame(timeSinceLast);
 };
 User.prototype.draw = function(){
     Character.prototype.draw.apply(this, arguments);
 }
-
+/**
+ * 
+ * @type {Function}
+ */
 // The individule running the class
 var Teacher = ArcBaseObject();
 Teacher.prototype = Object.create(User.prototype);
-
 // The world in which the students are playing in
 var Village = ArcBaseObject();
 Village.prototype.init = function (name) {
@@ -289,9 +477,25 @@ Village.prototype.init = function (name) {
     this.midMap = []; // Array of integers for tiles above the ground, but below the characters.
     this.upperMap = []; // array of integers for tiles above the ground
 };
+/**
+ * 
+ * @param pixelX
+ * @param pixelY
+ * @returns {[*,*]}
+ */
 Village.prototype.getClosestTileCoord = function (pixelX, pixelY) {
     return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
 };
+/**
+ * 
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @param width
+ * @param height
+ * @returns {boolean}
+ */
 // Checks if a rectangular area is blocked.
 Village.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
     if (this.tileSheet !== null) {
@@ -330,7 +534,10 @@ Village.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
 
     return true;
 };
-
+/**
+ * 
+ * @type {Function}
+ */
 // An idividual playing the game
 var Student = ArcBaseObject();
 Student.prototype = Object.create(User.prototype);
@@ -343,14 +550,17 @@ Student.prototype.init = function (id, name, village) {
         village.students["" + id] = (this);
     }
 };
-
+/**
+ * 
+ * @type {Function}
+ */
 // Player
 var Player = ArcBaseObject();
 Player.prototype.init = function (user) {
     this.user = user;
     this.showWaypoint = false;
     this.waypointLoc = [user.location[0], user.location[1]];
-    this.speed = 0.12;
+    this.speed = 0.24;
     this.direction = 0;
     this.action = 0;
     this.lastStep = [0, 0, false];
@@ -361,6 +571,13 @@ Player.prototype.init = function (user) {
 Player.prototype.stop = function(){
     this.user.stop();
 };
+/**
+ * 
+ * @param timeSinceLast
+ * @param worldAdapter
+ * @param village
+ */
+// The movment of the character to determine if it is allowed, or in a area that can be activated
 Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     var user = this.user;
 
@@ -424,32 +641,66 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     user.waypoint[0] = this.waypointLoc[0];
     user.waypoint[1] = this.waypointLoc[1];
 };
+/**
+ * 
+ * @type {Function}
+ */
 // The basic world adapter object
 var WorldAdapter = ArcBaseObject();
 WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, gameContext) {
     this.responseFunction = stateResponseFunction;
     this.messageFunction = messageFunction;
 };
+/**
+ * 
+ * @param passcode
+ * @returns {{isSuccessful: boolean}}
+ */
 WorldAdapter.prototype.login = function (passcode) {
     return {
         isSuccessful: true
     };
 };
+/**
+ * 
+ * @param userId
+ */
 WorldAdapter.prototype.logout = function (userId) {
 
 };
+/**
+ * 
+ * @param userId
+ */
 WorldAdapter.prototype.requestWorldState = function (userId) {
 
 };
+/**
+ * 
+ * @param timestamp
+ */
 WorldAdapter.prototype.getWorldActions = function (timestamp) {
 
 };
+/**
+ * 
+ * @param actionList
+ */
 WorldAdapter.prototype.postWorldActions = function (actionList) {
 
 };
+/**
+ * 
+ * @param id
+ */
 WorldAdapter.prototype.getSpriteSheet = function (id) {
 
 };
+/**
+ * 
+ * @param id
+ */
+// This is for logging out.
 WorldAdapter.prototype.removeUserFromMap = function (id) {
     postWorldActions([{
             timestamp: Date.now(),
@@ -461,6 +712,14 @@ WorldAdapter.prototype.removeUserFromMap = function (id) {
             }
         }]);
 };
+/**
+ * 
+ * @param message
+ * @param lineNumber
+ * @param player
+ * @param speaker
+ * @param onComplete
+ */
 WorldAdapter.prototype.showMessage = function (message, lineNumber, player, speaker, onComplete) {
     console.log(message);
     onComplete();
