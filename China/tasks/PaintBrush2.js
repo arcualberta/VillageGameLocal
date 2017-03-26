@@ -7,6 +7,25 @@
 	var distance = function(start, end){
 		return Math.sqrt(Math.pow(start[0] - end[0], 2.0) + Math.pow(start[1] - end[1], 2.0));
 	};
+
+	var setDrawProperties = function(img){
+		let w = task.displayAdapter.size[0];
+		let h = task.model.bottom;
+
+		let mult = 1.0;
+
+		if(img.height > img.width){
+			mult = h / img.height;
+		}else{
+			mult = w / img.width;
+		}
+
+		img.drawWidth = img.width * mult;
+		img.drawHeight = img.height * mult;
+
+		img.xOffset = (w / 2) - (img.drawWidth / 2);
+		img.yOffset = (h / 2) - (img.drawHeight / 2);
+	}
 	
 	var drawBrush = function(display, model){
 		var line = model.line;
@@ -167,8 +186,9 @@
 		
 		
 		if(model.bgImage){			
-			display.drawImage(model.bgImage, 0, 0, model.bgImage.width, model.bgImage.height,
-			0, 0, display.size[0], model.bottom);
+			let bgImage = model.bgImage;
+			display.drawImage(bgImage, 0, 0, bgImage.width, bgImage.height,
+			bgImage.xOffset, bgImage.yOffset, bgImage.drawWidth, bgImage.drawHeight);
 		}
 
 		if(model.brushImage && model.brushImage.complete){
@@ -179,11 +199,11 @@
 
 		display.drawToDisplay(true);
 	};
-	
+
 	task.setBackground = function(imageUrl){
 		var img = new Image();
 		img.onload = function(){
-			
+			setDrawProperties(img);
 		};
 		img.src = imageUrl;
 		
@@ -193,7 +213,7 @@
 	task.setComparison = function(imageUrl){
 		var img = new Image();
 		img.onload = function(){
-			
+			setDrawProperties(img);
 		};
 		img.src = imageUrl;
 		
