@@ -4,8 +4,8 @@ new CharacterScripts(Character.prototype);
 new DialogScripts(Character.prototype);
 /**
  *
- * @param id
- * @param name
+ * @param {Number} id
+ * @param {String} name
  */
 Character.prototype.init = function (id, name) {
     ArcCharacter.prototype.init.call(this);
@@ -40,9 +40,9 @@ Character.prototype.stop = function(){
 /**
  *
  * @param village
- * @param speed
- * @param time
- * @param goal
+ * @param {Number} speed
+ * @param {Number} time
+ * @param {Number} goal
  * @param output
  * @returns {*}
  */
@@ -662,8 +662,7 @@ WorldAdapter.prototype.login = function (passcode) {
     };
 };
 /**
- * 
- * @param userId
+ * @param {Number} userId
  */
 WorldAdapter.prototype.logout = function (userId) {
 
@@ -714,11 +713,11 @@ WorldAdapter.prototype.removeUserFromMap = function (id) {
 };
 /**
  * 
- * @param message
- * @param lineNumber
- * @param player
- * @param speaker
- * @param onComplete
+ * @param {String} message
+ * @param {Number} lineNumber
+ * @param {classObject} player
+ * @param {sprit} speaker
+ * @param {Function} onComplete
  */
 WorldAdapter.prototype.showMessage = function (message, lineNumber, player, speaker, onComplete) {
     console.log(message);
