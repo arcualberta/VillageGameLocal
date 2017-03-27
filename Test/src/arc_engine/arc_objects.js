@@ -514,9 +514,20 @@ ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
     this.interactRad = 8;
     this.dynamicInteract = true;
+    this.movementVector = new Float32Array(3);
 
     // TODO: check if objects interect through the circle.
 };
+ArcActor.prototype.setMovementVector = function(x, y){
+    this.movementVector[0] = x;
+    this.movementVector[1] = y;
+    this.movementVector[2] = Math.atan2(y, x); // This is so we get a value between -PI and PI
+};
+ArcActor.MovementAngle = {
+    QUARTER: Math.PI / 4.0,
+    HALF: Math.PI / 2.0,
+    THREE_QUARTER: (3.0 * Math.PI) / 4.0
+}
 /**
 * @override
 */

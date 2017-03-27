@@ -96,75 +96,12 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
         --y;
     }
 
+    if(x != 0 && y != 0){
+        this.setMovementVector(x, y);
+    }
+
     output[0] = this.location[4] + x;
     output[1] = this.location[5] + y;
-    output[2] = isChanged;
-
-    return output;
-}
-Character.prototype.calculateNextStep_old = function (village, speed, time, goal, output) {
-    let start = village.getClosestTileCoord(this.location[4], this.location[5]);
-    let end = village.getClosestTileCoord(goal[0], goal[1]);
-    let xDif = start[0] - end[0];
-    let yDif = start[1] - end[1];
-    let finalX = 0;//this.location[0];
-    let finalY = 0;//this.location[1];
-    let distance = speed * time;
-    let isChanged = false;
-    let newX = 0;
-    let newY = 0;
-    let xInc = 0;
-    let yInc = 0;
-    let nextX, nextY;
-
-    // TODO: check if we are going diagonally.
-
-    //if(Math.abs(xDif) > Math.abs(yDif)){
-    if (xDif > 0.0) {
-        finalX -= distance;
-        xInc = -Character.STEP;
-        isChanged = true;
-    } else if (xDif < 0.0) {
-        finalX += distance;
-        xInc = Character.STEP;
-        isChanged = true;
-    }
-    //}else{
-    if (yDif > 0) {
-        finalY -= distance;
-        yInc = -Character.STEP;
-        isChanged = true;
-    } else if (yDif < 0) {
-        finalY += distance;
-        yInc = Character.STEP;
-        isChanged = true;
-    }
-    //}
-
-    if (!isChanged) {
-        output[0] = this.location[4];
-        output[1] = this.location[5];
-        output[2] = false;
-
-        return output;
-    }
-
-    // TODO: Define an acutal bounding box variable
-    var tileBox = this.collisionBox();
-
-    if (village.isBlocked(tileBox[0], tileBox[1] + newY, tileBox[0] + tileBox[2], tileBox[1] + tileBox[3] + newY, tileBox[2], tileBox[3])) {
-        newY = 0;
-    }
-
-    if (village.isBlocked(tileBox[0] + newX, tileBox[1], tileBox[0] + newX + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])) {
-        newX = 0;
-    }
-
-    newX += this.location[4];
-    newY += this.location[5];
-
-    output[0] = newX;
-    output[1] = newY;
     output[2] = isChanged;
 
     return output;
@@ -234,19 +171,21 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
         this.action = 1;
 
         // Set the new direciton
-        var xDif = this.location[4] - newLoc[0];
-        var yDif = this.location[5] - newLoc[1];
-
-        if (xDif < 0.0) {
-            this.direction = 3;
-        } else if (xDif > 0.0) {
-            this.direction = 1;
-        }
-
-        if (yDif < 0.0) {
-            this.direction = 0;
-        } else if (yDif > 0.0) {
-            this.direction = 2;
+        let angle = this.movementVector[2];
+        if(angle > -ArcActor.MovementAngle.QUARTER){
+            if(angle <= ArcActor.MovementAngle.QUARTER){
+                this.direction = 3;
+            }else if(angle <= ArcActor.MovementAngle.THREE_QUARTER){
+                this.direction = 0;
+            }else{
+                this.direction = 1;
+            }
+        }else{
+            if(angle >= -ArcActor.MovementAngle.THREE_QUARTER){
+                this.direction = 2;
+            }else{
+                this.direction = 1;
+            }
         }
 
         // Set the new location
@@ -464,19 +403,21 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
         this.action = 1;
 
         // Set the new direciton
-        var xDif = user.location[4] - newLoc[0];
-        var yDif = user.location[5] - newLoc[1];
-
-        if (xDif < 0.0) {
-            this.direction = 3;
-        } else if (xDif > 0.0) {
-            this.direction = 1;
-        }
-
-        if (yDif < 0.0) {
-            this.direction = 0;
-        } else if (yDif > 0.0) {
-            this.direction = 2;
+        let angle = this.user.movementVector[2];
+        if(angle > -ArcActor.MovementAngle.QUARTER){
+            if(angle <= ArcActor.MovementAngle.QUARTER){
+                this.direction = 3;
+            }else if(angle <= ArcActor.MovementAngle.THREE_QUARTER){
+                this.direction = 0;
+            }else{
+                this.direction = 1;
+            }
+        }else{
+            if(angle >= -ArcActor.MovementAngle.THREE_QUARTER){
+                this.direction = 2;
+            }else{
+                this.direction = 1;
+            }
         }
 
         // Set the new location
