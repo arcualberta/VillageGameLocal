@@ -1284,6 +1284,9 @@
   <object id="26" name="PaintBrush" type="Object" gid="8" x="438.333" y="234.667" width="30" height="30">
    <properties>
     <property name="oninteract">player.stats.hasBrush = true;
+var t = this.TriggerTask('cutscene', worldAdapter);
+t.addAnimation(worldAdapter.module.path + &quot;/tasks/brush_obtain.png&quot;, 300);
+t.addAnimation(worldAdapter.module.path + &quot;/tasks/brush_obtain2.png&quot;, 300);
 world.objects.removeChild(this.name);</property>
    </properties>
   </object>
@@ -1294,7 +1297,7 @@ world.objects.removeChild(this.name);</property>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
    </properties>
   </object>
-  <object id="27" name="MainMusic" type="BackgroundMusic" x="146" y="74.6667" width="1677.33" height="739.333">
+  <object id="27" name="MainMusic" type="BackgroundMusic" x="121.758" y="59.5152" width="1677.33" height="739.333">
    <properties>
     <property name="file" value="sound/3VariationsOfPlumBlossoms.mp3"/>
    </properties>
