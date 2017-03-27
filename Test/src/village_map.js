@@ -1015,8 +1015,8 @@ ArcTileMap.prototype.drawMinimap = function(minimap, x, y, width, height, scale)
 
 ArcTileQuadTree_Tile.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     if(this.tile.properties["minimap"]){
-        let xs = Math.round((this.location[0] - x) * scale);
-        let ys = Math.round((this.location[1] - y) * scale);
+        let xs = Math.floor((this.location[0] - x) * scale);
+        let ys = Math.floor((this.location[1] - y) * scale);
 
         minimap.fillRect(this.tile.properties["minimap"], xs, ys, this.size[0] * scale, this.size[1] * scale);
     }
