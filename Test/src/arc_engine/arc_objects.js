@@ -519,9 +519,16 @@ ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
     // TODO: check if objects interect through the circle.
 };
 ArcActor.prototype.setMovementVector = function(x, y){
-    this.movementVector[0] = x;
-    this.movementVector[1] = y;
-    this.movementVector[2] = Math.atan2(y, x); // This is so we get a value between -PI and PI
+    let dist = Math.sqrt((x * x) + (y * y));
+
+    if(dist > 0){
+        this.movementVector[0] = x / dist;
+        this.movementVector[1] = y / dist;
+        this.movementVector[2] = Math.atan2(this.movementVector[1], this.movementVector[0]); // This is so we get a value between -PI and PI
+    }else{
+        this.movementVector[0] = 0.0;
+        this.movementVector[1] = 0.0;
+    }
 };
 ArcActor.MovementAngle = {
     QUARTER: Math.PI / 4.0,

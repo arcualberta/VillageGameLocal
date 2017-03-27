@@ -920,7 +920,9 @@ MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, heigh
     context.globalAlpha = this.opacity;
 
 	this.mapContext.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
-	map.drawMinimap(this.mapCanvas, this.mapContext, this.offset[0], this.offset[1], w, h, scale);
+    this.beginDraw();
+	map.drawMinimap(this, this.offset[0], this.offset[1], w, h, scale);
+    this.endDraw();
 	
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -961,54 +963,73 @@ MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
         }
     }
 };
+MiniMap.prototype.beginDraw = function(){
+    this.mapContext.beginPath();
+};
+MiniMap.prototype.fillRect = function(style, x, y, width, height){
+    let context = this.mapContext;
 
-QuadTree.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
-    let i, obj;
+    if(context.fillStyle != style){
+        context.fill();
+        context.closePath();
+
+        context.fillStyle = style;
+
+        context.beginPath();
+    }
+
+    context.rect(x, y, width, height);
+};
+MiniMap.prototype.endDraw = function(){
+    this.mapContext.fill();
+    this.mapContext.closePath();
+};
+
+QuadTree.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     const nodes = this.nodes;
 
-    for(i = 0; i < this.objects.length; ++i){
-        obj = this.objects[i];
+    for(let i = 0; i < this.objects.length; ++i){
+        let obj = this.objects[i];
 
         if(obj.drawMinimap){
-            obj.drawMinimap(canvas, context, x, y, width, height, scale);
+            obj.drawMinimap(minimap, x, y, width, height, scale);
         }
     }
 
     if(nodes[0] !== null){
-        i = this.getIndex(x, y, width, height);
+        let i = this.getIndex(x, y, width, height);
         if(i >= 0){
-            nodes[i].drawMinimap(canvas, context, x, y, width, height, scale);
+            nodes[i].drawMinimap(minimap, x, y, width, height, scale);
         }else{
-            nodes[0].drawMinimap(canvas, context, x, y, width, height, scale);
-            nodes[1].drawMinimap(canvas, context, x, y, width, height, scale);
-            nodes[2].drawMinimap(canvas, context, x, y, width, height, scale);
-            nodes[3].drawMinimap(canvas, context, x, y, width, height, scale);
+            nodes[0].drawMinimap(minimap, x, y, width, height, scale);
+            nodes[1].drawMinimap(minimap, x, y, width, height, scale);
+            nodes[2].drawMinimap(minimap, x, y, width, height, scale);
+            nodes[3].drawMinimap(minimap, x, y, width, height, scale);
         }
     }
 };
 
-ArcTileMap.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
-    this.data.drawMinimap(canvas, context, x, y, width, height, scale);
+ArcTileMap.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
+    this.data.drawMinimap(minimap, x, y, width, height, scale);
 }
 
-ArcTileQuadTree_Tile.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+ArcTileQuadTree_Tile.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     if(this.tile.properties["minimap"]){
         let xs = Math.round((this.location[0] - x) * scale);
         let ys = Math.round((this.location[1] - y) * scale);
 
-        context.fillStyle = this.tile.properties["minimap"];
-        context.fillRect(xs, ys, this.size[0] * scale, this.size[1] * scale);
+        minimap.fillRect(this.tile.properties["minimap"], xs, ys, this.size[0] * scale, this.size[1] * scale);
     }
 }
 
-VillageMap.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+VillageMap.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     let child, i;
     
     for(i = 0; i < this.children.length; ++i){
         child = this.children[i];
         
         if(child.drawMinimap){
-            child.drawMinimap(canvas, context, x, y, width, height, scale);
+            child.drawMinimap(minimap, x, y, width, height, scale);
         }
     }
 
@@ -1022,12 +1043,11 @@ VillageMap.prototype.drawMinimap = function(canvas, context, x, y, width, height
     context.fillRect(Math.floor(cb[0] * scale), Math.floor(cb[1] * scale), cb[2] * scale, this.size[3] * scale);
 }*/
 
-User.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
+User.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     let cb = this.lastCollisionBox;
 
     let xs = Math.round((cb[0] - x) * scale);
     let ys = Math.round((cb[1] - y) * scale);
 
-    context.fillStyle = '#FF0';
-    context.fillRect(xs, ys, cb[2] * scale, this.size[3] * scale);
+    minimap.fillRect("#FF0", xs, ys, cb[2] * scale, this.size[3] * scale);
 }
