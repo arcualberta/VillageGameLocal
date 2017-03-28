@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="29">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="33">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="304" columns="16">
   <image source="../tiles/tileset.png" width="480" height="570"/>
   <terraintypes>
@@ -1202,13 +1202,27 @@
    <properties>
     <property name="onidle" value="this.WalkArea(2640, 420, 3240, 900);"/>
     <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
-    <property name="ontalk">if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
-    var t = this.TriggerTask('PaintBrush2', worldAdapter);
-    t.setBackground( worldAdapter.module.path + &quot;/tasks/sickle_dash.png&quot;);
+    <property name="ontalk">var _this = this;
+
+if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
+	var taskCompleted = function(){
+		_this.TriggerDialog('WU_HAI_4', worldAdapter, player);
+	};
+	
+	var openTask = function(){
+		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+		t.setBackground( worldAdapter.module.path + &quot;/tasks/sickle_dash.png&quot;);
+	};
+    
+	this.TriggerDialog('WU_HAI_3', worldAdapter, player, openTask);
+}else if(player.stats[&quot;kindness&quot;] == 3){
+    this.TriggerDialog('WU_HAI_5', worldAdapter, player);
 }else if(this.properties[&quot;taskRequested&quot;]) { 
-    this.TriggerDialog('WU_HAI_2', worldAdapter, player); 
+    this.TriggerDialog('WU_HAI_2', worldAdapter, playe); 
 }else{ 
-    this.TriggerDialog('WU_HAI_1', worldAdapter, player);
+    this.TriggerDialog('WU_HAI_1', worldAdapter, player, function(){
+		if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('WU_HAI_5', worldAdapter, player);
+	});
  }</property>
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
@@ -1217,13 +1231,27 @@
    <properties>
     <property name="onidle" value="//TODO: Fish"/>
     <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
-    <property name="ontalk">if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
-    var t = this.TriggerTask('PaintBrush2', worldAdapter);
-    t.setBackground( worldAdapter.module.path + &quot;/tasks/net_outline_dash.png&quot;);
+    <property name="ontalk">var _this = this;
+
+if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
+	var taskCompleted = function(){
+		_this.TriggerDialog('GRANDPA_4', worldAdapter, player);
+	};
+	
+	var openTask = function(){
+		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+		t.setBackground( worldAdapter.module.path + &quot;/tasks/net_outline_dash.png&quot;);
+	};
+    
+	this.TriggerDialog('GRANDPA_3', worldAdapter, player, openTask);
+}else if(player.stats[&quot;kindness&quot;] == 3){
+    this.TriggerDialog('GRANDPA_5', worldAdapter, player);
 }else if(this.properties[&quot;taskRequested&quot;]) {
     this.TriggerDialog('GRANDPA_2', worldAdapter, player); 
 }else{ 
-    this.TriggerDialog('GRANDPA_1', worldAdapter, player); 
+    this.TriggerDialog('GRANDPA_1', worldAdapter, player, function(){
+		 if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('GRANDPA_5', worldAdapter, player);
+	}); 
 }</property>
     <property name="spritesheet" value="villager_1"/>
    </properties>
@@ -1256,18 +1284,31 @@
    <properties>
     <property name="onidle" value="// NOTHING"/>
     <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
-    <property name="ontalk">if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
-    var t = this.TriggerTask('PaintBrush2', worldAdapter);
-    t.setBackground( worldAdapter.module.path + &quot;/tasks/f_clothing_outline_dashed.png&quot;);
+    <property name="ontalk">var _this = this;
+if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
+	var taskCompleted = function(){
+		_this.TriggerDialog('AH_YU_4', worldAdapter, player);
+	};
+	
+	var openTask = function(){
+		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+		t.setBackground( worldAdapter.module.path + &quot;/tasks/f_clothing_outline_dashed.png&quot;);
+	};
+    
+	this.TriggerDialog('AH_YU_3', worldAdapter, player, openTask);
+}else if(player.stats[&quot;kindness&quot;] == 3){
+    this.TriggerDialog('AH_YU_5', worldAdapter, player);
 }else if(this.properties[&quot;taskRequested&quot;]) {
     this.TriggerDialog('AH_YU_2', worldAdapter, player);
  }else{ 
-    this.TriggerDialog('AH_YU_1', worldAdapter, player); 
+    this.TriggerDialog('AH_YU_1', worldAdapter, player, function(){
+		 if(player.stats[&quot;kindness&quot;] == 3)  _this.TriggerDialog('AH_YU_5', worldAdapter, player);
+	}); 
 }</property>
     <property name="spritesheet" value="npc_tattered"/>
    </properties>
   </object>
-  <object id="11" name="Cloud" type="NPC" gid="305" x="2670" y="2220" width="30" height="50">
+  <object id="11" name="Cloud" type="NPC" gid="305" x="2635" y="2294" width="30" height="50">
    <properties>
     <property name="onidle" value=""/>
     <property name="onstart" value="this.animation = &quot;hidden_down&quot;; this.state = &quot;onwait&quot;;"/>
@@ -1291,7 +1332,7 @@ world.objects.removeChild(this.name);</property>
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="13" name="marketSwitch" type="backgroundMusic" x="20" y="1526" width="2948" height="736">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
@@ -1300,6 +1341,18 @@ world.objects.removeChild(this.name);</property>
   <object id="27" name="MainMusic" type="BackgroundMusic" x="121.758" y="59.5152" width="1677.33" height="739.333">
    <properties>
     <property name="file" value="sound/3VariationsOfPlumBlossoms.mp3"/>
+   </properties>
+  </object>
+  <object id="31" name="CloudTrigger" type="Script" x="2500" y="2208" width="451" height="184">
+   <properties>
+    <property name="oninteract">// TODO: Stop Character
+if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
+	world.triggers.removeChild(&quot;CloudTrigger&quot;);
+	worldAdapter.showMessage(&quot;CLOUD_1&quot;, false, player, this, function(){
+		world.objects.getChild(&quot;PaintBrush&quot;).updateLocation(5126, 4528);
+	});
+}</property>
+    <property name="onstart" value="this.interactEnabled = true;"/>
    </properties>
   </object>
  </objectgroup>

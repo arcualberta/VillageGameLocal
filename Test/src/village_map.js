@@ -175,6 +175,36 @@ VillageObject.prototype.interact = function(left, top, right, bottom, player, wo
 
 // Trigger Objects
 
+var ScriptTrigger = ArcBaseObject();
+ScriptTrigger.prototype = Object.create(ArcTrigger.prototype);
+ScriptTrigger.prototype.init = function(name, type, position, size, rotation, properties) {
+    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
+    this.clickEnabled = false;
+    this.interactEnabled = false;
+
+    for(var key in properties){
+        var test = key.substring(0, 2);
+        var state = 0;
+        if(test === "on"){
+            this[key] = Function("time", "player", "world", "worldAdapter", properties[key]);
+        }
+    }
+
+    if(this.onstart){
+        this.onstart();
+    }
+};
+ScriptTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
+    if(this.oninteract){
+        this.oninteract(0, player, world, worldAdapter);
+    }
+};
+ScriptTrigger.prototype.click = function (x, y, player, world){
+    if(this.onclick){
+        this.onclick(0, player, world, null);
+    }
+};
+
 var ChangeMapTrigger = ArcBaseObject();
 ChangeMapTrigger.prototype = Object.create(ArcTrigger.prototype);
 ChangeMapTrigger.prototype.init = function (name, type, position, size, rotation, module, mapName, start) {
@@ -339,7 +369,7 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, module
 
     // Load the properties
     $trigger.find("properties > property").each(function () {
-        triggerProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value");
+        triggerProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
     });
 
     if (triggerType === "changemap") {
@@ -350,6 +380,8 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, module
         trigger = new ClickTaskTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["title"], triggerProperties["task"]);
     } else if(triggerType === "backgroundmusic"){
         trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, modulePath + "/" + triggerProperties["file"], gameContext.audio);
+    } else if(triggerType === "script"){
+        trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties);
     }else {
         trigger = new Trigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
     }
