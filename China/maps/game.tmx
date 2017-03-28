@@ -1206,6 +1206,7 @@
 
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
+		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('WU_HAI_4', worldAdapter, player);
 	};
 	
@@ -1235,6 +1236,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
+		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('GRANDPA_4', worldAdapter, player);
 	};
 	
@@ -1287,6 +1289,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     <property name="ontalk">var _this = this;
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
+		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('AH_YU_4', worldAdapter, player);
 	};
 	

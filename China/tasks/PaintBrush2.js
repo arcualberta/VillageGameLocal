@@ -11,17 +11,16 @@
 	var setDrawProperties = function(img){
 		let w = task.displayAdapter.size[0];
 		let h = task.model.bottom;
+		let aspect = w / h;
+		let imgAspect = img.width / img.height;
 
-		let mult = 1.0;
-
-		if(img.height > img.width){
-			mult = h / img.height;
+		if(aspect > imgAspect){
+			img.drawWidth = img.width * (h / img.height);
+			img.drawHeight = h;
 		}else{
-			mult = w / img.width;
+			img.drawWidth = w;
+			img.drawHeight = img.height * (w / img.width);
 		}
-
-		img.drawWidth = img.width * mult;
-		img.drawHeight = img.height * mult;
 
 		img.xOffset = (w / 2) - (img.drawWidth / 2);
 		img.yOffset = (h / 2) - (img.drawHeight / 2);
