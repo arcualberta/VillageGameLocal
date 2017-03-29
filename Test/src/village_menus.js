@@ -381,7 +381,11 @@ function SettingsWindow(game){
         slider.attr("step", step);
         slider.attr("value", value);
 
-        slider.bind("change", onchange);
+        slider.bind("change", function(ev){
+            recordEvent("Settings", "SetValue", name, this.value);
+            
+            onchange.apply(this, arguments);
+        });
 
         addMenuItem(parent, name, slider);
     }
@@ -468,11 +472,14 @@ function DialogMenu(dialog, name, lineNumber, player, speaker) {
 
     var createOptionClick = function(index){
         return function(event){
+            recordEvent("Dialog", "SelectOption", name + " - " + currentLine["LINE_NUMBER"], index);
             setLine(name, currentLine["OPTION_" + index + "_LINE"]);
         };
     };
 
     var setLine = function (name, lineNumber) {
+        recordEvent("Dialog", "SetLine", name, lineNumber);
+
         dialog.getDialog(name, lineNumber, function (result) {
             if (result === null) {
                 console.log("Error loading dialog: " + name + " - " + lineNumber);

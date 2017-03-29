@@ -1,4 +1,13 @@
 /**
+* Records user events to an anlytics system.
+*/
+var recordEvent = function(category, action, label, value){
+    if(ga){
+        ga('send', 'event', category, action, label, value);
+    }
+}
+
+/**
 * Sorts tiles on the screen so that they appear in a top down fashion. This makes objects closer to the bottom of the screen occlude objects near the top.
 */
 var sortOutputTiles = (function(){ // NOTE: This currently does not work because it requires overwriting the check value.

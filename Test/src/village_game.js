@@ -192,11 +192,15 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         __this.currentTask = new TaskScript(menu.canvas, title, url, worldAdapter.module.path, __this.taskWorker);
         menu.task = __this.currentTask;
 
+        recordEvent("Task", "Open", title);
+
         menu.task.setTitle = function(title){
             menu.setTitle(title);
         }
 
         menu.task.close = function(){
+            recordEvent("Task", "Close", title);
+
             menu.close();
             menu = false;
         }
@@ -264,7 +268,11 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         $(optionsIcon).click(function(){
             if(!(menu)){
                 menu = SettingsWindow(game);
+
+                recordEvent("Settings", "Open");
+
                 menu.closeComplete = function(){
+                    recordEvent("Settings", "Close");
                     menu = null;
                 };
                 menu.show(canvas);
@@ -341,7 +349,12 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             __this.villageDisplay.readWorldState(result);
         }, function (dialog, name, lineNumber, player, speaker, onClose) {
             menu = new DialogMenu(dialog, name, lineNumber, player, speaker);
+
+            recordEvent("Dialog", "Open", name);
+
             menu.closeComplete = function(){
+                recordEvent("Dialog", "Close", name);
+
                 menu = null;
                 if(onClose){
                     onClose();
