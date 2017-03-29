@@ -62,6 +62,10 @@ function GameMenu(title, width, height, backgroundImageUrl, classes) {
     this.animate = function (timeSinceLast) {
 
     };
+
+    this.setTitle = function(title) {
+        titleBar.text(title);
+    }
 }
 
 function LoginMenu(loginFunction) {

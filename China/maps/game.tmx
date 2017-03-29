@@ -1213,6 +1213,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var openTask = function(){
 		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
 		t.setBackground( worldAdapter.module.path + &quot;/tasks/sickle_dash.png&quot;);
+		t.setTitle(&quot;Wu Hai's Sickle&quot;);
 	};
     
 	this.TriggerDialog('WU_HAI_3', worldAdapter, player, openTask);
@@ -1243,6 +1244,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var openTask = function(){
 		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
 		t.setBackground( worldAdapter.module.path + &quot;/tasks/net_outline_dash.png&quot;);
+		t.setTitle(&quot;Grandpa's Net&quot;);
 	};
     
 	this.TriggerDialog('GRANDPA_3', worldAdapter, player, openTask);
@@ -1296,6 +1298,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var openTask = function(){
 		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
 		t.setBackground( worldAdapter.module.path + &quot;/tasks/f_clothing_outline_dashed.png&quot;);
+		t.setTitle(&quot;Ah Yu's Dress&quot;);
 	};
     
 	this.TriggerDialog('AH_YU_3', worldAdapter, player, openTask);
@@ -1329,6 +1332,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
    <properties>
     <property name="oninteract">player.stats.hasBrush = true;
 var t = this.TriggerTask('cutscene', worldAdapter);
+t.setTitle(&quot;&quot;);
 t.addAnimation(worldAdapter.module.path + &quot;/tasks/brush_obtain.png&quot;, 300);
 t.addAnimation(worldAdapter.module.path + &quot;/tasks/brush_obtain2.png&quot;, 300);
 world.objects.removeChild(this.name);</property>

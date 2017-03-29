@@ -191,6 +191,11 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         __this.currentTask = new TaskScript(menu.canvas, title, url, worldAdapter.module.path, __this.taskWorker);
         menu.task = __this.currentTask;
+
+        menu.task.setTitle = function(title){
+            menu.setTitle(title);
+        }
+
         menu.task.close = function(){
             menu.close();
             menu = false;
