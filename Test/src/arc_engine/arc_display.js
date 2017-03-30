@@ -811,6 +811,11 @@ ArcGLCanvasAdapter.prototype.updateImage = function(image) {
         image.texture = this.loadTexture(image);
     }else{
         gl.bindTexture(gl.TEXTURE_2D, image.texture);
+
+        if(image.getImageData){
+            image = image.getImageData(0, 0, image.width, image.height);
+        }
+
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
     }
 };
@@ -981,11 +986,15 @@ ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
     };
 
     var swapMessageBuffer = function () {
+        let w = __this.textCanvas.width;
+        let h = __this.textCanvas.height;
+        let data = __this.textContext.getImageData(0, 0, w, h);
+
         gl.useProgram(__this.textProgram);
 
         gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, __this.textbufferTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __this.textCanvas);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vBuffer.numItems);
         gl.activeTexture(gl.TEXTURE0);

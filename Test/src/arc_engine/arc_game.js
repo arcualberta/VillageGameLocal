@@ -139,11 +139,12 @@ ArcGame.prototype.start = function () {
 
     // Main Game Loop
     var loopGame = function () {
-        arcRequestAnimFrame(loopGame);
-
         var time = __this.animate();
+        arcRequestAnimFrame(loopGame);
+        
         if (time > 0.0) {
             __this.display.update(time);
+
             for (var index = 0; index < __this.loopListeners.length; ++index) {
                 __this.loopListeners[index](__this, time);
             }

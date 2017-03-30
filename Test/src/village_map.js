@@ -917,6 +917,9 @@ MiniMap.prototype.init = function(width, height, outWidth, outHeight, mask, imag
     this.mask = mask;
     this.image = image;
     this.opacity = 1.0;
+    this.quadrant = 0;
+    this.quadrantWidth = 0;
+    this.quadrantHeight = 0;
 
     this.resize(width, height, outWidth, outHeight);
     this.updateSize(width, height);
@@ -930,6 +933,10 @@ MiniMap.prototype.resize = function(width, height, outWidth, outHeight){
 
     this.context = this.canvas.getContext("2d");
 	this.mapContext = this.mapCanvas.getContext("2d");
+    this.mapContext.globalCompositeOperation = "destination-over";
+
+    this.quadrantWidth = width >> 1;
+    this.quadrantHeight = height >> 1;
 
     let context = this.context;
     context.mozImageSmoothingEnabled = false;
@@ -946,14 +953,36 @@ MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, heigh
     let scale = 1 / map.tileWidth;
     let w = this.mapCanvas.width * map.tileWidth;
     let h = this.mapCanvas.height * map.tileHeight;
+    let hw = w >> 1;
+    let hh = h >> 1;
     let location = this.location;
     let size = this.size;
 
     context.globalAlpha = this.opacity;
 
-	this.mapContext.clearRect(0, 0, this.mapCanvas.width, this.mapCanvas.height);
     this.beginDraw();
-	map.drawMinimap(this, this.offset[0], this.offset[1], w, h, scale);
+    switch(this.quadrant){
+        case 0:
+            this.mapContext.clearRect(0, 0, this.quadrantWidth, this.quadrantHeight);
+            map.drawMinimap(this, this.offset[0], this.offset[1], hw, hh, 0, 0, scale);
+            break;
+
+        case 1:
+            this.mapContext.clearRect(this.quadrantWidth, 0, this.quadrantWidth, this.quadrantHeight);
+            map.drawMinimap(this, this.offset[0] + hw, this.offset[1], hw, hh, this.quadrantWidth, 0, scale);
+            break;
+
+        case 2:
+            this.mapContext.clearRect(this.quadrantWidth, this.quadrantHeight, this.quadrantWidth, this.quadrantHeight);
+            map.drawMinimap(this, this.offset[0] + hw, this.offset[1] + hh, hw, hh, this.quadrantWidth, this.quadrantHeight, scale);
+            break;
+
+        case 3:
+            this.mapContext.clearRect(0, this.quadrantHeight, this.quadrantWidth, this.quadrantHeight);
+            map.drawMinimap(this, this.offset[0], this.offset[1] + hh, hw, hh, 0, this.quadrantHeight, scale);
+            break;
+    }
+	
     this.endDraw();
 	
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -994,6 +1023,8 @@ MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
             this.opacity = Math.min(1.0, this.opacity + 0.05);
         }
     }
+
+    this.quadrant = (this.quadrant + 1) % 4;
 };
 MiniMap.prototype.beginDraw = function(){
     this.mapContext.beginPath();
@@ -1017,7 +1048,7 @@ MiniMap.prototype.endDraw = function(){
     this.mapContext.closePath();
 };
 
-QuadTree.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
+QuadTree.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
     const nodes = this.nodes;
     let l = this.objects.length;
 
@@ -1025,64 +1056,64 @@ QuadTree.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
         let obj = this.objects[i];
 
         if(obj.drawMinimap){
-            obj.drawMinimap(minimap, x, y, width, height, scale);
+            obj.drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
         }
     }
 
     if(nodes[0] !== null){
         let i = this.getIndex(x, y, width, height);
         if(i >= 0){
-            nodes[i].drawMinimap(minimap, x, y, width, height, scale);
+            nodes[i].drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
         }else{
-            nodes[0].drawMinimap(minimap, x, y, width, height, scale);
-            nodes[1].drawMinimap(minimap, x, y, width, height, scale);
-            nodes[2].drawMinimap(minimap, x, y, width, height, scale);
-            nodes[3].drawMinimap(minimap, x, y, width, height, scale);
+            nodes[0].drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
+            nodes[1].drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
+            nodes[2].drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
+            nodes[3].drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
         }
     }
 };
 
-ArcTileMap.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
-    this.data.drawMinimap(minimap, x, y, width, height, scale);
+ArcTileMap.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
+    this.data.drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
 }
 
-ArcTileQuadTree_Tile.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
-    if(this.tile.properties["minimap"]){
-        let xs = Math.floor((this.location[0] - x) * scale);
-        let ys = Math.floor((this.location[1] - y) * scale);
+ArcTileQuadTree_Tile.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
+    if(this.tile.properties["minimap"] && this.inLocation(x, y, x + width, y + height)){
+        let xs = Math.floor((this.location[0] - x) * scale) + drawX;
+        let ys = Math.floor((this.location[1] - y) * scale) + drawY;
 
         minimap.fillRect(this.tile.properties["minimap"], xs, ys, this.size[0] * scale, this.size[1] * scale);
     }
 }
 
-VillageMap.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
+VillageMap.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
     let child, i;
     
-    for(i = 0; i < this.children.length; ++i){
+    for(i = this.children.length - 1; i >= 0; --i){
         child = this.children[i];
         
         if(child.drawMinimap){
-            child.drawMinimap(minimap, x, y, width, height, scale);
+            child.drawMinimap(minimap, x, y, width, height, drawX, drawY, scale);
         }
     }
 
     return false;
 };
 
-NPC.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
+NPC.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
     let cb = this.collisionBox();
 
-    let xs = Math.floor((cb[0] - x) * scale);
-    let ys = Math.floor((cb[1] - y) * scale);
+    let xs = Math.floor((cb[0] - x) * scale) + drawX;
+    let ys = Math.floor((cb[1] - y) * scale) + drawY;
 
     minimap.fillRect('#FF0', xs, ys, cb[2] * scale, this.size[3] * scale);
 }
 
-User.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
+User.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
     let cb = this.lastCollisionBox;
 
-    let xs = Math.round((cb[0] - x) * scale);
-    let ys = Math.round((cb[1] - y) * scale);
+    let xs = Math.round((cb[0] - x) * scale) + drawX;
+    let ys = Math.round((cb[1] - y) * scale) + drawY;
 
     minimap.fillRect("#0CF", xs, ys, cb[2] * scale, this.size[3] * scale);
 }
