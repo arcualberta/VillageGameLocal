@@ -1314,10 +1314,24 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     <property name="spritesheet" value="npc_tattered"/>
    </properties>
   </object>
-  <object id="11" name="Cloud" type="NPC" gid="305" x="2635" y="2294" width="30" height="50">
+  <object id="11" name="Cloud" type="NPC" gid="305" x="2661.67" y="2303.33" width="30" height="50">
    <properties>
+    <property name="ondropbrush">if(!this.lastStep[2]){
+	this.stopCount++;
+}
+
+if(this.stopCount &gt; 1){
+	world.objects.getChild(&quot;PaintBrush&quot;).updateLocation(5126, 4528);
+	this.state = &quot;onidle&quot;;
+
+	this.waypoint[0] = 4799;
+	this.waypoint[1] = 4799;
+}</property>
     <property name="onidle" value=""/>
-    <property name="onstart" value="this.animation = &quot;hidden_down&quot;; this.state = &quot;onwait&quot;;"/>
+    <property name="onstart">this.animation = &quot;hidden_down&quot;; 
+this.state = &quot;onwait&quot;;
+this.blockable = false;
+this.stopCount = 0;</property>
     <property name="onwait" value="if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3) { this.animation = &quot;stand_down&quot;; this.state = &quot;onidle&quot; }"/>
     <property name="spritesheet" value="cloud"/>
    </properties>
@@ -1356,7 +1370,11 @@ world.objects.removeChild(this.name);</property>
 if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
 	world.triggers.removeChild(&quot;CloudTrigger&quot;);
 	worldAdapter.showMessage(&quot;CLOUD_1&quot;, false, player, this, function(){
-		world.objects.getChild(&quot;PaintBrush&quot;).updateLocation(5126, 4528);
+		let cloud = world.objects.getChild(&quot;Cloud&quot;);
+		let waypoint = cloud.waypoint;
+		waypoint[0] = 5126;
+		waypoint[1] = 4528;
+		cloud.state = &quot;ondropbrush&quot;;
 	});
 }</property>
     <property name="onstart" value="this.interactEnabled = true;"/>

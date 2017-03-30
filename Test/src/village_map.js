@@ -1101,12 +1101,14 @@ VillageMap.prototype.drawMinimap = function(minimap, x, y, width, height, drawX,
 };
 
 NPC.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){
-    let cb = this.collisionBox();
+    if(this.inLocation(x, y, x + width, y + height)){
+        let cb = this.collisionBox();
 
-    let xs = Math.floor((cb[0] - x) * scale) + drawX;
-    let ys = Math.floor((cb[1] - y) * scale) + drawY;
+        let xs = Math.floor((cb[0] - x) * scale) + drawX;
+        let ys = Math.floor((cb[1] - y) * scale) + drawY;
 
-    minimap.fillRect('#FF0', xs, ys, cb[2] * scale, this.size[3] * scale);
+        minimap.fillRect('#FF0', xs, ys, cb[2] * scale, this.size[3] * scale);
+    }
 }
 
 User.prototype.drawMinimap = function(minimap, x, y, width, height, drawX, drawY, scale){

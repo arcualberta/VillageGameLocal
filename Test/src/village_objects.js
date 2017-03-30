@@ -20,6 +20,7 @@ Character.prototype.init = function (id, name) {
     this.speed = 0.1;
     this.action = 0;
     this.direction = 0;
+    this.blockable = true;
 
     this.updateSize(16, 16);
 };
@@ -34,6 +35,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     var xDif = Math.abs(start[0] - end[0]);
     var yDif = Math.abs(start[1] - end[1]);
     var dist = 1.0 / (speed * time);
+    var blockable = this.blockable;
 
     // Check if we are moving
     if(xDif < 1 && yDif < 1){
@@ -60,7 +62,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     // Set to find where we intersect in the x direction.
     if(xDif < 0){
         for(x = -1; x > xDif; --x){
-            if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
                 break;
             }
         }
@@ -68,7 +70,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
         ++x;
     }else if(xDif > 0){
         for(x = 1; x < xDif; ++x){
-            if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
                 break;
             }
         }
@@ -79,7 +81,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     // Step in the y direction to see where we intersect.
     if(yDif < 0){
         for(y = -1; y > yDif; --y){
-            if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
                 break;
             }
         }
@@ -87,7 +89,7 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
         ++y;
     }else if(yDif > 0){
         for(y = 1; y < yDif; ++y){
-            if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
 
                 break;
             }
