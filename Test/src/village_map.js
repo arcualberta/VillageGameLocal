@@ -1019,8 +1019,9 @@ MiniMap.prototype.endDraw = function(){
 
 QuadTree.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     const nodes = this.nodes;
+    let l = this.objects.length;
 
-    for(let i = 0; i < this.objects.length; ++i){
+    for(let i = 0; i < l; ++i){
         let obj = this.objects[i];
 
         if(obj.drawMinimap){
@@ -1068,12 +1069,14 @@ VillageMap.prototype.drawMinimap = function(minimap, x, y, width, height, scale)
     return false;
 };
 
-/*NPC.prototype.drawMinimap = function(canvas, context, x, y, width, height, scale){
-    let cb = this.lastCollisionBox;
+NPC.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
+    let cb = this.collisionBox();
 
-    context.fillStyle = '#00F';
-    context.fillRect(Math.floor(cb[0] * scale), Math.floor(cb[1] * scale), cb[2] * scale, this.size[3] * scale);
-}*/
+    let xs = Math.floor((cb[0] - x) * scale);
+    let ys = Math.floor((cb[1] - y) * scale);
+
+    minimap.fillRect('#FF0', xs, ys, cb[2] * scale, this.size[3] * scale);
+}
 
 User.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     let cb = this.lastCollisionBox;
@@ -1081,5 +1084,5 @@ User.prototype.drawMinimap = function(minimap, x, y, width, height, scale){
     let xs = Math.round((cb[0] - x) * scale);
     let ys = Math.round((cb[1] - y) * scale);
 
-    minimap.fillRect("#FF0", xs, ys, cb[2] * scale, this.size[3] * scale);
+    minimap.fillRect("#0CF", xs, ys, cb[2] * scale, this.size[3] * scale);
 }

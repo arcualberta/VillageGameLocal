@@ -1220,7 +1220,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 }else if(player.stats[&quot;kindness&quot;] == 3){
     this.TriggerDialog('WU_HAI_5', worldAdapter, player);
 }else if(this.properties[&quot;taskRequested&quot;]) { 
-    this.TriggerDialog('WU_HAI_2', worldAdapter, playe); 
+    this.TriggerDialog('WU_HAI_2', worldAdapter, player); 
 }else{ 
     this.TriggerDialog('WU_HAI_1', worldAdapter, player, function(){
 		if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('WU_HAI_5', worldAdapter, player);

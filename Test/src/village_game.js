@@ -348,7 +348,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             // __this.villageWorker.postMessage([WORKER_SET_WORLD, result], [result.world]);
             __this.villageDisplay.readWorldState(result);
         }, function (dialog, name, lineNumber, player, speaker, onClose) {
-            menu = new DialogMenu(dialog, name, lineNumber, player, speaker);
+            menu = new DialogMenu(dialog, name, lineNumber ? lineNumber : 1, player, speaker);
 
             recordEvent("Dialog", "Open", name);
 

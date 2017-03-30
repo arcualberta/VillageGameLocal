@@ -147,7 +147,7 @@ function setPaletteColor(index, r, g, b) {
 
 // Some code is added to give auto model creation.
 function CharacterSelectMenu(spriteSheets) {
-    var menu = new GameMenu("Character Select", 330, 330);
+    var menu = new GameMenu("Character Select", 332, 330);
 
     menu.sprites = [];
     menu.selected = 0;
@@ -383,7 +383,7 @@ function SettingsWindow(game){
 
         slider.bind("change", function(ev){
             recordEvent("Settings", "SetValue", name, this.value);
-            
+
             onchange.apply(this, arguments);
         });
 
@@ -474,6 +474,7 @@ function DialogMenu(dialog, name, lineNumber, player, speaker) {
         return function(event){
             recordEvent("Dialog", "SelectOption", name + " - " + currentLine["LINE_NUMBER"], index);
             setLine(name, currentLine["OPTION_" + index + "_LINE"]);
+            event.stopImmediatePropagation();
         };
     };
 

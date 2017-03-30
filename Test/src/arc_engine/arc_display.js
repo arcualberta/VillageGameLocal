@@ -804,22 +804,14 @@ ArcGLCanvasAdapter.prototype.loadTexture = function (image, flipY) {
 
     return texture;
 };
-ArcGLCanvasAdapter.prototype.updateImage = function(image, useNearest) {
+ArcGLCanvasAdapter.prototype.updateImage = function(image) {
     let gl = this.context;
 
     if(!image.texture){
         image.texture = this.loadTexture(image);
     }else{
         gl.bindTexture(gl.TEXTURE_2D, image.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    }
-
-    if(useNearest){
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    }else{
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
     }
 };
 ArcGLCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
