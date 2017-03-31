@@ -833,366 +833,365 @@ function arcUpscaleImage(amount, image, gridX, gridY) {
 // Defining the quadtree class
 // Tutorial from: http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 var QuadTree = ArcBaseObject();
-QuadTree.prototype = Object.create(ArcRenderableObject.prototype);
-QuadTree.prototype.init = function (x, y, width, height, level) {
-    ArcRenderableObject.prototype.init.call(this, true, true);
-    // We don't use the parent init because we do not wish to create more arrays
-    this.tickEnabled = true;
-    this.drawEnabled = true;
-    this.clickEnabled = true;
-    this.interactEnabled = true;
-    
-    this.level = level ? level : 0;
-    this.nodes = [null, null, null, null]; //Northwest, Northeast, Southeast, Southwest
-    this.objects = []; // Objects fully contained in this area
-    this.halfSize = [width / 2, height / 2];
+{
+    // Private functions
+    var treeTick = function(obj){
+        obj.tick.apply(obj, treeTick.args);
+    };
+    treeTick.args = null;
 
-    this.updateSize(width, height);
-
-    this.updateLocation(x, y)
-};
-QuadTree.prototype.updateLocation = function(x, y){
-    this.location[0] = x;
-    this.location[1] = y;
-    this.location[2] = x + this.size[0];
-    this.location[3] = y + this.size[1];
-    this.location[4] = x + this.size[2];
-    this.location[5] = y + this.size[3];
-};
-QuadTree.prototype.unload = function(){
-    this.clear();
-}
-QuadTree.prototype.MAX_OBJECTS = 5;
-QuadTree.prototype.MAX_LEVELS = 10;
-QuadTree.prototype.clear = function (onObjectClear) {
-    var i = 0;
-    var objects = this.objects;
-    var nodes = this.nodes;
-    // Clear the objects
-    if (onObjectClear) {
-        for (i = 0; i < objects.length; ++i) {
-            onObjectClear(objects[i]);
+    var treeClick = function(obj){
+        if(obj.clickEnabled && obj.inLocation(treeClick.x, treeClick.y, treeClick.x, treeClick.y)){
+            obj.click.apply(obj, treeClick.args);
         }
+    };
+    treeClick.args = null;
+    treeClick.x = 0;
+    treeClick.y = 0;
+
+    var treeInteract = function(obj){
+        if(obj.interactEnabled && obj.inLocation(treeInteract.left, treeInteract.top, treeInteract.right, treeInteract.bottom)){
+            obj.interact.apply(obj, treeInteract.args)
+        }
+    };
+    treeInteract.args = null;
+    treeInteract.left = 0;
+    treeInteract.top = 0;
+    treeInteract.right = 0;
+    treeInteract.bottom = 0;
+
+    var quadSort = function(a, b){ return a.location[3] - b.location[3]; };
+
+    // Public functions
+    QuadTree.prototype = Object.create(ArcRenderableObject.prototype);
+    QuadTree.prototype.init = function (x, y, width, height, level) {
+        ArcRenderableObject.prototype.init.call(this, true, true);
+        // We don't use the parent init because we do not wish to create more arrays
+        this.tickEnabled = true;
+        this.drawEnabled = true;
+        this.clickEnabled = true;
+        this.interactEnabled = true;
+        
+        this.level = level ? level : 0;
+        this.nodes = [null, null, null, null]; //Northwest, Northeast, Southeast, Southwest
+        this.halfSize = [width / 2, height / 2];
+        this.childrenCount = 0;
+
+        this.updateSize(width, height);
+
+        this.updateLocation(x, y)
+    };
+    QuadTree.prototype.updateLocation = function(x, y){
+        this.location[0] = x;
+        this.location[1] = y;
+        this.location[2] = x + this.size[0];
+        this.location[3] = y + this.size[1];
+        this.location[4] = x + this.size[2];
+        this.location[5] = y + this.size[3];
+    };
+    QuadTree.prototype.unload = function(){
+        this.clear();
     }
-    objects.length = 0;
-    // Clear child nodes
-    for (i = 0; i < 4; ++i) {
-        if (nodes[i] !== null) {
-            nodes[i].clear();
-            nodes[i] = null;
-        }
-    }
-};
-QuadTree.prototype.split = function () {
-    var halfWidth = this.halfSize[0];
-    var halfHeight = this.halfSize[1];
-    var x = this.location[0];
-    var y = this.location[1];
-    var level = this.level + 1;
-    this.nodes[0] = new QuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
-    this.nodes[1] = new QuadTree(x, y, halfWidth, halfHeight, level);
-    this.nodes[2] = new QuadTree(x, y + halfHeight, halfWidth, halfHeight, level);
-    this.nodes[3] = new QuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
-};
-QuadTree.prototype.getIndex = function (x, y, width, height) {
-    let bounds = this.location;
-    let hMid = bounds[0] + this.halfSize[0];
-    let vMid = bounds[1] + this.halfSize[1];
-    
-    // Check if the object fits in the top and bottom quadtrants
-    let fitNorth = (y + height) < vMid;
-    let fitSouth = y >= vMid;
-    
-    // Check if the object fits on the left or right sides
-    if ((x + width) < hMid) {
-        if (fitNorth) {
-            return 1;
-        } else if (fitSouth) {
-            return 2;
-        }
-    } else if (x >= hMid) {
-        if (fitNorth) {
-            return 0;
-        } else if (fitSouth) {
-            return 3;
-        }
-    }
-
-    return -1;
-};
-QuadTree.prototype.isInside = function(value){
-    return value.inLocation(this.location[0], this.location[1], this.location[3], this.location[4]);
-};
-/**
-* @override
-*/
-QuadTree.prototype.getChild = function(name){
-    let i, nodes;
-    let obj = null;
-
-    if(this.objects.length > 0){
-        for(i = this.objects.length - 1; i >= 0; --i){
-            obj = this.objects[i];
-
-            if(obj.name == name){
-                return obj;
-            }
-        }
-    }
-
-    nodes = this.nodes;
-    if(nodes[0] !== null){
-        for(i = 0; i < 4; ++i){
-            if((obj = nodes[i].getChild(name)) !== null){
-                return obj;
-            }
-        }
-    }
-
-    return null;
-}
-/**
-* @override
-*/
-QuadTree.prototype.removeChild = function(name){
-    let i, nodes;
-    let obj = null;
-
-    if(this.objects.length > 0){
-        for(i = this.objects.length - 1; i >= 0; --i){
-            obj = this.objects[i];
-
-            if(obj.name == name){
-                obj.unload();
-                this.objects.splice(i, 1);
-                return obj;
-            }
-        }
-    }
-
-    nodes = this.nodes;
-    if(nodes[0] !== null){
-        for(i = 0; i < 4; ++i){
-            if((obj = nodes[i].removeChild(name)) !== null){
-                return obj;
-            }
-        }
-    }
-
-    return null;
-};
-QuadTree.prototype.recalculate = function(buffer) {
-    let nodes = this.nodes;
-    let isEmpty = true;
-    let i;
-    let addedToBuffer = false;
-    var obj;
-
-    // Recalcualte nodes
-    if (nodes[0] !== null) {
-        isEmpty = nodes[0].recalculate(buffer);
-        isEmpty = nodes[1].recalculate(buffer) && isEmpty;
-        isEmpty = nodes[2].recalculate(buffer) && isEmpty;
-        isEmpty = nodes[3].recalculate(buffer) && isEmpty;
-
-        if(isEmpty){
-            nodes[0] = null;
-            nodes[1] = null;
-            nodes[2] = null;
-            nodes[3] = null;
-        }
-    }
-
-    // Calculate if our objects are still inside
-    if(this.objects.length > 0){
-        for(i = this.objects.length - 1; i >= 0; --i){
-            obj = this.objects[i];
-
-            if(!this.isInside(obj)){
-                buffer.push(obj);
-                this.objects.splice(i, 1);
-                addedToBuffer = true;
-            }
-        }
-    }
-
-    if(!addedToBuffer && buffer.length > 0){
-        for(i = buffer.length - 1; i >= 0; --i){
-            obj = buffer.pop();
-
-            // Go until we find one that we cannot insert.
-            if(this.isInside(obj)){
-                this.insert(obj);
-            }else{
-                buffer.push(obj)
-                break;
-            }
-        }
-    }
-
-
-    return nodes[0] === null && this.objects.length < 1;
-};
-QuadTree.prototype.insert = function (value) {
-    var nodes = this.nodes;
-    if (nodes[0] !== null) {
-        var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
-        if (index > -1) {
-            nodes[index].insert(value);
-            return;
-        }
-    }
-
-    this.objects.push(value);
-    if (this.objects.length > this.MAX_OBJECTS && this.level < this.MAX_LEVELS) {
-        if (this.nodes[0] === null) {
-            this.split();
-        }
-
+    QuadTree.prototype.MAX_OBJECTS = 5;
+    QuadTree.prototype.MAX_LEVELS = 10;
+    QuadTree.prototype.clear = function (onObjectClear) {
         var i = 0;
-        while (i < this.objects.length) {
-            var o = this.objects[i];
-            var index = this.getIndex(o.location[0], o.location[1], o.size[0], o.size[1]);
-            if (index > -1) {
-                this.objects.splice(i, 1);
-                this.nodes[index].insert(o);
-            } else {
-                ++i;
+        var nodes = this.nodes;
+        // Clear the objects
+        if (onObjectClear) {
+            for (i = 0; i < this.children.length; ++i) {
+                onObjectClear(this.children[i]);
             }
         }
-    }
-};
-QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, executeFunction) {
-    for (var i = 0; i < this.objects.length; ++i) {
-        returnObjects.push(this.objects[i]);
-
-        if (executeFunction) {
-            executeFunction(this.objects[i]);
-        }
-    }
-
-    var nodes = this.nodes;
-    if (nodes[0] !== null) {
-        var index = this.getIndex(x, y, width, height);
-        if (index > -1) {
-            returnObjects = returnObjects.concat(nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction));
-        } else {
-            nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
-            nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
-            nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
-            nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
-        }
-    }
-
-    return returnObjects;
-};
-QuadTree.prototype.getByName = function (name) {
-    var i = 0;
-    for (; i < this.objects.length; ++i) {
-        if (this.objects[i].name === name) {
-            return this.objects[i];
-        }
-    }
-
-    if (this.nodes[0] !== null) {
+        this.children.length = 0;
+        // Clear child nodes
         for (i = 0; i < 4; ++i) {
-            var result = this.nodes[i].getByName(name);
-            if (result !== null) {
-                return result;
+            if (nodes[i] !== null) {
+                nodes[i].clear();
+                nodes[i] = null;
             }
         }
-    }
-
-    return null;
-};
-QuadTree.prototype.tick = function (timeSinceLastFrame) {
-    let index;
-    let node;
-
-    if(this.nodes){
-        for(index = 0; index < 4; ++index){
-            node = this.nodes[index];
-            if(node){
-                node.tick.apply(node, arguments);
+    };
+    QuadTree.prototype.split = function () {
+        var halfWidth = this.halfSize[0];
+        var halfHeight = this.halfSize[1];
+        var x = this.location[0];
+        var y = this.location[1];
+        var level = this.level + 1;
+        this.nodes[0] = new QuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
+        this.nodes[1] = new QuadTree(x, y, halfWidth, halfHeight, level);
+        this.nodes[2] = new QuadTree(x, y + halfHeight, halfWidth, halfHeight, level);
+        this.nodes[3] = new QuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
+    };
+    QuadTree.prototype.getIndex = function (x, y, width, height) {
+        let bounds = this.location;
+        let hMid = bounds[0] + this.halfSize[0];
+        let vMid = bounds[1] + this.halfSize[1];
+        
+        // Check if the object fits in the top and bottom quadtrants
+        let fitNorth = (y + height) < vMid;
+        let fitSouth = y >= vMid;
+        
+        // Check if the object fits on the left or right sides
+        if ((x + width) < hMid) {
+            if (fitNorth) {
+                return 1;
+            } else if (fitSouth) {
+                return 2;
+            }
+        } else if (x >= hMid) {
+            if (fitNorth) {
+                return 0;
+            } else if (fitSouth) {
+                return 3;
             }
         }
-    }
 
-    for(index = 0; index < this.objects.length; ++index){
-        node = this.objects[index];
-        node.tick.apply(node, arguments);
-    }
+        return -1;
+    };
+    QuadTree.prototype.isInside = function(value){
+        return value.inLocation(this.location[0], this.location[1], this.location[3], this.location[4]);
+    };
+    /**
+    * @override
+    */
+    QuadTree.prototype.getChild = function(name){
+        let i, nodes;
+        let obj = null;
 
-    if(this.level == 0){
-        let buffer = QuadTree.ArrayBuffer;
+        if(this.children.length > 0){
+            for(i = this.children.length - 1; i >= 0; --i){
+                obj = this.children[i];
+
+                if(obj.name == name){
+                    return obj;
+                }
+            }
+        }
+
+        nodes = this.nodes;
+        if(nodes[0] !== null){
+            for(i = 0; i < 4; ++i){
+                if((obj = nodes[i].getChild(name)) !== null){
+                    return obj;
+                }
+            }
+        }
+
+        return null;
+    }
+    /**
+    * @override
+    */
+    QuadTree.prototype.removeChild = function(name){
+        let i, nodes;
+        let obj = null;
+
+        if(this.children.length > 0){
+            for(i = this.children.length - 1; i >= 0; --i){
+                obj = this.children[i];
+
+                if(obj.name == name){
+                    obj.unload();
+                    this.children.splice(i, 1);
+                    return obj;
+                }
+            }
+        }
+
+        nodes = this.nodes;
+        if(nodes[0] !== null){
+            for(i = 0; i < 4; ++i){
+                if((obj = nodes[i].removeChild(name)) !== null){
+                    return obj;
+                }
+            }
+        }
+
+        return null;
+    };
+    QuadTree.prototype.recalculate = function(buffer) {
+        let nodes = this.nodes;
+        let isEmpty = true;
+        let i;
+        let addedToBuffer = false;
+        var obj;
+
+        // Recalcualte nodes
+        if (nodes[0] !== null) {
+            isEmpty = nodes[0].recalculate(buffer);
+            isEmpty = nodes[1].recalculate(buffer) && isEmpty;
+            isEmpty = nodes[2].recalculate(buffer) && isEmpty;
+            isEmpty = nodes[3].recalculate(buffer) && isEmpty;
+
+            if(isEmpty){
+                nodes[0] = null;
+                nodes[1] = null;
+                nodes[2] = null;
+                nodes[3] = null;
+            }
+        }
+
+        // Calculate if our objects are still inside
+        if(this.children.length > 0){
+            for(i = this.children.length - 1; i >= 0; --i){
+                obj = this.children[i];
+
+                if(!this.isInside(obj)){
+                    buffer.push(obj);
+                    this.children.splice(i, 1);
+                    addedToBuffer = true;
+                }
+            }
+        }
+
+        if(!addedToBuffer && buffer.length > 0){
+            for(i = buffer.length - 1; i >= 0; --i){
+                obj = buffer.pop();
+
+                // Go until we find one that we cannot insert.
+                if(this.isInside(obj)){
+                    this.insert(obj);
+                }else{
+                    buffer.push(obj)
+                    break;
+                }
+            }
+        }
+
+
+        return nodes[0] === null && this.children.length < 1;
+    };
+    QuadTree.prototype.insert = function (value) {
+        var nodes = this.nodes;
+        if (nodes[0] !== null) {
+            var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
+            if (index > -1) {
+                nodes[index].insert(value);
+                return;
+            }
+        }
+
+        this.children.push(value);
+        if (this.children.length > this.MAX_OBJECTS && this.level < this.MAX_LEVELS) {
+            if (this.nodes[0] === null) {
+                this.split();
+            }
+
+            var i = 0;
+            while (i < this.children.length) {
+                var o = this.children[i];
+                var index = this.getIndex(o.location[0], o.location[1], o.size[0], o.size[1]);
+                if (index > -1) {
+                    this.children.splice(i, 1);
+                    this.nodes[index].insert(o);
+                } else {
+                    ++i;
+                }
+            }
+        }
+    };
+    QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, executeFunction) {
+        for (var i = 0; i < this.children.length; ++i) {
+            if(returnObjects) returnObjects.push(this.children[i]);
+
+            if (executeFunction) {
+                executeFunction(this.children[i]);
+            }
+        }
+
+        var nodes = this.nodes;
+        if (nodes[0] !== null) {
+            var index = this.getIndex(x, y, width, height);
+            if (index > -1) {
+                nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction);
+            } else {
+                nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
+                nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
+                nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
+                nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
+            }
+        }
+
+        return returnObjects;
+    };
+    QuadTree.prototype.getByName = function (name) {
+        return this.getChild(name);
+    };
+    QuadTree.prototype.tick = function (timeSinceLastFrame) {
+        treeTick.args = arguments;
+
+        this.getObjects(this.location[0], this.location[1], this.size[0], this.size[1], false, treeTick);
+
+        if(this.level == 0){
+            let buffer = QuadTree.ArrayBuffer;
+            buffer.length = 0;
+            this.recalculate(buffer);
+
+            for(index = 0; index < buffer.length; ++index){
+                this.insert(buffer[index]);
+            }
+        }
+    };
+    QuadTree.prototype.drawGrid = function(displayContext, xOffset, yOffset, width, height){
+        let color = "#00F";
+        let x1 = this.location[0];
+        let y1 = this.location[1];
+        let x2 = this.location[2];
+        let y2 = this.location[3];
+
+        displayContext.drawLine(x1, y1, x1, y2, color);
+        displayContext.drawLine(x1, y1, x2, y1, color);
+        displayContext.drawLine(x2, y2, x1, y2, color);
+        displayContext.drawLine(x2, y2, x2, y1, color);
+
+        let nodes = this.nodes;
+        if (nodes[0] !== null) {
+            let index = this.getIndex(xOffset, yOffset, width, height);
+            if (index > -1) {
+                nodes[index].drawGrid(displayContext, xOffset, yOffset, width, height);
+            } else {
+                nodes[0].drawGrid(displayContext, xOffset, yOffset, width, height);
+                nodes[1].drawGrid(displayContext, xOffset, yOffset, width, height);
+                nodes[2].drawGrid(displayContext, xOffset, yOffset, width, height);
+                nodes[3].drawGrid(displayContext, xOffset, yOffset, width, height);
+            }
+        }
+    };
+    QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        let buffer= QuadTree.ArrayBuffer;
+        let index;
         buffer.length = 0;
-        this.recalculate(buffer);
+        
+        this.getObjects(xOffset, yOffset, width, height, buffer);
+
+        buffer.sort(quadSort);
 
         for(index = 0; index < buffer.length; ++index){
-            this.insert(buffer[index]);
+            buffer[index].draw(displayContext, xOffset, yOffset, width, height);
         }
-    }
-};
-QuadTree.prototype.drawGrid = function(displayContext, xOffset, yOffset, width, height){
-    let color = "#00F";
-    let x1 = this.location[0];
-    let y1 = this.location[1];
-    let x2 = this.location[2];
-    let y2 = this.location[3];
 
-    displayContext.drawLine(x1, y1, x1, y2, color);
-    displayContext.drawLine(x1, y1, x2, y1, color);
-    displayContext.drawLine(x2, y2, x1, y2, color);
-    displayContext.drawLine(x2, y2, x2, y1, color);
-
-    let nodes = this.nodes;
-    if (nodes[0] !== null) {
-        let index = this.getIndex(xOffset, yOffset, width, height);
-        if (index > -1) {
-            nodes[index].drawGrid(displayContext, xOffset, yOffset, width, height);
-        } else {
-            nodes[0].drawGrid(displayContext, xOffset, yOffset, width, height);
-            nodes[1].drawGrid(displayContext, xOffset, yOffset, width, height);
-            nodes[2].drawGrid(displayContext, xOffset, yOffset, width, height);
-            nodes[3].drawGrid(displayContext, xOffset, yOffset, width, height);
+        if(window.debugMode){
+            this.drawGrid(displayContext, xOffset, yOffset, width, height);
         }
-    }
-};
-QuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    let buffer= QuadTree.ArrayBuffer;
-    let index;
-    buffer.length = 0;
-    
-    this.getObjects(xOffset, yOffset, width, height, buffer);
-
-    buffer.sort(function(a, b){ return a.location[3] - b.location[3]; });
-
-    for(index = 0; index < buffer.length; ++index){
-        buffer[index].draw(displayContext, xOffset, yOffset, width, height);
-    }
-
-    if(window.debugMode){
-        this.drawGrid(displayContext, xOffset, yOffset, width, height);
-    }
-};
-QuadTree.prototype.click = function(x, y){
-    var args = arguments;
-    let objects = this.getObjects(x, y, 1, 1, [], function(obj){
-        if(obj.clickEnabled && obj.inLocation(x, y, x, y)){
-            obj.click.apply(obj, args);
-        }
-    });
-};
-QuadTree.prototype.interact = function(left, top, right, bottom){
-    var args = arguments;
-    let objects = this.getObjects(left, top, right, bottom, [], function(obj){
-        if(obj.interactEnabled && obj.inLocation(left, top, right, bottom)){
-            obj.interact.apply(obj, args)
-        }
-    });
-};
-QuadTree.ArrayBuffer = [];
-QuadTree.StackBuffer = [];
+    };
+    QuadTree.prototype.click = function(x, y){
+        treeClick.args = arguments;
+        treeClick.x = x;
+        treeClick.y = y;
+        this.getObjects(x, y, 1, 1, false, treeClick);
+    };
+    QuadTree.prototype.interact = function(left, top, right, bottom){
+        treeInteract.args = arguments;
+        treeInteract.left = left;
+        treeInteract.right = right;
+        treeInteract.top = top;
+        treeInteract.bottom = bottom;
+        this.getObjects(left, top, right, bottom, false, treeInteract);
+    };
+    QuadTree.ArrayBuffer = [];
+    QuadTree.StackBuffer = [];
+}
 
 var ArcTileQuadTree_Tile = ArcBaseObject();
 ArcTileQuadTree_Tile.prototype = Object.create(ArcRenderableObject());
@@ -1225,212 +1224,114 @@ ArcTileQuadTree_Tile.prototype.trigger = function(action, left, top, right, bott
 
 // Special Quadtree for tiles
 var ArcTileQuadTree = ArcBaseObject();
-ArcTileQuadTree.prototype = Object.create(QuadTree.prototype);
-ArcTileQuadTree.prototype.init = function (x, y, width, height, level, scroll) {
-    QuadTree.prototype.init.call(this, x, y, width, height, level);
-    
-    this.scroll = scroll ? [scroll[0], scroll[1]] : null;
-    this.offset = [0, 0];
-    this.repeat = scroll && scroll !== null && (scroll[0] !== 0 || scroll[1] !== 0);
-    this.searchStack = [];
-};
-ArcTileQuadTree.prototype.MIN_WIDTH = 80; // Min Patch size in pixels
-ArcTileQuadTree.prototype.MIN_HEIGHT = 60; // Min Patch size in pixels
-ArcTileQuadTree.prototype.SPLIT_CHECK = {
-    isSplit: false,
-    xSplits: [],
-    ySplits: []
-};
-ArcTileQuadTree.prototype.split = function () {
-    var halfWidth = this.halfSize[0];
-    var halfHeight = this.halfSize[1];
-    var x = this.location[0];
-    var y = this.location[1];
-    var level = this.level + 1;
+{
+    // Private functions
+    var tileTrigger = function(obj){
+        obj.trigger(tileTrigger.action, tileTrigger.left, tileTrigger.top, tileTrigger.right, tileTrigger.bottom);
+    };
+    tileTrigger.action = null;
+    tileTrigger.left = 0;
+    tileTrigger.right = 0;
+    tileTrigger.top = 0;
+    tileTrigger.bottom = 0;
 
-    this.nodes[0] = new ArcTileQuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
-    this.nodes[1] = new ArcTileQuadTree(x, y, halfWidth, halfHeight, level);
-    this.nodes[2] = new ArcTileQuadTree(x, y + halfHeight, halfWidth, halfHeight, level);
-    this.nodes[3] = new ArcTileQuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
-
-    if (halfWidth > this.MIN_WIDTH && halfHeight > this.MIN_HEIGHT) {
-        for (var i = 0; i < 4; ++i) {
-            this.nodes[i].split();
-        }
-    }
-};
-ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeight) {
-    var arcTile = new ArcTileQuadTree_Tile(tile, x, y, tileWidth, tileHeight);
-    this.insert(arcTile);
-    return arcTile;
-};
-ArcTileQuadTree.prototype.insert = function (value) {
-    var nodes = this.nodes;
-    if (nodes[0] !== null) {
-        var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
-        if (index > -1) {
-            nodes[index].insert(value);
-            return;
-        }
-    }
-
-    this.objects.push(value);
-};
-ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, offset, split) {
-    // TODO: this needs to be calculated for repeating
-    /*split.isSplit = false;
-     
-     // check xSplits
-     var splits = split.xSplits;
-     var i = null;
-     splits.length = 0;
-     if(x < 0){
-     split.isSplit = true;
-     i = x;
-     while(i < 0){
-     i += this.bounds[2];
-     }
-     splits.push(i);
-     splits.push(this.bounds[2] - i);
-     splits.push(0);
-     
-     }else if(x > this.bounds[2]){
-     
-     }*/
-};
-ArcTileQuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, offset, repeat) {
-    let nodeStack = this.searchStack;
-    nodeStack.push(this);
-    
-    let node = null;
-    let object = null;
-
-    while ((node = nodeStack.pop()) != null) {
-        if (offset && offset !== null) {
-            node.offset[0] = offset[0];
-            node.offset[1] = offset[1];
-        }
-
-        repeat = repeat ? true : node.repeat;
-
-        // If this repeatable, split it up as needed
-        if (repeat) {
-            var bounds = node.location;
-            var xCheck = x + node.offset[0];
-            var yCheck = y + node.offset[1];
-
-            if (xCheck < bounds[0]) {
-                x += node.size[0];
-            } else if (xCheck > node.location[2]) {
-                x -= node.size[0];
-            }
-
-            if (yCheck < bounds[1]) {
-                y += node.size[1];
-            } else if (yCheck > node.location[3]) {
-                y -= node.size[1];
-            }
-        }
-
-        for (var i = 0; i < node.objects.length; ++i) {
-            object = node.objects[i];
-            if (object.tile.isDrawable) {
-                returnObjects.push({
-                    x: object.location[0] - node.offset[0],
-                    y: object.location[1] - node.offset[1],
-                    width: object.size[0],
-                    height: object.size[1],
-                    tile: object.tile.drawable(),
-                    tileSheet: object.tile.tileSheetName
-                });
-            }
-        }
-
-        var nodes = node.nodes;
-        if (nodes[0] !== null) {
-            var index = node.getIndex(x + node.offset[0], y + node.offset[1], width, height);
-            
-            if (index > -1) {
-                nodeStack.push(nodes[index]);
-            }else{
-                nodeStack.push(nodes[0]);
-                nodeStack.push(nodes[1]);
-                nodeStack.push(nodes[2]);
-                nodeStack.push(nodes[3]);
-            }
-        }
-    }
-
-    return returnObjects;
-};
-ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjects, offset, repeat){
-    let i, nodes, obj;
-
-    for(i = 0; i < this.objects.length; ++i){
-        obj = this.objects[i];
+    var tileDraw = function(obj){
         if(obj.tile.isDrawable){
-            // TODO: Find a way around this. We shouldnt need to create a new object.
-            returnObjects.push(obj);
+            tileDraw.buffer.push(obj);
         }
-    }
+    };
+    tileDraw.buffer = null;
 
-    nodes = this.nodes;
-    if(nodes[0] !== null){
-        i = this.getIndex(x, y, width, height);
+    // Public functions
+    ArcTileQuadTree.prototype = Object.create(QuadTree.prototype);
+    ArcTileQuadTree.prototype.init = function (x, y, width, height, level, scroll) {
+        QuadTree.prototype.init.call(this, x, y, width, height, level);
+        
+        this.scroll = scroll ? [scroll[0], scroll[1]] : null;
+        this.offset = [0, 0];
+        this.repeat = scroll && scroll !== null && (scroll[0] !== 0 || scroll[1] !== 0);
+        this.searchStack = [];
+    };
+    ArcTileQuadTree.prototype.MIN_WIDTH = 128; // Min Patch size in pixels
+    ArcTileQuadTree.prototype.MIN_HEIGHT = 128; // Min Patch size in pixels
+    ArcTileQuadTree.prototype.SPLIT_CHECK = {
+        isSplit: false,
+        xSplits: [],
+        ySplits: []
+    };
+    ArcTileQuadTree.prototype.split = function () {
+        var halfWidth = this.halfSize[0];
+        var halfHeight = this.halfSize[1];
+        var x = this.location[0];
+        var y = this.location[1];
+        var level = this.level + 1;
 
-        if(i >= 0){
-            nodes[i].getObjects(x, y, width, height, returnObjects, offset, repeat);
-        }else{
-            nodes[0].getObjects(x, y, width, height, returnObjects, offset, repeat);
-            nodes[1].getObjects(x, y, width, height, returnObjects, offset, repeat);
-            nodes[2].getObjects(x, y, width, height, returnObjects, offset, repeat);
-            nodes[3].getObjects(x, y, width, height, returnObjects, offset, repeat);
-        }
-    }
-};
-ArcTileQuadTree.prototype.trigger = function(action, left, top, right, bottom){
-    let i, nodes, obj;
+        this.nodes[0] = new ArcTileQuadTree(x + halfWidth, y, halfWidth, halfHeight, level);
+        this.nodes[1] = new ArcTileQuadTree(x, y, halfWidth, halfHeight, level);
+        this.nodes[2] = new ArcTileQuadTree(x, y + halfHeight, halfWidth, halfHeight, level);
+        this.nodes[3] = new ArcTileQuadTree(x + halfWidth, y + halfHeight, halfWidth, halfHeight, level);
 
-    for(i = 0; i < this.objects.length; ++i){
-        this.objects[i].trigger(action, left, top, right, bottom);
-    }
-
-    nodes = this.nodes;
-    if(nodes[0] !== null){
-        i = this.getIndex(left, top, right - left, bottom - top);
-
-        if(i >= 0){
-            nodes[i].trigger(action, left, top, right, bottom);
-        }else{
-            nodes[0].trigger(action, left, top, right, bottom);
-            nodes[1].trigger(action, left, top, right, bottom);
-            nodes[2].trigger(action, left, top, right, bottom);
-            nodes[3].trigger(action, left, top, right, bottom);
-        }
-    }
-};
-ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
-    const nodes = this.nodes;
-    let i, r, obj;
-    let result = null;
-
-    for (i = 0; i < this.objects.length; ++i) {
-        obj = this.objects[i];
-        r = obj.isBlocked(x1, y1, x2, y2, width, height);
-
-        if(r !== null){
-            if(r){
-                return true;
-            }else{
-                result = false;
+        if (halfWidth > this.MIN_WIDTH && halfHeight > this.MIN_HEIGHT) {
+            for (var i = 0; i < 4; ++i) {
+                this.nodes[i].split();
             }
         }
-    }
+    };
+    ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeight) {
+        var arcTile = new ArcTileQuadTree_Tile(tile, x, y, tileWidth, tileHeight);
+        this.insert(arcTile);
+        return arcTile;
+    };
+    ArcTileQuadTree.prototype.insert = function (value) {
+        var nodes = this.nodes;
+        if (nodes[0] !== null) {
+            var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
+            if (index > -1) {
+                nodes[index].insert(value);
+                return;
+            }
+        }
 
-    if (nodes[0] !== null) {
-        i = this.getIndex(x1, y1, width, height);
-        if (i > -1) {
-            r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+        this.children.push(value);
+    };
+    ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, offset, split) {
+        // TODO: this needs to be calculated for repeating
+        /*split.isSplit = false;
+         
+         // check xSplits
+         var splits = split.xSplits;
+         var i = null;
+         splits.length = 0;
+         if(x < 0){
+         split.isSplit = true;
+         i = x;
+         while(i < 0){
+         i += this.bounds[2];
+         }
+         splits.push(i);
+         splits.push(this.bounds[2] - i);
+         splits.push(0);
+         
+         }else if(x > this.bounds[2]){
+         
+         }*/
+    };
+    ArcTileQuadTree.prototype.trigger = function(action, left, top, right, bottom){
+        tileTrigger.action = action;
+        tileTrigger.left = left;
+        tileTrigger.right = right;
+        tileTrigger.top = top;
+        tileTrigger.bottom = bottom;
+        this.getObjects(left, top, right - left, bottom - top, false, tileTrigger);
+    };
+    ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+        const nodes = this.nodes;
+        let i, r, obj;
+        let result = null;
+
+        for (i = 0; i < this.children.length; ++i) {
+            obj = this.children[i];
+            r = obj.isBlocked(x1, y1, x2, y2, width, height);
 
             if(r !== null){
                 if(r){
@@ -1439,8 +1340,11 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
                     result = false;
                 }
             }
-        } else {
-            for (i = 0; i < 4; ++i) {
+        }
+
+        if (nodes[0] !== null) {
+            i = this.getIndex(x1, y1, width, height);
+            if (i > -1) {
                 r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
 
                 if(r !== null){
@@ -1450,47 +1354,90 @@ ArcTileQuadTree.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
                         result = false;
                     }
                 }
+            } else {
+                for (i = 0; i < 4; ++i) {
+                    r = nodes[i].isBlocked(x1, y1, x2, y2, width, height);
+
+                    if(r !== null){
+                        if(r){
+                            return true;
+                        }else{
+                            result = false;
+                        }
+                    }
+                }
             }
         }
-    }
 
-    return result;
-};
-ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
-    if (this.scroll !== null) {
-        let width = this.size[0];
-        let height = this.size[1];
-        let offset = this.offset;
-        let seconds = timeSinceLastFrame / 1000.0;
-        offset[0] += (seconds * this.scroll[0]);
-        offset[1] += (seconds * this.scroll[1]);
+        return result;
+    };
+    ArcTileQuadTree.prototype.tick = function (timeSinceLastFrame) {
+        if (this.scroll !== null) {
+            let width = this.size[0];
+            let height = this.size[1];
+            let offset = this.offset;
+            let seconds = timeSinceLastFrame / 1000.0;
+            offset[0] += (seconds * this.scroll[0]);
+            offset[1] += (seconds * this.scroll[1]);
 
-        // Reset the offsets as needed
-        while (offset[0] < -width) {
-            offset[0] += width;
+            // Reset the offsets as needed
+            while (offset[0] < -width) {
+                offset[0] += width;
+            }
+            while (offset[0] > width) {
+                offset[0] -= width;
+            }
+            while (offset[1] < -height) {
+                offset[1] += height;
+            }
+            while (offset[1] > height) {
+                offset[1] -= height;
+            }
         }
-        while (offset[0] > width) {
-            offset[0] -= width;
+    };
+    ArcTileQuadTree.prototype.drawGrid = function(displayContext, xOffset, yOffset, width, height){
+        let color = "rgba(128, 0, 128, 0.1)";
+        let x1 = this.location[0];
+        let y1 = this.location[1];
+        let x2 = this.location[2];
+        let y2 = this.location[3];
+
+        displayContext.drawLine(x1, y1, x1, y2, color);
+        displayContext.drawLine(x1, y1, x2, y1, color);
+        displayContext.drawLine(x2, y2, x1, y2, color);
+        displayContext.drawLine(x2, y2, x2, y1, color);
+
+        let nodes = this.nodes;
+        if (nodes[0] !== null) {
+            let index = this.getIndex(xOffset, yOffset, width, height);
+            if (index > -1) {
+                nodes[index].drawGrid(displayContext, xOffset, yOffset, width, height);
+            } else {
+                nodes[0].drawGrid(displayContext, xOffset, yOffset, width, height);
+                nodes[1].drawGrid(displayContext, xOffset, yOffset, width, height);
+                nodes[2].drawGrid(displayContext, xOffset, yOffset, width, height);
+                nodes[3].drawGrid(displayContext, xOffset, yOffset, width, height);
+            }
         }
-        while (offset[1] < -height) {
-            offset[1] += height;
-        }
-        while (offset[1] > height) {
-            offset[1] -= height;
+    };
+    ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        let buffer= QuadTree.ArrayBuffer;
+        buffer.length = 0;
+
+        tileDraw.buffer = buffer;
+        
+        this.getObjects(xOffset, yOffset, width, height, false, tileDraw);
+        
+        // Optimize drawing calls for the objects.
+        //sortOutputTiles(buffer);
+        buffer.sort(arcSortOutputTiles);
+        
+        displayContext.drawTileLayer(buffer);
+
+        if(window.debugMode){
+            this.drawGrid(displayContext, xOffset, yOffset, width, height);
         }
     }
-};
-ArcTileQuadTree.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    let buffer= QuadTree.ArrayBuffer;
-    buffer.length = 0;
-    
-    this.getObjects(xOffset, yOffset, width, height, buffer);
-    
-    // Optimize drawing calls for the objects.
-    //sortOutputTiles(buffer);
-    buffer.sort(arcSortOutputTiles);
-    
-    displayContext.drawTileLayer(buffer);
 }
 
 /**
@@ -1750,8 +1697,9 @@ ArcTileMap.prototype.setTileSheet = function (tileSheets, tileWidth, tileHeight)
     this.tileDimension[0] = tileWidth;
     this.tileDimension[1] = tileHeight;
 };
-ArcTileMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
-    return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
+ArcTileMap.prototype.getClosestTileCoord = function (pixelX, pixelY, buffer) {
+    buffer[0] = Math.round(pixelX / this.tileWidth);
+    buffer[1] =  Math.round(pixelY / this.tileHeight);
 };
 ArcTileMap.prototype.getTile = function (x, y) {
     var i = (y * this.dimension[0]) * x;

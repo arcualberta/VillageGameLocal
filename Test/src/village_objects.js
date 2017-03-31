@@ -29,16 +29,17 @@ Character.actions = ["stand", "walk"];
 Character.prototype.stop = function(){
 
 };
-Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
-    var start = village.getClosestTileCoord(this.location[4], this.location[5]);
-    var end = village.getClosestTileCoord(goal[0], goal[1]);
-    var xDif = Math.abs(start[0] - end[0]);
-    var yDif = Math.abs(start[1] - end[1]);
-    var dist = 1.0 / (speed * time);
-    var blockable = this.blockable;
+Character.startBuffer = new Float32Array(2);
+Character.endBuffer = new Float32Array(2);
+Character.prototype.isOnGoal = function(village, goal){
+    var start = village.getClosestTileCoord(this.location[4], this.location[5], Character.startBuffer);
+    var end = village.getClosestTileCoord(goal[0], goal[1], Character.endBuffer);
 
+    return Math.abs(start[0] - end[0]) < 1 && Math.abs(start[1] - end[1]) < 1;
+};
+Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
     // Check if we are moving
-    if(xDif < 1 && yDif < 1){
+    if(this.isOnGoal(village, goal)){
         output[0] = this.location[4];
         output[1] = this.location[5];
         output[2] = false;
@@ -47,9 +48,10 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     }
 
     // Find the movement vector
-    xDif = goal[0] - this.location[4];
-    yDif = goal[1] - this.location[5];
-    dist *= Math.sqrt((xDif * xDif) + (yDif * yDif));
+    var blockable = this.blockable;
+    var xDif = goal[0] - this.location[4];
+    var yDif = goal[1] - this.location[5];
+    var dist = Math.sqrt((xDif * xDif) + (yDif * yDif)) / (speed * time);
     xDif = (xDif / dist);
     yDif = (yDif / dist);
 

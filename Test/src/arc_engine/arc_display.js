@@ -195,7 +195,7 @@ ArcGraphicsAdapter.prototype.drawTileLayerWithOffset = function (layer, loopX, l
             if (tileIndex >= 0) {
                 var tile = layer.tileSheet.tiles[tileIndex];
 
-                if (tile) {
+                if (tile && tile.isDrawable) {
                     this.drawTile(tileSheet, tile.drawable(), xLoc, yLoc, layer.tileDimension[0], layer.tileDimension[1]);
                 }
             }
@@ -1134,10 +1134,6 @@ ArcMobileCanvasAdapter.prototype.requestFullscreen = function () {
 
 
 function arcGetDisplayAdapter(canvas, useGL) {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        return new ArcMobileCanvasAdapter(canvas);
-    }
-
     var adapter;
 
     if (useGL) {
@@ -1151,6 +1147,8 @@ function arcGetDisplayAdapter(canvas, useGL) {
                 console.log(e);
             }
         }
+    } else if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        adapter = new ArcMobileCanvasAdapter(canvas);
     } else {
         adapter = new ArcCanvasAdapter(canvas);
     }
