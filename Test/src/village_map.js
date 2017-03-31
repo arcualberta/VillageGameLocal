@@ -522,12 +522,14 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
 
                 $tile.find("properties > property").each(function () {
                     var propName = $(this).attr("name");
-                    var value = $(this).attr("value");
+                    var value = $(this).attr("value") ? $(this).attr("value") : $(this).text();
 
                     if (propName === "walkable") {
                         tile.walkable = "false" !== value.toLowerCase();
                     }else if(propName === "drawable"){
                         tile.isDrawable = "false" !== value.toLowerCase();
+                    }else if(propName.substring(0,2) === "on"){
+                        tile.properties[propName] = Function("caller", "time", "player", "world", "worldAdapter", value);
                     }else {
                         tile.properties[propName] = value;
                     }
@@ -583,7 +585,12 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                             tileY = tileY - tileHeight + _this.tileHeight;
                         }
 
-                        data.setTile(_this.tiles[index], tileX, tileY, tileWidth, tileHeight);
+                        var arcTile = data.setTile(_this.tiles[index], tileX, tileY, tileWidth, tileHeight);
+                        arcTile.setTile = function(tileId){
+                            if(tileId >= 0 && tileId < tiles.length){
+                                this.tile = tiles[tileId];
+                            }
+                        }
                     }
                 }
 
@@ -710,6 +717,15 @@ VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
     }
 
     return false;
+};
+VillageMap.prototype.trigger = function(action, left, top, right, bottom){
+    let child = null;
+
+    for(var i = this.waypointIndex - 1; i > -1; --i){
+        child = this.children[i];
+        
+        child.trigger(action, left, top, right, bottom);
+    }
 };
 /*VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer = QuadTree.ArrayBuffer;

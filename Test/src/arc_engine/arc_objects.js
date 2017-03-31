@@ -258,6 +258,17 @@ ArcEventObject.prototype.click = function(x, y){
 ArcEventObject.prototype.interact = function(left, top, right, bottom){
 
 };
+/**
+* Triggers the action specified by the function.
+* @param {string} action
+* @param {Number} left
+* @param {Number} top
+* @param {Number} right
+* @param {Number} bottom
+*/
+ArcEventObject.prototype.trigger = function(action, left, top, right, bottom){
+
+}
 
 /**
 * All objects that are renderable to the scene.
@@ -1202,6 +1213,15 @@ ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom, wi
 
     return null;
 };
+/**
+* @override
+*/
+ArcTileQuadTree_Tile.prototype.trigger = function(action, left, top, right, bottom){
+    let title = "on" + action;
+    if(this.tile.properties[title] && this.inLocation(left, top, right, bottom)){
+        this.tile.properties[title](this);
+    }
+}
 
 // Special Quadtree for tiles
 var ArcTileQuadTree = ArcBaseObject();
@@ -1240,7 +1260,9 @@ ArcTileQuadTree.prototype.split = function () {
     }
 };
 ArcTileQuadTree.prototype.insertTile = function (tile, x, y, tileWidth, tileHeight) {
-    this.insert(new ArcTileQuadTree_Tile(tile, x, y, tileWidth, tileHeight));
+    var arcTile = new ArcTileQuadTree_Tile(tile, x, y, tileWidth, tileHeight);
+    this.insert(arcTile);
+    return arcTile;
 };
 ArcTileQuadTree.prototype.insert = function (value) {
     var nodes = this.nodes;
@@ -1363,6 +1385,27 @@ ArcTileQuadTree.prototype.getObjects = function(x, y, width, height, returnObjec
             nodes[1].getObjects(x, y, width, height, returnObjects, offset, repeat);
             nodes[2].getObjects(x, y, width, height, returnObjects, offset, repeat);
             nodes[3].getObjects(x, y, width, height, returnObjects, offset, repeat);
+        }
+    }
+};
+ArcTileQuadTree.prototype.trigger = function(action, left, top, right, bottom){
+    let i, nodes, obj;
+
+    for(i = 0; i < this.objects.length; ++i){
+        this.objects[i].trigger(action, left, top, right, bottom);
+    }
+
+    nodes = this.nodes;
+    if(nodes[0] !== null){
+        i = this.getIndex(left, top, right - left, bottom - top);
+
+        if(i >= 0){
+            nodes[i].trigger(action, left, top, right, bottom);
+        }else{
+            nodes[0].trigger(action, left, top, right, bottom);
+            nodes[1].trigger(action, left, top, right, bottom);
+            nodes[2].trigger(action, left, top, right, bottom);
+            nodes[3].trigger(action, left, top, right, bottom);
         }
     }
 };
@@ -1700,7 +1743,7 @@ ArcTileMap.prototype.init = function (name, width, height, tileWidth, tileHeight
     this.data.split();
 };
 ArcTileMap.prototype.setTile = function (tile, x, y, tileWidth, tileHeight) {
-    this.data.insertTile(tile, x, y, tileWidth, tileHeight);
+    return this.data.insertTile(tile, x, y, tileWidth, tileHeight);
 };
 ArcTileMap.prototype.setTileSheet = function (tileSheets, tileWidth, tileHeight) {
     this.tileSheets = tileSheets;
@@ -1730,6 +1773,12 @@ ArcTileMap.prototype.tick = function(deltaMilliseconds){
         this.data.tick.apply(this.data, arguments);
     }
 }
+ArcTileMap.prototype.trigger = function(action, left, top, right, bottom){
+    if(this.data){
+        this.data.trigger(action, left, top, right, bottom);
+    }
+}
+
 /*ArcTileMap.prototype.isBlocked = function (x, y, w, h) {
  var tileSheet = this.tileSheet;
  if (tileSheet !== null) {
