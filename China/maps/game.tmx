@@ -144,6 +144,7 @@
   <tile id="26">
    <properties>
     <property name="minimap" value="#85c529"/>
+    <property name="oncut" value="caller.setTile(62);"/>
    </properties>
   </tile>
   <tile id="27">
@@ -242,6 +243,7 @@
   <tile id="45">
    <properties>
     <property name="minimap" value="#85c529"/>
+    <property name="oncut" value="caller.setTile(62);"/>
    </properties>
   </tile>
   <tile id="46">
@@ -332,6 +334,7 @@
   <tile id="64">
    <properties>
     <property name="minimap" value="#85c529"/>
+    <property name="oncut" value="caller.setTile(62);"/>
    </properties>
   </tile>
   <tile id="65">
@@ -398,19 +401,19 @@
   <tile id="81">
    <properties>
     <property name="minimap" value="#85c529"/>
-    <property name="oncut" value="caller.setTile(54);"/>
+    <property name="oncut" value="caller.setTile(63);"/>
    </properties>
   </tile>
   <tile id="82">
    <properties>
     <property name="minimap" value="#85c529"/>
-    <property name="oncut" value="caller.setTile(54);"/>
+    <property name="oncut" value="caller.setTile(63);"/>
    </properties>
   </tile>
   <tile id="83">
    <properties>
     <property name="minimap" value="#85c529"/>
-    <property name="oncut" value="caller.setTile(54);"/>
+    <property name="oncut" value="caller.setTile(63);"/>
    </properties>
   </tile>
   <tile id="87">
@@ -1408,7 +1411,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 if(this.stopCount &gt; 1){
 	world.objects.getChild(&quot;PaintBrush&quot;).updateLocation(5126, 4528);
 	this.state = &quot;onleave&quot;;
-
+	this.stopCount = 0;
 	this.waypoint[0] = 6999;
 	this.waypoint[1] = 4799;
 }</property>
