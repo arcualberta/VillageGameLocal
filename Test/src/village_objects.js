@@ -51,9 +51,9 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     var blockable = this.blockable;
     var xDif = goal[0] - this.location[4];
     var yDif = goal[1] - this.location[5];
-    var dist = Math.sqrt((xDif * xDif) + (yDif * yDif)) / (speed * time);
-    xDif = (xDif / dist);
-    yDif = (yDif / dist);
+    var dist = (speed * time) / Math.sqrt((xDif * xDif) + (yDif * yDif));
+    xDif = (xDif * dist);
+    yDif = (yDif * dist);
 
     // Set the new values
     var isChanged = true;

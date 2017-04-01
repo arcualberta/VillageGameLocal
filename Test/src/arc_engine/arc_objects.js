@@ -186,7 +186,7 @@ var ArcArrayBuffer = new ArcBaseObject();
     var createArrayProperty = function(buffer, index){
         Object.defineProperty(buffer, index, {
             get: function() { return buffer.data[index]; },
-            set: function(newValue) { buffer.data[index] = newValue; },
+            //set: function(newValue) { buffer.data[index] = newValue; },
             enumerable: true,
             configurable: true
         });
@@ -238,27 +238,33 @@ var ArcArrayBuffer = new ArcBaseObject();
     ArcArrayBuffer.prototype.pop = function(){
         if(this.length > 0){
             --this.length;
-            return this.data[this.length];
+            var result = this.data[this.length];
+            this.data[this.length] = null;
+            return result;
         }
 
         return null;
     }
     ArcArrayBuffer.prototype.splice = function(index, length){
-        var end = index + length;
+        var newLength = this.length - length;//Math.min(length, this.length - index);
 
-        if(end < this.length){
-            for(var i = 0; i < length; ++i){
-                this.data[index + i] = this.data[end + i];
+        this.data.splice(index, length);
+
+        /*if(newLength < 0){
+            newLength = 0;
+        }
+
+        for(var i = index; i < newLength; ++i){
+            var end = i + length;
+
+            if(end < this.length){
+                this.data[location] = this.data[end];
+                this.data[end] = null;
             }
-        }else{
-            this.data.splice(index, length);
         }
 
-        this.length -= length;
-
-        if(this.length < 0){
-            this.length = 0;
-        }
+        this.data.length = newLength;*/
+        this.length = newLength;
 
         return this;
     };
@@ -447,7 +453,7 @@ ArcRenderableObject.prototype.addChild = function(child, name){
 * @return {int} The index location of the child object. If no object exists then -1 is returned.
 */
 ArcRenderableObject.prototype.indexOfChild = function(name){
-    for(var i in this.children){
+    for(var i = 0 ; i < this.children.length; ++i){
         if(this.children[i].name === name){
             return i;
         }
@@ -460,7 +466,7 @@ ArcRenderableObject.prototype.indexOfChild = function(name){
 * @return {ArcRenderableObject} The child with the specified name. If no child exists, null is returned.
 */
 ArcRenderableObject.prototype.getChild = function(name){
-    for(var i in this.children){
+    for(var i = 0 ; i < this.children.length; ++i){
         if(this.children[i].name === name){
             return this.children[i];
         }
@@ -486,8 +492,8 @@ ArcRenderableObject.prototype.removeChild = function(name){
 * @override
 */
 ArcRenderableObject.prototype.unload = function(){
-    for (let key in this.children){
-        let child = this.children[key];
+    for (var i = 0 ; i < this.children.length; ++i){
+        let child = this.children[i];
         if(child.drawEnabled){
             child.unload();
         }
@@ -503,10 +509,10 @@ ArcRenderableObject.prototype.unload = function(){
 * @override
 */
 ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){ // For now lets assume zoom is 1
-    let child, key;
+    let child, i;
 
-    for (key in this.children){
-        child = this.children[key];
+    for (i = 0 ; i < this.children.length; ++i){
+        child = this.children[i];
         if(child.drawEnabled){
             child.draw(displayContext, xOffset, yOffset, width, height);
         }
@@ -518,10 +524,10 @@ ArcRenderableObject.prototype.draw = function(displayContext, xOffset, yOffset, 
 * @override
 */
 ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
-    let child, key;
+    let child, i;
 
-    for (key in this.children){
-        child = this.children[key];
+    for (i = 0 ; i < this.children.length; ++i){
+        child = this.children[i];
         if(child.tickEnabled){
             child.tick.apply(child, arguments);
         }
@@ -534,10 +540,10 @@ ArcRenderableObject.prototype.tick = function(deltaMilliseconds){
 * @override
 */
 ArcRenderableObject.prototype.click = function(x, y){
-    let child, key;
+    let child, i;
 
-    for (key in this.children){
-        child = this.children[key];
+    for (i = 0 ; i < this.children.length; ++i){
+        child = this.children[i];
         if(child.clickEnabled){
             child.click.apply(child, arguments);
         }
@@ -547,10 +553,10 @@ ArcRenderableObject.prototype.click = function(x, y){
 * @override
 */
 ArcRenderableObject.prototype.interact = function(left, top, right, bottom){
-    let child, key;
+    let child, i;
 
-    for (key in this.children){
-        child = this.children[key];
+    for (i = 0 ; i < this.children.length; ++i){
+        child = this.children[i];
         if(child.interactEnabled){
             child.interact.apply(child, arguments);
         }
