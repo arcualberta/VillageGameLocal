@@ -177,6 +177,104 @@ function ArcBaseObject() {
 }
 
 /**
+* Used to handle arrays by locking in memory.
+* @class
+* @param {int} soze The initial size of the array.
+*/
+var ArcArrayBuffer = new ArcBaseObject();
+{
+    var createArrayProperty = function(buffer, index){
+        Object.defineProperty(buffer, index, {
+            get: function() { return buffer.data[index]; },
+            set: function(newValue) { buffer.data[index] = newValue; },
+            enumerable: true,
+            configurable: true
+        });
+    };
+
+    var swap = function(array, i, j){
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    };
+
+    var partition = function(func, array, left, right){
+        var pivotValue = array[right];
+        var partitionIndex = left;
+
+        for(var i = left; i < right; ++i){
+            if(func(array[i], pivotValue) < 0){
+                swap(array, i, partitionIndex);
+                ++partitionIndex;
+            }
+        }
+        swap(array, right, partitionIndex);
+        return partitionIndex;
+    };
+
+    var quickSort = function(func, array, left, right){
+        if(left < right){
+            var partitionIndex = partition(func, array, left, right);
+
+            quickSort(func, array, left, partitionIndex - 1);
+            quickSort(func, array, partitionIndex + 1, right);
+        }
+    };
+
+    ArcArrayBuffer.prototype.init = function(size = 0){
+        this.data = new Array(size);
+        this.length = 0;
+    };
+    ArcArrayBuffer.prototype.push = function(obj){
+        if(this.length < this.data.length){
+            this.data[this.length] = obj;
+        }else{
+            this.data.push(obj);
+            createArrayProperty(this, this.length);
+        }
+
+        ++this.length;
+    };
+    ArcArrayBuffer.prototype.pop = function(){
+        if(this.length > 0){
+            --this.length;
+            return this.data[this.length];
+        }
+
+        return null;
+    }
+    ArcArrayBuffer.prototype.splice = function(index, length){
+        var end = index + length;
+
+        if(end < this.length){
+            for(var i = 0; i < length; ++i){
+                this.data[index + i] = this.data[end + i];
+            }
+        }else{
+            this.data.splice(index, length);
+        }
+
+        this.length -= length;
+
+        if(this.length < 0){
+            this.length = 0;
+        }
+
+        return this;
+    };
+    ArcArrayBuffer.prototype.sort = function(sortFunction){
+        quickSort(sortFunction, this.data, 0, this.length - 1);
+    };
+}
+
+var ArcFloat32Array = new ArcBaseObject();
+ArcFloat32Array.prototype = Object.create(ArcArrayBuffer.prototype);
+ArcFloat32Array.prototype.init = function(size = 0){
+    this.data = new Float32Array(size);
+    this.length = 0;
+}
+
+/**
 * An object used to attach multiple scripting funcitons to a class.
 * @class
 * @implements {ArcBaseObject}
@@ -279,7 +377,7 @@ ArcEventObject.prototype.trigger = function(action, left, top, right, bottom){
 */
 var ArcRenderableObject = new ArcBaseObject();
 ArcRenderableObject.prototype.init = function(tickEnabled, drawEnabled){
-    this.children = [];
+    this.children = new ArcArrayBuffer();
     this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
     this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
     this.clickEnabled = false;
@@ -1189,8 +1287,8 @@ var QuadTree = ArcBaseObject();
         treeInteract.bottom = bottom;
         this.getObjects(left, top, right, bottom, false, treeInteract);
     };
-    QuadTree.ArrayBuffer = [];
-    QuadTree.StackBuffer = [];
+    QuadTree.ArrayBuffer = new ArcArrayBuffer();
+    QuadTree.StackBuffer = new ArcArrayBuffer();
 }
 
 var ArcTileQuadTree_Tile = ArcBaseObject();
