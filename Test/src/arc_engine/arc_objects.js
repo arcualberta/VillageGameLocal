@@ -193,7 +193,7 @@ var ArcArrayBuffer = new ArcBaseObject();
     };
 
     var swap = function(array, i, j){
-        var temp = array[i];
+        let temp = array[i];
         array[i] = array[j];
         array[j] = temp;
     };
@@ -230,9 +230,9 @@ var ArcArrayBuffer = new ArcBaseObject();
             this.data[this.length] = obj;
         }else{
             this.data.push(obj);
-            createArrayProperty(this, this.length);
         }
 
+        createArrayProperty(this, this.length);
         ++this.length;
     };
     ArcArrayBuffer.prototype.pop = function(){
@@ -240,6 +240,7 @@ var ArcArrayBuffer = new ArcBaseObject();
             --this.length;
             var result = this.data[this.length];
             this.data[this.length] = null;
+            delete this[this.length]
             return result;
         }
 
@@ -248,9 +249,9 @@ var ArcArrayBuffer = new ArcBaseObject();
     ArcArrayBuffer.prototype.splice = function(index, length){
         var newLength = this.length - length;//Math.min(length, this.length - index);
 
-        this.data.splice(index, length);
+        //this.data.splice(index, length);
 
-        /*if(newLength < 0){
+        if(newLength < 0){
             newLength = 0;
         }
 
@@ -258,12 +259,15 @@ var ArcArrayBuffer = new ArcBaseObject();
             var end = i + length;
 
             if(end < this.length){
-                this.data[location] = this.data[end];
-                this.data[end] = null;
+                this.data[i] = this.data[end];
             }
         }
 
-        this.data.length = newLength;*/
+        for(var j = newLength; j < this.length; ++j){
+            //this.data[j] = null;
+            delete this[j];
+        }
+
         this.length = newLength;
 
         return this;
