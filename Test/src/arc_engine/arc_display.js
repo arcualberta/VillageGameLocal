@@ -353,9 +353,11 @@ ArcCanvasAdapter.prototype.drawTileLayerWithOffset = function (layer, loopX, loo
     ArcGraphicsAdapter.prototype.drawTileLayerWithOffset.call(this, layer, loopX, loopY);
 };
 ArcCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
-    this.context.drawImage(image,
+    if(image){
+        this.context.drawImage(image,
             cx, cy, cwidth, cheight,
             x, y, width, height);
+    }
 };
 ArcCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
     var offset = this.camera.offset;
@@ -811,11 +813,6 @@ ArcGLCanvasAdapter.prototype.updateImage = function(image) {
         image.texture = this.loadTexture(image);
     }else{
         gl.bindTexture(gl.TEXTURE_2D, image.texture);
-
-        if(image.getImageData){
-            image = image.getImageData(0, 0, image.width, image.height);
-        }
-
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
     }
 };
@@ -1136,6 +1133,10 @@ ArcMobileCanvasAdapter.prototype.requestFullscreen = function () {
 function arcGetDisplayAdapter(canvas, useGL) {
     var adapter;
 
+    var adapters = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 
+        [ArcGL2CanvasAdapter, ArcGLCanvasAdapter, ArcCanvasAdapter] :
+        [ArcCanvasAdapter];
+
     if (useGL) {
         var adapters = [ArcGL2CanvasAdapter, ArcGLCanvasAdapter, ArcCanvasAdapter];
 
@@ -1147,8 +1148,6 @@ function arcGetDisplayAdapter(canvas, useGL) {
                 console.log(e);
             }
         }
-    } else if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        adapter = new ArcMobileCanvasAdapter(canvas);
     } else {
         adapter = new ArcCanvasAdapter(canvas);
     }

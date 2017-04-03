@@ -150,10 +150,6 @@ function arcVerticalMergeOutputTiles(o1, o2){
 }
 
 function arcSortOutputTiles(o1, o2){
-    if(o1 == null || o2 == null){
-        return 0;
-    };
-    
     return o1.y === o2.y ? o1.x - o2.x : o1.y - o2.y;
 }
 
@@ -981,8 +977,8 @@ var QuadTree = ArcBaseObject();
         this.interactEnabled = true;
         
         this.level = level ? level : 0;
+        this.halfSize = [width / 2, height / 2]
         this.nodes = [null, null, null, null]; //Northwest, Northeast, Southeast, Southwest
-        this.halfSize = [width / 2, height / 2];
         this.childrenCount = 0;
 
         this.updateSize(width, height);
@@ -1033,8 +1029,8 @@ var QuadTree = ArcBaseObject();
     };
     QuadTree.prototype.getIndex = function (x, y, width, height) {
         let bounds = this.location;
-        let hMid = bounds[0] + this.halfSize[0];
-        let vMid = bounds[1] + this.halfSize[1];
+        let hMid = bounds[0] + this.size[2];
+        let vMid = bounds[1] + this.size[3];
         
         // Check if the object fits in the top and bottom quadtrants
         let fitNorth = (y + height) < vMid;
@@ -1200,24 +1196,26 @@ var QuadTree = ArcBaseObject();
         }
     };
     QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, executeFunction) {
-        for (var i = 0; i < this.children.length; ++i) {
-            if(returnObjects) returnObjects.push(this.children[i]);
+        if(this.inLocation(x, y, x + width, y + width)){
+            for (var i = 0; i < this.children.length; ++i) {
+                if(returnObjects) returnObjects.push(this.children[i]);
 
-            if (executeFunction) {
-                executeFunction(this.children[i]);
+                if (executeFunction) {
+                    executeFunction(this.children[i]);
+                }
             }
-        }
 
-        var nodes = this.nodes;
-        if (nodes[0] !== null) {
-            var index = this.getIndex(x, y, width, height);
-            if (index > -1) {
-                nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction);
-            } else {
-                nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
-                nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
-                nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
-                nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
+            var nodes = this.nodes;
+            if (nodes[0] !== null) {
+                var index = this.getIndex(x, y, width, height);
+                if (index > -1) {
+                    nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction);
+                } else {
+                    nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
+                }
             }
         }
 

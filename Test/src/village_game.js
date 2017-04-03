@@ -83,6 +83,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         });
     }
 
+    // Add the main Loop functionality
     var handleControls = function () {
         var actionList = __this.control.pullActionList();
 
@@ -94,19 +95,26 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             __this.villageDisplay.handleActions(actionList);
         }
     };
-
-    // Add the main Loop functionality
-    this.loopListeners.push(function (game, time) {
+    
+    this.beginLoopListeners.push(function(game, time) {
         handleControls();
+        var worldActions = worldAdapter.getWorldActions(__this.timestamp);
+        __this.villageDisplay.updateWorld(time, worldActions);
+    });
 
+    this.updateListeners.push(function (game, time) {
         if (menu) {
             menu.animate(time);
         }
 
-        var worldActions = worldAdapter.getWorldActions(__this.timestamp);
-        __this.villageDisplay.updateWorld(time, worldActions, __this.display.camera.offset);
+        
+        __this.villageDisplay.tick(time, __this.display.camera.offset);
         __this.hud.tick(time, worldAdapter, worldAdapter.module.currentMap);
         //drawScene();
+    });
+
+    this.drawListeners.push(function(game){
+        __this.villageDisplay.triggerDraw()
     });
 
     var updateSounds = function (location) {

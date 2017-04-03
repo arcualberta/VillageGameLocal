@@ -4,7 +4,7 @@ window.arcRequestAnimFrame = (function () {
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             function (callback) {
-                window.setTimeout(callback, 1000 / 30); // 30 fps otherwise
+                window.setTimeout(callback, 1000 / 60); // 30 fps otherwise
             };
 })();
 
@@ -80,7 +80,11 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
     this.display = displayAdapter;
     this.control = controlAdapter;
     this.audio = audioAdapter;
-    this.loopListeners = [];
+    this.beginLoopListeners = [];
+    this.endLoopListeners = [];
+    this.updateListeners = [];
+    this.drawListeners = [];
+    this.frameCap = 1000.0 / fpsCap;
     this.onResize = function (width, height) {
     };
 
@@ -134,11 +138,35 @@ ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audio
 
     resizeFunction();
 };
+ArcGame.prototype.beginLoop = function(delta){
+    for(var i = 0; i < this.beginLoopListeners.length; ++i){
+        this.beginLoopListeners[i](this, delta);
+    }
+};
+ArcGame.prototype.endLoop = function(){
+    for(var i = 0; i < this.endLoopListeners.length; ++i){
+        this.endLoopListeners[i](this);
+    }
+};
+ArcGame.prototype.update = function(delta){
+    this.display.update(delta);
+
+    for(var i = 0; i < this.updateListeners.length; ++i){
+        this.updateListeners[i](this, delta);
+    }
+};
+ArcGame.prototype.draw = function(){
+    for(var i = 0; i < this.drawListeners.length; ++i){
+        this.drawListeners[i](this);
+    }
+}
 ArcGame.prototype.start = function () {
     var __this = this;
+    var delta = 0;
+    var lastFrame = 0;
 
     // Main Game Loop
-    var loopGame = function () {
+    /*var loopGame = function (timestamp) {
         var time = __this.animate();
         arcRequestAnimFrame(loopGame);
         
@@ -149,7 +177,33 @@ ArcGame.prototype.start = function () {
                 __this.loopListeners[index](__this, time);
             }
         }
-    };
+    };*/
 
-    loopGame();
+    var loopGame = function(timestamp){
+        var loopCount = 0;
+        var redraw = false;
+
+        delta += timestamp - lastFrame;
+        lastFrame = timestamp;
+
+        if(delta >= __this.frameCap){
+            __this.beginLoop(delta);
+
+            while(delta >= __this.frameCap){
+
+                if(++loopCount < 10){
+                    __this.update(__this.frameCap);
+                }
+
+                delta -= __this.frameCap;
+            }
+
+            __this.draw();
+            __this.endLoop();
+        }
+
+        arcRequestAnimFrame(loopGame);
+    }
+
+    loopGame(0);
 };

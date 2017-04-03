@@ -291,12 +291,15 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
 
         stateResponseFunction(result);
     };
+    this.lastWorldActions = {
+        type: WORLD_ACTIONLIST,
+        timestamp: Date.now(), // Timestamp will be used for the network to find out which actions do not need to be used
+        actions: new ArcArrayBuffer()
+    };
     this.getWorldActions = function (timestamp) {
-        var result = {
-            type: WORLD_ACTIONLIST,
-            timestamp: Date.now(), // Timestamp will be used for the network to find out which actions do not need to be used
-            actions: []
-        };
+        var result = this.lastWorldActions;
+        result.timestamp = Date.now();
+        result.actions.length = 0;
 
         while (temp_actionList.length > 0 && temp_actionList[0].timestamp < result.timestamp) {
             result.actions.push(temp_actionList.shift().action);

@@ -32,9 +32,16 @@ VillageDisplay.prototype.clearLayerGroup = function(layers, groupCount){
     
     return layers;
 };
-VillageDisplay.prototype.triggerDraw = function (playerLoc, offset) {
+VillageDisplay.prototype.triggerDraw = function () {
+    var offset = this.offset;
+
     if (this.world !== null && offset) {
-        this.drawWorldFunction(playerLoc, offset[0], offset[1], this.world);
+        if(this.player && this.player.user){
+            this.drawWorldFunction(this.player.user.location, offset[0], offset[1], this.world);
+        }else{
+            this.drawWorldFunction(offset, offset[0], offset[1], this.world);
+        }
+        
     }
 };
 VillageDisplay.prototype.handleActions = function (actions) {
@@ -76,20 +83,50 @@ VillageDisplay.prototype.handleActions = function (actions) {
 };
 VillageDisplay.prototype.updateWorld = function (time, actionList, cameraOffset) {
     this.readWorldState(actionList, cameraOffset);
-    var player = this.player;
+};
+VillageDisplay.prototype.tick = function(time, cameraOffset){
+    var p = null;
+    var offset = this.offset;
+    var dimension = null;
+
+    if (this.player && this.player.user) {
+        p = this.player.user;
+        dimension = this.halfDim;
+
+        offset[0] = p.location[4] - dimension[0];
+        offset[1] = p.location[5] - dimension[1];
+    } else if (cameraOffset) {
+        offset[0] = cameraOffset[0];
+        offset[1] = cameraOffset[1];
+    } else {
+        offset[0] = 0;
+        offset[1] = 0;
+    }
+
+    dimension = this.dimension;
+    if (offset[0] < 0) {
+        offset[0] = 0;
+    } else if (offset[0] > this.maxOffset[0] - dimension[0]) {
+        offset[0] = this.maxOffset[0] - dimension[0];
+    }
+
+    if (offset[1] < 0) {
+        offset[1] = 0;
+    } else if (offset[1] > this.maxOffset[1] - dimension[1]) {
+        offset[1] = this.maxOffset[1] - dimension[1];
+    }
 
     // Update player
-    if (player !== null && player.user) {
+    if (p !== null) {
         this.player.tick(time, this.worldAdapter, this.world);
-        if(player.showWaypoint){
-            this.world.setWaypointLocation(player.waypointLoc);
+        if(this.player.showWaypoint){
+            this.world.setWaypointLocation(this.player.waypointLoc);
         }else{
             this.world.setWaypointLocation(null);
         }
     }
 
-    // Update the layers
-    this.world.tick(time, this.worldAdapter, this.world, player);
+    this.world.tick(time, this.worldAdapter, this.world, this.player);
 };
 VillageDisplay.prototype.resize = function (width, height) {
     this.dimension[0] = width;
@@ -103,7 +140,7 @@ VillageDisplay.prototype.setPlayer = function (id, name, location, spriteSheetId
 
     this.player = id;
 };
-VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
+VillageDisplay.prototype.readWorldState = function (result) {
     // Check if the player is logged in
     var player = this.player;
     var isPlayerSet = typeof player === 'number';
@@ -139,38 +176,9 @@ VillageDisplay.prototype.readWorldState = function (result, cameraOffset) {
             break;
     }
 
-    var p = null;
-    var offset = this.offset;
-    var dimension = null;
+    
 
-    if (isPlayerSet) {
-        p = player.user;
-        dimension = this.halfDim;
-
-        offset[0] = p.location[4] - dimension[0];
-        offset[1] = p.location[5] - dimension[1];
-    } else if (cameraOffset) {
-        offset[0] = cameraOffset[0];
-        offset[1] = cameraOffset[1];
-    } else {
-        offset[0] = 0;
-        offset[1] = 0;
-    }
-
-    dimension = this.dimension;
-    if (offset[0] < 0) {
-        offset[0] = 0;
-    } else if (offset[0] > this.maxOffset[0] - dimension[0]) {
-        offset[0] = this.maxOffset[0] - dimension[0];
-    }
-
-    if (offset[1] < 0) {
-        offset[1] = 0;
-    } else if (offset[1] > this.maxOffset[1] - dimension[1]) {
-        offset[1] = this.maxOffset[1] - dimension[1];
-    }
-
-    this.triggerDraw(p === null ? offset : p.location, offset);
+    //this.triggerDraw(p === null ? offset : p.location, offset);
 };
 VillageDisplay.prototype.handleWorldSnapshot = function (world, playerStart) {
     var i;

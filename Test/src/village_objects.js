@@ -52,55 +52,35 @@ Character.prototype.calculateNextStep = function(village, speed, time, goal, out
     var xDif = goal[0] - this.location[4];
     var yDif = goal[1] - this.location[5];
     var dist = (speed * time) / Math.sqrt((xDif * xDif) + (yDif * yDif));
-    xDif = (xDif * dist);
-    yDif = (yDif * dist);
+    var x = Math.round(xDif * dist);
+    var y = Math.round(yDif * dist);
 
     // Set the new values
     var isChanged = true;
     var tileBox = this.collisionBox();
-    var x = 0;
-    var y = 0;
 
     // Set to find where we intersect in the x direction.
-    if(xDif < 0){
-        for(x = -1; x > xDif; --x){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
-                break;
-            }
+    if(x < 0){
+        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+            x = 0; //TODO: go to the edge of the blocking object;
         }
-
-        ++x;
-    }else if(xDif > 0){
-        for(x = 1; x < xDif; ++x){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
-                break;
-            }
+    }else if(x > 0){
+        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+            x = 0;
         }
-
-        --x;
     }
 
-    // Step in the y direction to see where we intersect.
-    if(yDif < 0){
-        for(y = -1; y > yDif; --y){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
-                break;
-            }
+    if(y < 0){
+        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+            y = 0;
         }
-
-        ++y;
-    }else if(yDif > 0){
-        for(y = 1; y < yDif; ++y){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
-
-                break;
-            }
+    }else if(y > 0){
+        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+            y = 0;
         }
-
-        --y;
     }
 
-    if(x != 0 && y != 0){
+    if(x != 0 || y != 0){
         this.setMovementVector(x, y);
     }
 
