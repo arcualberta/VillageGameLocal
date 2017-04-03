@@ -387,574 +387,9 @@ ArcCanvasAdapter.prototype.resize = function (width, height) {
 };
 
 var ArcGLCanvasAdapter = ArcBaseObject();
-ArcGLCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
-ArcGLCanvasAdapter.prototype.init = function (canvas) {
-    ArcGraphicsAdapter.prototype.init.call(this);
-    var textCanvas = document.createElement('canvas');
-    $(textCanvas).css("background-color", "rgba(255, 0, 255, 0)");
-    textCanvas.width = canvas.width;
-    textCanvas.height = canvas.height;
-
-    // Setup WebGL
-    var gl;
-
-    try {
-        gl = canvas.getContext("webgl", "experimental-webgl");
-    } catch (e) {
-        throw("WebGL not supported.");
-    }
-
-    this.textCanvas = textCanvas;
-    this.textContext = textCanvas.getContext('2d');
-    this.program = null;
-    this.waypointProgram = null;
-    this.postProgram = null;
-    this.textProgram = null;
-    this.backbuffer = null;
-    this.backbufferTexture = null;
-    this.textbufferTexture = null;
-    this.context = gl;
-    this.vBuffer = null;
-    this.size[0] = canvas.width;
-    this.size[1] = canvas.height;
-    this.canvas = canvas;
-
-    this.initGL();
-};
-ArcGLCanvasAdapter.prototype.initGL = function () {
-    var gl = this.context;
-    var canvas = this.canvas;
-
-    // Create Orthoginal Matrix
-    var generateOrtho = function (mat, left, right, top, bottom, near, far) {
-        var width = right - left;
-        var height = top - bottom;
-        var depth = far - near;
-
-        mat[0] = 2 / width;
-        mat[1] = 0;
-        mat[2] = 0;
-        mat[3] = 0;
-
-        mat[4] = 0;
-        mat[5] = 2 / height;
-        mat[6] = 0;
-        mat[7] = 0;
-
-        mat[8] = 0;
-        mat[9] = 0;
-        mat[10] = -1 / depth;
-        mat[11] = 0;
-
-        mat[12] = -(right + left) / width;
-        mat[13] = -(top + bottom) / height;
-        mat[14] = -near / depth;
-        mat[15] = 1.0;
-
-        return mat;
-    };
-
-    // Create Perspective Matrix
-    var generatePerspective = function (mat, fov, near, far) {
-        var S = 1.0 / Math.tan(fov * 0.5 * (Math.PI / 180.0));
-        var depth = far - near;
-
-        mat[0] = S;
-        mat[1] = 0;
-        mat[2] = 0;
-        mat[3] = 0;
-
-        mat[4] = 0;
-        mat[5] = S;
-        mat[6] = 0;
-        mat[7] = 0;
-
-        mat[8] = 0;
-        mat[9] = 0;
-        mat[10] = -far / depth;
-        mat[11] = -1.0;
-
-        mat[12] = 0;
-        mat[13] = 0;
-        mat[14] = -(far * near) / depth;
-        mat[15] = 0;
-
-        return mat;
-    };
-
-    var generateRotationMatrix = function (mat, theta) {
-        var sin = Math.sin(theta);
-        var cos = Math.cos(theta);
-
-        mat[0] = 1;
-        mat[1] = 0;
-        mat[2] = 0;
-        mat[3] = 0;
-
-        mat[4] = 0;
-        mat[5] = cos;
-        mat[6] = -sin;
-        mat[7] = 0;
-
-        mat[8] = 0;
-        mat[9] = sin;
-        mat[10] = cos;
-        mat[11] = 0;
-
-        mat[12] = 0;
-        mat[13] = 0;
-        mat[14] = 0;
-        mat[15] = 1;
-
-        return mat;
-    };
-
-    var createShader = function (type, code) {
-        var shader = gl.createShader(type);
-
-        gl.shaderSource(shader, code);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            alert(gl.getShaderInfoLog(shader));
-            return null;
-        }
-
-        return shader;
-    };
-
-    var createProgram = function (vertSrc, fragSrc) {
-        var fragShader = createShader(gl.FRAGMENT_SHADER, fragSrc);
-        var vertexShader = createShader(gl.VERTEX_SHADER, vertSrc);
-
-        var program = gl.createProgram();
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragShader);
-        gl.linkProgram(program);
-
-        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            alert("Could not initialize shaders.");
-        }
-
-        return program;
-    };
-
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.enable(gl.BLEND);
-
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-    // Create the text writing program
-    textProgram = createProgram(
-            "precision mediump float;\n" +
-            "attribute vec2 aVertPos;\n" +
-            "varying vec2 vTexPos;\n" +
-            "void main(void){\n" +
-            "vTexPos = vec2(aVertPos.x, 1.0 - aVertPos.y);\n" +
-            "gl_Position = vec4((aVertPos * 2.0) - 1.0, 0.0, 1.0);\n" +
-            "}",
-            "precision mediump float;\n" +
-            "uniform sampler2D uTexture;\n" +
-            "varying vec2 vTexPos;\n" +
-            "void main(void){\n" +
-            "gl_FragColor = texture2D(uTexture, vTexPos);\n" +
-            "}"
-            );
-
-    gl.useProgram(textProgram);
-    textProgram.aVertPos = gl.getAttribLocation(textProgram, "aVertPos");
-
-    textProgram.uTexture = gl.getUniformLocation(textProgram, "uTexture");
-
-    gl.uniform1i(textProgram.uTexture, 2);
-    this.textProgram = textProgram;
-
-    // Create the post processing program
-    var postProgram = createProgram(
-            "precision mediump float;\n" +
-            "attribute vec2 aVertPos;\n" +
-            "varying vec2 vTexPos;\n" +
-            "void main(void){\n" +
-            "vTexPos = vec2(aVertPos.x, aVertPos.y);\n" +
-            "gl_Position = vec4((aVertPos * 2.0) - 1.0, 0.0, 1.0);\n" +
-            "}",
-            "precision mediump float;\n" +
-            "uniform vec2 uSpace;\n" +
-            "uniform lowp int uBlurType;\n" +
-            "uniform sampler2D uTexture;\n" +
-            "varying vec2 vTexPos;\n" +
-            "varying vec2 vSpace;\n" +
-            "vec4 blur(float p){\n" +
-            "vec4 tMain = texture2D(uTexture, vTexPos);\n" +
-            "if(p <= 0.0) { return tMain; }\n" +
-            "vec4 left, right;\n" +
-            "if(uBlurType == 1){\n" +
-            "left = texture2D(uTexture, vec2(vTexPos.x, vTexPos.y - uSpace.y));\n" +
-            "right = texture2D(uTexture, vec2(vTexPos.x, vTexPos.y + uSpace.y));\n" +
-            "}else if(uBlurType == 2){\n" +
-            "left = texture2D(uTexture, vec2(vTexPos.x - uSpace.x, vTexPos.y));\n" +
-            "right = texture2D(uTexture, vec2(vTexPos.x + uSpace.x, vTexPos.y));\n" +
-            "}else{return tMain;}\n" +
-            "float outP = sqrt(p * 2.0) / 3.0;\n" +
-            "return (outP * (left + right)) + ((1.0 - (2.0 * outP)) * tMain);\n" +
-            "}\n" +
-            "void main(void){\n" +
-            "float y = pow((vTexPos.y * 2.0) - 1.0, 2.0);\n" + // Tilt shift
-            //"float y = (2.0 * distance((vTexPos * 2.0) - 1.0, vec2(0, 0))) - 1.0;\n" + // Radial focus
-            "y = max(y, 0.0);\n" +
-            "gl_FragColor = blur(y);\n" +
-            "}");
-    gl.useProgram(postProgram);
-    postProgram.aVertPos = gl.getAttribLocation(postProgram, "aVertPos");
-
-    postProgram.uSpace = gl.getUniformLocation(postProgram, "uSpace");
-    postProgram.uTexture = gl.getUniformLocation(postProgram, "uTexture");
-    postProgram.uBlurType = gl.getUniformLocation(postProgram, "uBlurType");
-
-    gl.uniform1i(postProgram.uTexture, 1);
-
-    this.postProgram = postProgram;
-
-    // Create the waypoint program
-    var waypointProgram = createProgram(
-            "precision mediump float;\n" +
-            "uniform vec2 uScreen;\n" +
-            "uniform vec4 uDimension;\n" +
-            "attribute vec2 aVertPos;\n" +
-            "varying vec2 vTexPos;\n" +
-            "void main(void){\n" +
-            "vTexPos = (vec2(aVertPos.x, aVertPos.y) * 2.0) - 1.0;\n" +
-            "gl_Position.zw = vec2(0.0, 1.0);\n" +
-            "gl_Position.x = ((2.0 * uDimension.x) - uScreen.x + (2.0 * aVertPos.x * uDimension.z)) / uScreen.x;\n" +
-            "gl_Position.y = ((-2.0 * uDimension.y) + uScreen.y - (2.0 * aVertPos.y * uDimension.w)) / uScreen.y;\n" +
-            "}",
-            "precision mediump float;\n" +
-            "varying vec2 vTexPos;\n" +
-            "void main(void){\n" +
-            "float d = distance(vTexPos, vec2(0,0));\n" +
-            "if(d > 1.0){ discard; }\n" +
-            "d = 1.0 - d;\n" +
-            "d *= d;\n" +
-            "gl_FragColor = vec4(d, d, d * 0.1, 1.0);\n" +
-            "}");
-
-    gl.useProgram(waypointProgram);
-    waypointProgram.aVertPos = gl.getAttribLocation(waypointProgram, "aVertPos");
-
-    waypointProgram.uScreen = gl.getUniformLocation(waypointProgram, "uScreen");
-    waypointProgram.uDimension = gl.getUniformLocation(waypointProgram, "uDimension");
-
-    this.waypointProgram = waypointProgram;
-
-    // Create the basic image shader
-    var program = createProgram(
-            "precision mediump float;\n" +
-            "uniform mat4 mOMatrix;\n" +
-            "uniform mat4 mRMatrix;\n" +
-            "uniform vec2 uScreen;\n" +
-            "uniform vec4 uDimension;\n" +
-            "attribute vec2 aVertPos;\n" +
-            "varying vec2 vTexPos;\n" +
-            "void main(void){\n" +
-            "vTexPos = vec2(aVertPos.x, aVertPos.y);\n" +
-            "gl_Position.zw = vec2(-1.6, 1.0);\n" +
-            "gl_Position.x = ((2.0 * uDimension.x) - uScreen.x + (2.0 * aVertPos.x * uDimension.z)) / uScreen.x;\n" +
-            "gl_Position.y = ((-2.0 * uDimension.y) + uScreen.y - (2.0 * aVertPos.y * uDimension.w)) / uScreen.y;\n" +
-            "gl_Position = mRMatrix * gl_Position;\n" +
-            "gl_Position.z -= 0.0;\n" +
-            "gl_Position = mOMatrix * gl_Position;\n" +
-            "}",
-            "precision mediump float;\n" +
-            "uniform float uScaleDist;\n" +
-            "uniform vec2 uTexDimension;\n" +
-            "uniform vec4 uTileDimension;\n" +
-            "uniform sampler2D uTexture;\n" +
-            "varying vec2 vTexPos;\n" +
-            "vec2 getAvailableTexturePosition(vec2 texPos){\n" +
-            "vec2 outVal = max(min(texPos, vec2(1.0, 1.0)), vec2(0.01, 0.01));\n" +
-            "outVal *= uTileDimension.zw;\n" +
-            "outVal += uTileDimension.xy;\n" +
-            "return outVal / uTexDimension;\n" +
-            "}\n" +
-            "vec4 scaled(vec2 texPos){\n" +
-            "vec2 scale = uScaleDist * 1.0/uTileDimension.zw;\n" +
-            "vec2 texCoord[9];\n" +
-            "vec4 texColor[9];\n" +
-            "vec4 avg;\n" +
-            "float d;\n" +
-            "float dCheck;\n" +
-            "texCoord[0] = getAvailableTexturePosition(vec2(texPos.x - scale.x, texPos.y - scale.y));\n" +
-            "texCoord[1] = getAvailableTexturePosition(vec2(texPos.x - 0.0, texPos.y - scale.y));\n" +
-            "texCoord[2] = getAvailableTexturePosition(vec2(texPos.x + scale.x, texPos.y - scale.y));\n" +
-            "texCoord[3] = getAvailableTexturePosition(vec2(texPos.x - scale.x, texPos.y - 0.0));\n" +
-            "texCoord[4] = getAvailableTexturePosition(vec2(texPos.x - 0.0, texPos.y - 0.0));\n" +
-            "texCoord[5] = getAvailableTexturePosition(vec2(texPos.x + scale.x, texPos.y - 0.0));\n" +
-            "texCoord[6] = getAvailableTexturePosition(vec2(texPos.x - scale.x, texPos.y - scale.y));\n" +
-            "texCoord[7] = getAvailableTexturePosition(vec2(texPos.x - 0.0, texPos.y - scale.y));\n" +
-            "texCoord[8] = getAvailableTexturePosition(vec2(texPos.x + scale.x, texPos.y - scale.y));\n" +
-            "texColor[0] = texture2D(uTexture, texCoord[0]);\n" +
-            "texColor[1] = texture2D(uTexture, texCoord[1]);\n" +
-            "texColor[2] = texture2D(uTexture, texCoord[2]);\n" +
-            "texColor[3] = texture2D(uTexture, texCoord[3]);\n" +
-            "texColor[4] = texture2D(uTexture, texCoord[4]);\n" +
-            "texColor[5] = texture2D(uTexture, texCoord[5]);\n" +
-            "texColor[6] = texture2D(uTexture, texCoord[6]);\n" +
-            "texColor[7] = texture2D(uTexture, texCoord[7]);\n" +
-            "texColor[8] = texture2D(uTexture, texCoord[8]);\n" +
-            "avg = texColor[0] + texColor[1] + texColor[2] + texColor[3] + texColor[4] + texColor[5] + texColor[6] + texColor[7] + texColor[8];\n" +
-            "if(avg.a == 0.0) { discard; }\n" +
-            "avg = avg / 9.0;\n" +
-            "vec4 currentColor = texColor[5];\n" +
-            "d = distance(avg, currentColor);\n" +
-            "dCheck = distance(avg, texColor[0]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[0]; }\n" +
-            "dCheck = distance(avg, texColor[1]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[1]; }\n" +
-            "dCheck = distance(avg, texColor[2]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[2]; }\n" +
-            "dCheck = distance(avg, texColor[3]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[3]; }\n" +
-            "dCheck = distance(avg, texColor[4]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[4]; }\n" +
-            "dCheck = distance(avg, texColor[6]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[6]; }\n" +
-            "dCheck = distance(avg, texColor[7]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[7]; }\n" +
-            "dCheck = distance(avg, texColor[8]);\n" +
-            "if(dCheck < d){ d = dCheck; currentColor = texColor[8]; }\n" +
-            "return currentColor;\n" +
-            "}\n" +
-            "void main(void){\n" +
-            //"vec2 texPos = vTexPos * uTileDimension.zw;\n" +
-            //"texPos += uTileDimension.xy;\n" +
-            //"texPos = texPos / uTexDimension;\n" + 
-            "gl_FragColor = scaled(vTexPos);\n" +
-            "}");
-    gl.useProgram(program);
-    program.aVertPos = gl.getAttribLocation(program, "aVertPos");
-
-
-    program.uScreen = gl.getUniformLocation(program, "uScreen");
-    program.uDimension = gl.getUniformLocation(program, "uDimension");
-    program.uTileDimension = gl.getUniformLocation(program, "uTileDimension");
-    program.uTexDimension = gl.getUniformLocation(program, "uTexDimension");
-    program.uTexture = gl.getUniformLocation(program, "uTexture");
-    program.uScaleDist = gl.getUniformLocation(program, "uScaleDist");
-    program.mOMatrix = gl.getUniformLocation(program, "mOMatrix");
-    program.mRMatrix = gl.getUniformLocation(program, "mRMatrix");
-
-    gl.uniform1i(program.uTexture, 0);
-    gl.uniform1f(program.uScaleDist, 0.5);
-
-    var orthoMat = new Float32Array(16);
-    generateOrtho(orthoMat, -1.0, 1.0, 1.0, -1.0, -1.0, -10.0);
-    //generatePerspective(orthoMat, 90.0, 0.0, 100.0);
-    gl.uniformMatrix4fv(program.mOMatrix, false, orthoMat);
-
-    var rotMat = new Float32Array(16);
-    generateRotationMatrix(rotMat, 0.0);
-    gl.uniformMatrix4fv(program.mRMatrix, false, rotMat);
-
-    this.program = program;
-
-    // Create the basic square buffer
-    var vBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    var verticies = [
-        1.0, 1.0,
-        0.0, 1.0,
-        1.0, 0.0,
-        0.0, 0.0
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticies), gl.STATIC_DRAW);
-    vBuffer.itemSize = 2;
-    vBuffer.numItems = 4;
-
-    this.vBuffer = vBuffer;
-
-    gl.useProgram(textProgram);
-    gl.enableVertexAttribArray(textProgram.aVertPos);
-    gl.vertexAttribPointer(textProgram.aVertPos, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.useProgram(postProgram);
-    gl.enableVertexAttribArray(postProgram.aVertPos);
-    gl.vertexAttribPointer(postProgram.aVertPos, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.useProgram(waypointProgram);
-    gl.enableVertexAttribArray(waypointProgram.aVertPos);
-    gl.vertexAttribPointer(waypointProgram, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.useProgram(program);
-    gl.enableVertexAttribArray(program.aVertPos);
-    gl.vertexAttribPointer(program.aVertPos, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    this.resize(canvas.width, canvas.height);
-};
-ArcGLCanvasAdapter.prototype.loadTexture = function (image, flipY) {
-    var gl = this.context;
-    var texture = gl.createTexture();
-
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    return texture;
-};
-ArcGLCanvasAdapter.prototype.updateImage = function(image) {
-    let gl = this.context;
-
-    if(!image.texture){
-        image.texture = this.loadTexture(image);
-    }else{
-        gl.bindTexture(gl.TEXTURE_2D, image.texture);
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    }
-};
-ArcGLCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
-    if (!image || !image.complete) {
-        return;
-    }
-
-    var gl = this.context;
-    var program = this.program;
-
-    gl.uniform4f(program.uDimension, x, y, width, height);
-    gl.uniform2f(program.uTexDimension, image.width, image.height);
-    gl.uniform4f(program.uTileDimension, cx, cy, cwidth, cheight);
-
-    gl.activeTexture(gl.TEXTURE0);
-    if (!image.texture) {
-        image.texture = this.loadTexture(image, false);
-    }
-    gl.bindTexture(gl.TEXTURE_2D, image.texture);
-
-    // Draws the polygon to the screen
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vBuffer.numItems);
-    //gl.drawArrays(gl.TRIANGLES, 0, vBuffer.numItems);
-};
-ArcGLCanvasAdapter.prototype.requestFullscreen = function () {
-    // Perform nothing at the moment
-};
-ArcGLCanvasAdapter.prototype.addTileSheet = function (name, url, tiles) {
-    var __this = this;
-    this.tileSheets[name] = new ArcTileSheet(name, url, tiles, function (t) {
-        if (t.image.texture && t.image.texture !== null) {
-            __this.context.deleteTexture(t.image.texture);
-        }
-
-        t.image.texture = __this.loadTexture(t.image, false);
-    });
-};
-ArcGLCanvasAdapter.prototype.addExistingTileSheet = function (name, tileSheet) {
-    var __this = this;
-
-    tileSheet.onImageUpdate = function (t) {
-        if (t.image.texture && t.image.texture !== null) {
-            __this.context.deleteTexture(t.image.texture);
-        }
-
-        t.image.texture = __this.loadTexture(t.image, false);
-    };
-
-    this.tileSheets[name] = tileSheet;
-};
-ArcGLCanvasAdapter.prototype.addSpriteSheet = function (id, url, animations, palette) {
-    var __this = this;
-    var spriteSheet = new ArcSpriteSheet(url, function (s) {
-        if (s.image.texture && s.image.texture !== null) {
-            __this.context.deleteTexture(s.image.texture);
-        }
-
-        s.image.texture = __this.loadTexture(s.image, true);
-    }, palette);
-
-    for (var key in animations) {
-        spriteSheet.setAnimation(key, animations[key]);
-    }
-
-    spriteSheet.id = id;
-    this.spriteSheets[id] = spriteSheet;
-};
-ArcGLCanvasAdapter.prototype.addExistingSpriteSheet = function (id, spriteSheet) {
-    var __this = this;
-
-    spriteSheet.onImageUpdate = function (s) {
-        if (s.image.texture && s.image.texture !== null) {
-            __this.context.deleteTexture(s.image.texture);
-        }
-        s.image.texture = __this.loadTexture(s.image, true);
-    };
-
-    this.spriteSheets[id] = spriteSheet;
-    spriteSheet.updateColorset();
-};
-ArcGLCanvasAdapter.prototype.clear = function () {
-    var canvas = this.textCanvas;
-    var gl = this.context;
-
-    this.textContext.clearRect(0, 0, canvas.width, canvas.height);
-
-    gl.useProgram(this.program);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.backbuffer);
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-};
-ArcGLCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
-    var offset = this.camera.offset;
-    var gl = this.context;
-
-    var waypointProgram = this.waypointProgram;
-    gl.useProgram(waypointProgram);
-    gl.uniform4f(waypointProgram.uDimension, waypointLoc[0] - offset[0] - 32, waypointLoc[1] - offset[1] - 32, 64, 64);
-
-    //TODO: Add particle effects
-    gl.blendFunc(gl.ONE, gl.ONE);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vBuffer.numItems);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    gl.useProgram(this.program);
-};
-ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
-    var textContext = this.textContext;
-
-    if (fontInfo == undefined) {
-        fontInfo = this.defaultFontInfo;
-    }
-
-    textContext.font = fontInfo.font;
-    textContext.textAlign = fontInfo.textAlign;
-    textContext.fillStyle = fontInfo.fillStyle;
-
-    textContext.fillText(message, x, y);
-};
-ArcGLCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
-    var offset = this.camera.offset;
-    var context = this.textContext;
-
-    if(!(color)){
-        color = "#0F0";
-    };
-    context.strokeStyle = color;
-
-    context.beginPath();
-    context.moveTo(x1 - offset[0], y1 - offset[1]);
-    context.lineTo(x2 - offset[0], y2 - offset[1]);
-    context.stroke();
-};
-ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
-    var gl = this.context;
-    var __this = this;
-    var postProgram = this.postProgram;
-    var vBuffer = this.vBuffer;
-
-    var drawBlurred = function (toDisplay) {
+{
+    // Private functions
+    var drawBlurred = function (gl, toDisplay, postProgram, vBuffer) {
         gl.useProgram(postProgram);
         gl.disable(gl.BLEND);
         gl.uniform1i(postProgram.uBlurType, 1);
@@ -971,7 +406,7 @@ ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
         gl.enable(gl.BLEND);
     };
 
-    var drawNonBlurred = function (toDisplay) {
+    var drawNonBlurred = function (gl, toDisplay, postProgram, vBuffer) {
         gl.useProgram(postProgram);
         gl.disable(gl.BLEND);
         gl.uniform1i(postProgram.uBlurType, 0);
@@ -982,92 +417,661 @@ ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
         gl.enable(gl.BLEND);
     };
 
-    var swapMessageBuffer = function () {
-        let w = __this.textCanvas.width;
-        let h = __this.textCanvas.height;
-        let data = __this.textContext.getImageData(0, 0, w, h);
+    var swapMessageBuffer = function (gl, vBuffer) {
+        let data = this.textCanvas;//__this.textContext.getImageData(0, 0, w, h);
 
-        gl.useProgram(__this.textProgram);
+        gl.useProgram(this.textProgram);
 
         gl.activeTexture(gl.TEXTURE2);
-        gl.bindTexture(gl.TEXTURE_2D, __this.textbufferTexture);
+        gl.bindTexture(gl.TEXTURE_2D, this.textbufferTexture);
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vBuffer.numItems);
         gl.activeTexture(gl.TEXTURE0);
     };
 
-    if (true) {
-        drawNonBlurred(true);
-    } else {
-        drawBlurred(true);
-    }
+    // Public Functions
+    ArcGLCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
+    ArcGLCanvasAdapter.prototype.init = function (canvas) {
+        ArcGraphicsAdapter.prototype.init.call(this);
+        var textCanvas = document.createElement('canvas');
+        $(textCanvas).css("background-color", "rgba(255, 0, 255, 0)");
+        textCanvas.width = canvas.width;
+        textCanvas.height = canvas.height;
 
-    // Write messages to the screen
-    swapMessageBuffer(); //TODO: Find a way to display this information without having to write to the texture each time.
-    //this.flatContext.drawImage(this.textCanvas, 0, 0);
-};
-ArcGLCanvasAdapter.prototype.resize = function (width, height) {
-    var gl = this.context;
+        // Setup WebGL
+        var gl;
 
-    gl.viewportWidth = width;
-    gl.viewportHeight = height;
+        try {
+            gl = canvas.getContext("webgl", "experimental-webgl");
+        } catch (e) {
+            throw("WebGL not supported.");
+        }
 
-    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        this.textCanvas = textCanvas;
+        this.textContext = textCanvas.getContext('2d');
+        this.program = null;
+        this.waypointProgram = null;
+        this.postProgram = null;
+        this.textProgram = null;
+        this.backbuffer = null;
+        this.backbufferTexture = null;
+        this.textbufferTexture = null;
+        this.context = gl;
+        this.vBuffer = null;
+        this.size[0] = canvas.width;
+        this.size[1] = canvas.height;
+        this.canvas = canvas;
 
-    var postProgram = this.postProgram;
-    gl.useProgram(postProgram);
-    gl.uniform2f(postProgram.uSpace, 1.0 / width, 1.0 / height);
+        this.initGL();
+    };
+    ArcGLCanvasAdapter.prototype.initGL = function () {
+        var gl = this.context;
+        var canvas = this.canvas;
 
-    var waypointProgram = this.waypointProgram;
-    gl.useProgram(waypointProgram);
-    gl.uniform2f(waypointProgram.uScreen, width, height);
+        // Create Orthoginal Matrix
+        var generateOrtho = function (mat, left, right, top, bottom, near, far) {
+            var width = right - left;
+            var height = top - bottom;
+            var depth = far - near;
 
-    var program = this.program;
-    gl.useProgram(program);
-    gl.uniform2f(program.uScreen, width, height);
+            mat[0] = 2 / width;
+            mat[1] = 0;
+            mat[2] = 0;
+            mat[3] = 0;
 
-    //Create the textbufferTexture
-    gl.activeTexture(gl.TEXTURE2);
-    this.textbufferTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.textbufferTexture);
+            mat[4] = 0;
+            mat[5] = 2 / height;
+            mat[6] = 0;
+            mat[7] = 0;
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            mat[8] = 0;
+            mat[9] = 0;
+            mat[10] = -1 / depth;
+            mat[11] = 0;
 
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.textCanvas);
+            mat[12] = -(right + left) / width;
+            mat[13] = -(top + bottom) / height;
+            mat[14] = -near / depth;
+            mat[15] = 1.0;
 
-    // Create backbuffer
-    gl.activeTexture(gl.TEXTURE1);
-    this.backbuffer = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.backbuffer);
+            return mat;
+        };
 
-    this.backbufferTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.backbufferTexture);
+        // Create Perspective Matrix
+        var generatePerspective = function (mat, fov, near, far) {
+            var S = 1.0 / Math.tan(fov * 0.5 * (Math.PI / 180.0));
+            var depth = far - near;
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            mat[0] = S;
+            mat[1] = 0;
+            mat[2] = 0;
+            mat[3] = 0;
 
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.backbufferTexture, 0);
+            mat[4] = 0;
+            mat[5] = S;
+            mat[6] = 0;
+            mat[7] = 0;
+
+            mat[8] = 0;
+            mat[9] = 0;
+            mat[10] = -far / depth;
+            mat[11] = -1.0;
+
+            mat[12] = 0;
+            mat[13] = 0;
+            mat[14] = -(far * near) / depth;
+            mat[15] = 0;
+
+            return mat;
+        };
+
+        var generateRotationMatrix = function (mat, theta) {
+            var sin = Math.sin(theta);
+            var cos = Math.cos(theta);
+
+            mat[0] = 1;
+            mat[1] = 0;
+            mat[2] = 0;
+            mat[3] = 0;
+
+            mat[4] = 0;
+            mat[5] = cos;
+            mat[6] = -sin;
+            mat[7] = 0;
+
+            mat[8] = 0;
+            mat[9] = sin;
+            mat[10] = cos;
+            mat[11] = 0;
+
+            mat[12] = 0;
+            mat[13] = 0;
+            mat[14] = 0;
+            mat[15] = 1;
+
+            return mat;
+        };
+
+        var createShader = function (type, code) {
+            var shader = gl.createShader(type);
+
+            gl.shaderSource(shader, code);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert(gl.getShaderInfoLog(shader));
+                return null;
+            }
+
+            return shader;
+        };
+
+        var createProgram = function (vertSrc, fragSrc) {
+            var fragShader = createShader(gl.FRAGMENT_SHADER, fragSrc);
+            var vertexShader = createShader(gl.VERTEX_SHADER, vertSrc);
+
+            var program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragShader);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                alert("Could not initialize shaders.");
+            }
+
+            return program;
+        };
+
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.enable(gl.BLEND);
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        // Create the text writing program
+        textProgram = createProgram(
+                "precision mediump float;\n" +
+                "attribute vec2 aVertPos;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "vTexPos = vec2(aVertPos.x, 1.0 - aVertPos.y);\n" +
+                "gl_Position = vec4((aVertPos * 2.0) - 1.0, 0.0, 1.0);\n" +
+                "}",
+                "precision mediump float;\n" +
+                "uniform sampler2D uTexture;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "gl_FragColor = texture2D(uTexture, vTexPos);\n" +
+                "}"
+                );
+
+        gl.useProgram(textProgram);
+        textProgram.aVertPos = gl.getAttribLocation(textProgram, "aVertPos");
+
+        textProgram.uTexture = gl.getUniformLocation(textProgram, "uTexture");
+
+        gl.uniform1i(textProgram.uTexture, 2);
+        this.textProgram = textProgram;
+
+        // Create the post processing program
+        var postProgram = createProgram(
+                "precision mediump float;\n" +
+                "attribute vec2 aVertPos;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "vTexPos = vec2(aVertPos.x, aVertPos.y);\n" +
+                "gl_Position = vec4((aVertPos * 2.0) - 1.0, 0.0, 1.0);\n" +
+                "}",
+                "precision mediump float;\n" +
+                "uniform vec2 uSpace;\n" +
+                "uniform lowp int uBlurType;\n" +
+                "uniform sampler2D uTexture;\n" +
+                "varying vec2 vTexPos;\n" +
+                "varying vec2 vSpace;\n" +
+                "vec4 blur(float p){\n" +
+                "vec4 tMain = texture2D(uTexture, vTexPos);\n" +
+                "if(p <= 0.0) { return tMain; }\n" +
+                "vec4 left, right;\n" +
+                "if(uBlurType == 1){\n" +
+                "left = texture2D(uTexture, vec2(vTexPos.x, vTexPos.y - uSpace.y));\n" +
+                "right = texture2D(uTexture, vec2(vTexPos.x, vTexPos.y + uSpace.y));\n" +
+                "}else if(uBlurType == 2){\n" +
+                "left = texture2D(uTexture, vec2(vTexPos.x - uSpace.x, vTexPos.y));\n" +
+                "right = texture2D(uTexture, vec2(vTexPos.x + uSpace.x, vTexPos.y));\n" +
+                "}else{return tMain;}\n" +
+                "float outP = sqrt(p * 2.0) / 3.0;\n" +
+                "return (outP * (left + right)) + ((1.0 - (2.0 * outP)) * tMain);\n" +
+                "}\n" +
+                "void main(void){\n" +
+                "float y = pow((vTexPos.y * 2.0) - 1.0, 2.0);\n" + // Tilt shift
+                //"float y = (2.0 * distance((vTexPos * 2.0) - 1.0, vec2(0, 0))) - 1.0;\n" + // Radial focus
+                "y = max(y, 0.0);\n" +
+                "gl_FragColor = blur(y);\n" +
+                "}");
+        gl.useProgram(postProgram);
+        postProgram.aVertPos = gl.getAttribLocation(postProgram, "aVertPos");
+
+        postProgram.uSpace = gl.getUniformLocation(postProgram, "uSpace");
+        postProgram.uTexture = gl.getUniformLocation(postProgram, "uTexture");
+        postProgram.uBlurType = gl.getUniformLocation(postProgram, "uBlurType");
+
+        gl.uniform1i(postProgram.uTexture, 1);
+
+        this.postProgram = postProgram;
+
+        // Create the waypoint program
+        var waypointProgram = createProgram(
+                "precision mediump float;\n" +
+                "uniform vec2 uScreen;\n" +
+                "uniform vec4 uDimension;\n" +
+                "attribute vec2 aVertPos;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "vTexPos = (vec2(aVertPos.x, aVertPos.y) * 2.0) - 1.0;\n" +
+                "gl_Position.zw = vec2(0.0, 1.0);\n" +
+                "gl_Position.x = ((2.0 * uDimension.x) - uScreen.x + (2.0 * aVertPos.x * uDimension.z)) / uScreen.x;\n" +
+                "gl_Position.y = ((-2.0 * uDimension.y) + uScreen.y - (2.0 * aVertPos.y * uDimension.w)) / uScreen.y;\n" +
+                "}",
+                "precision mediump float;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "float d = distance(vTexPos, vec2(0,0));\n" +
+                "if(d > 1.0){ discard; }\n" +
+                "d = 1.0 - d;\n" +
+                "d *= d;\n" +
+                "gl_FragColor = vec4(d, d, d * 0.1, 1.0);\n" +
+                "}");
+
+        gl.useProgram(waypointProgram);
+        waypointProgram.aVertPos = gl.getAttribLocation(waypointProgram, "aVertPos");
+
+        waypointProgram.uScreen = gl.getUniformLocation(waypointProgram, "uScreen");
+        waypointProgram.uDimension = gl.getUniformLocation(waypointProgram, "uDimension");
+
+        this.waypointProgram = waypointProgram;
+
+        // Create the basic image shader
+        var program = createProgram(
+                "precision mediump float;\n" +
+                "uniform mat4 mOMatrix;\n" +
+                "uniform mat4 mRMatrix;\n" +
+                "uniform vec2 uScreen;\n" +
+                "uniform vec4 uDimension;\n" +
+                "attribute vec2 aVertPos;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "vTexPos = vec2(aVertPos.x, aVertPos.y);\n" +
+                "gl_Position.zw = vec2(-1.6, 1.0);\n" +
+                "gl_Position.x = ((2.0 * uDimension.x) - uScreen.x + (2.0 * aVertPos.x * uDimension.z)) / uScreen.x;\n" +
+                "gl_Position.y = ((-2.0 * uDimension.y) + uScreen.y - (2.0 * aVertPos.y * uDimension.w)) / uScreen.y;\n" +
+                "gl_Position = mRMatrix * gl_Position;\n" +
+                "gl_Position.z -= 0.0;\n" +
+                "gl_Position = mOMatrix * gl_Position;\n" +
+                "}",
+                "precision mediump float;\n" +
+                "uniform float uScaleDist;\n" +
+                "uniform vec2 uTexDimension;\n" +
+                "uniform vec4 uTileDimension;\n" +
+                "uniform sampler2D uTexture;\n" +
+                "varying vec2 vTexPos;\n" +
+                "vec2 getAvailableTexturePosition(vec2 texPos){\n" +
+                "vec2 outVal = max(min(texPos, vec2(1.0, 1.0)), vec2(0.01, 0.01));\n" +
+                "outVal *= uTileDimension.zw;\n" +
+                "outVal += uTileDimension.xy;\n" +
+                "return outVal / uTexDimension;\n" +
+                "}\n" +
+                "vec4 scaled(vec2 texPos){\n" +
+                "vec2 scale = uScaleDist * 1.0/uTileDimension.zw;\n" +
+                "vec2 texCoord[9];\n" +
+                "vec4 texColor[9];\n" +
+                "vec4 avg;\n" +
+                "float d;\n" +
+                "float dCheck;\n" +
+                "texCoord[0] = getAvailableTexturePosition(vec2(texPos.x - scale.x, texPos.y - scale.y));\n" +
+                "texCoord[1] = getAvailableTexturePosition(vec2(texPos.x - 0.0, texPos.y - scale.y));\n" +
+                "texCoord[2] = getAvailableTexturePosition(vec2(texPos.x + scale.x, texPos.y - scale.y));\n" +
+                "texCoord[3] = getAvailableTexturePosition(vec2(texPos.x - scale.x, texPos.y - 0.0));\n" +
+                "texCoord[4] = getAvailableTexturePosition(vec2(texPos.x - 0.0, texPos.y - 0.0));\n" +
+                "texCoord[5] = getAvailableTexturePosition(vec2(texPos.x + scale.x, texPos.y - 0.0));\n" +
+                "texCoord[6] = getAvailableTexturePosition(vec2(texPos.x - scale.x, texPos.y - scale.y));\n" +
+                "texCoord[7] = getAvailableTexturePosition(vec2(texPos.x - 0.0, texPos.y - scale.y));\n" +
+                "texCoord[8] = getAvailableTexturePosition(vec2(texPos.x + scale.x, texPos.y - scale.y));\n" +
+                "texColor[0] = texture2D(uTexture, texCoord[0]);\n" +
+                "texColor[1] = texture2D(uTexture, texCoord[1]);\n" +
+                "texColor[2] = texture2D(uTexture, texCoord[2]);\n" +
+                "texColor[3] = texture2D(uTexture, texCoord[3]);\n" +
+                "texColor[4] = texture2D(uTexture, texCoord[4]);\n" +
+                "texColor[5] = texture2D(uTexture, texCoord[5]);\n" +
+                "texColor[6] = texture2D(uTexture, texCoord[6]);\n" +
+                "texColor[7] = texture2D(uTexture, texCoord[7]);\n" +
+                "texColor[8] = texture2D(uTexture, texCoord[8]);\n" +
+                "avg = texColor[0] + texColor[1] + texColor[2] + texColor[3] + texColor[4] + texColor[5] + texColor[6] + texColor[7] + texColor[8];\n" +
+                "if(avg.a == 0.0) { discard; }\n" +
+                "avg = avg / 9.0;\n" +
+                "vec4 currentColor = texColor[5];\n" +
+                "d = distance(avg, currentColor);\n" +
+                "dCheck = distance(avg, texColor[0]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[0]; }\n" +
+                "dCheck = distance(avg, texColor[1]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[1]; }\n" +
+                "dCheck = distance(avg, texColor[2]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[2]; }\n" +
+                "dCheck = distance(avg, texColor[3]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[3]; }\n" +
+                "dCheck = distance(avg, texColor[4]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[4]; }\n" +
+                "dCheck = distance(avg, texColor[6]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[6]; }\n" +
+                "dCheck = distance(avg, texColor[7]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[7]; }\n" +
+                "dCheck = distance(avg, texColor[8]);\n" +
+                "if(dCheck < d){ d = dCheck; currentColor = texColor[8]; }\n" +
+                "return currentColor;\n" +
+                "}\n" +
+                "void main(void){\n" +
+                //"vec2 texPos = vTexPos * uTileDimension.zw;\n" +
+                //"texPos += uTileDimension.xy;\n" +
+                //"texPos = texPos / uTexDimension;\n" + 
+                "gl_FragColor = scaled(vTexPos);\n" +
+                "}");
+        gl.useProgram(program);
+        program.aVertPos = gl.getAttribLocation(program, "aVertPos");
 
 
-    gl.bindTexture(gl.TEXTURE_2D, this.backbufferTexture);
+        program.uScreen = gl.getUniformLocation(program, "uScreen");
+        program.uDimension = gl.getUniformLocation(program, "uDimension");
+        program.uTileDimension = gl.getUniformLocation(program, "uTileDimension");
+        program.uTexDimension = gl.getUniformLocation(program, "uTexDimension");
+        program.uTexture = gl.getUniformLocation(program, "uTexture");
+        program.uScaleDist = gl.getUniformLocation(program, "uScaleDist");
+        program.mOMatrix = gl.getUniformLocation(program, "mOMatrix");
+        program.mRMatrix = gl.getUniformLocation(program, "mRMatrix");
 
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-};
-ArcGLCanvasAdapter.prototype.setScaleDist = function (value) {
-    var gl = this.context;
-    var program = this.program;
+        gl.uniform1i(program.uTexture, 0);
+        gl.uniform1f(program.uScaleDist, 0.5);
 
-    gl.useProgram(program);
-    gl.uniform1f(program.uScaleDist, value);
-};
+        var orthoMat = new Float32Array(16);
+        generateOrtho(orthoMat, -1.0, 1.0, 1.0, -1.0, -1.0, -10.0);
+        //generatePerspective(orthoMat, 90.0, 0.0, 100.0);
+        gl.uniformMatrix4fv(program.mOMatrix, false, orthoMat);
+
+        var rotMat = new Float32Array(16);
+        generateRotationMatrix(rotMat, 0.0);
+        gl.uniformMatrix4fv(program.mRMatrix, false, rotMat);
+
+        this.program = program;
+
+        // Create the basic square buffer
+        var vBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        var verticies = [
+            1.0, 1.0,
+            0.0, 1.0,
+            1.0, 0.0,
+            0.0, 0.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticies), gl.STATIC_DRAW);
+        vBuffer.itemSize = 2;
+        vBuffer.numItems = 4;
+
+        this.vBuffer = vBuffer;
+
+        gl.useProgram(textProgram);
+        gl.enableVertexAttribArray(textProgram.aVertPos);
+        gl.vertexAttribPointer(textProgram.aVertPos, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.useProgram(postProgram);
+        gl.enableVertexAttribArray(postProgram.aVertPos);
+        gl.vertexAttribPointer(postProgram.aVertPos, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.useProgram(waypointProgram);
+        gl.enableVertexAttribArray(waypointProgram.aVertPos);
+        gl.vertexAttribPointer(waypointProgram, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.useProgram(program);
+        gl.enableVertexAttribArray(program.aVertPos);
+        gl.vertexAttribPointer(program.aVertPos, vBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        this.resize(canvas.width, canvas.height);
+    };
+    ArcGLCanvasAdapter.prototype.loadTexture = function (image, flipY) {
+        var gl = this.context;
+        var texture = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        return texture;
+    };
+    ArcGLCanvasAdapter.prototype.updateImage = function(image) {
+        let gl = this.context;
+
+        if(!image.texture){
+            image.texture = this.loadTexture(image);
+        }else{
+            gl.bindTexture(gl.TEXTURE_2D, image.texture);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        }
+    };
+    ArcGLCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
+        if (!image || !image.complete) {
+            return;
+        }
+
+        var gl = this.context;
+        var program = this.program;
+
+        gl.uniform4f(program.uDimension, x, y, width, height);
+        gl.uniform2f(program.uTexDimension, image.width, image.height);
+        gl.uniform4f(program.uTileDimension, cx, cy, cwidth, cheight);
+
+        gl.activeTexture(gl.TEXTURE0);
+        if (!image.texture) {
+            image.texture = this.loadTexture(image, false);
+        }
+        gl.bindTexture(gl.TEXTURE_2D, image.texture);
+
+        // Draws the polygon to the screen
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vBuffer.numItems);
+        //gl.drawArrays(gl.TRIANGLES, 0, vBuffer.numItems);
+    };
+    ArcGLCanvasAdapter.prototype.requestFullscreen = function () {
+        // Perform nothing at the moment
+    };
+    ArcGLCanvasAdapter.prototype.addTileSheet = function (name, url, tiles) {
+        var __this = this;
+        this.tileSheets[name] = new ArcTileSheet(name, url, tiles, function (t) {
+            if (t.image.texture && t.image.texture !== null) {
+                __this.context.deleteTexture(t.image.texture);
+            }
+
+            t.image.texture = __this.loadTexture(t.image, false);
+        });
+    };
+    ArcGLCanvasAdapter.prototype.addExistingTileSheet = function (name, tileSheet) {
+        var __this = this;
+
+        tileSheet.onImageUpdate = function (t) {
+            if (t.image.texture && t.image.texture !== null) {
+                __this.context.deleteTexture(t.image.texture);
+            }
+
+            t.image.texture = __this.loadTexture(t.image, false);
+        };
+
+        this.tileSheets[name] = tileSheet;
+    };
+    ArcGLCanvasAdapter.prototype.addSpriteSheet = function (id, url, animations, palette) {
+        var __this = this;
+        var spriteSheet = new ArcSpriteSheet(url, function (s) {
+            if (s.image.texture && s.image.texture !== null) {
+                __this.context.deleteTexture(s.image.texture);
+            }
+
+            s.image.texture = __this.loadTexture(s.image, true);
+        }, palette);
+
+        for (var key in animations) {
+            spriteSheet.setAnimation(key, animations[key]);
+        }
+
+        spriteSheet.id = id;
+        this.spriteSheets[id] = spriteSheet;
+    };
+    ArcGLCanvasAdapter.prototype.addExistingSpriteSheet = function (id, spriteSheet) {
+        var __this = this;
+
+        spriteSheet.onImageUpdate = function (s) {
+            if (s.image.texture && s.image.texture !== null) {
+                __this.context.deleteTexture(s.image.texture);
+            }
+            s.image.texture = __this.loadTexture(s.image, true);
+        };
+
+        this.spriteSheets[id] = spriteSheet;
+        spriteSheet.updateColorset();
+    };
+    ArcGLCanvasAdapter.prototype.clear = function () {
+        var canvas = this.textCanvas;
+        var gl = this.context;
+
+        this.textContext.clearRect(0, 0, canvas.width, canvas.height);
+
+        gl.useProgram(this.program);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.backbuffer);
+
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+    };
+    ArcGLCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
+        var offset = this.camera.offset;
+        var gl = this.context;
+
+        var waypointProgram = this.waypointProgram;
+        gl.useProgram(waypointProgram);
+        gl.uniform4f(waypointProgram.uDimension, waypointLoc[0] - offset[0] - 32, waypointLoc[1] - offset[1] - 32, 64, 64);
+
+        //TODO: Add particle effects
+        gl.blendFunc(gl.ONE, gl.ONE);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vBuffer.numItems);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+        gl.useProgram(this.program);
+    };
+    ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
+        var textContext = this.textContext;
+
+        if (fontInfo == undefined) {
+            fontInfo = this.defaultFontInfo;
+        }
+
+        textContext.font = fontInfo.font;
+        textContext.textAlign = fontInfo.textAlign;
+        textContext.fillStyle = fontInfo.fillStyle;
+
+        textContext.fillText(message, x, y);
+    };
+    ArcGLCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
+        var offset = this.camera.offset;
+        var context = this.textContext;
+
+        if(!(color)){
+            color = "#0F0";
+        };
+        context.strokeStyle = color;
+
+        context.beginPath();
+        context.moveTo(x1 - offset[0], y1 - offset[1]);
+        context.lineTo(x2 - offset[0], y2 - offset[1]);
+        context.stroke();
+    };
+    ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
+        var gl = this.context;
+        var __this = this;
+        var postProgram = this.postProgram;
+        var vBuffer = this.vBuffer;
+
+        if (true) {
+            drawNonBlurred(gl, true, postProgram, vBuffer);
+        } else {
+            drawBlurred(gl, true, postProgram, vBuffer);
+        }
+
+        // Write messages to the screen
+        if(window.debugMode){
+            swapMessageBuffer.call(this, gl, vBuffer); //TODO: Find a way to display this information without having to write to the texture each time.
+        }
+        //this.flatContext.drawImage(this.textCanvas, 0, 0);
+    };
+    ArcGLCanvasAdapter.prototype.resize = function (width, height) {
+        var gl = this.context;
+
+        gl.viewportWidth = width;
+        gl.viewportHeight = height;
+
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+
+        var postProgram = this.postProgram;
+        gl.useProgram(postProgram);
+        gl.uniform2f(postProgram.uSpace, 1.0 / width, 1.0 / height);
+
+        var waypointProgram = this.waypointProgram;
+        gl.useProgram(waypointProgram);
+        gl.uniform2f(waypointProgram.uScreen, width, height);
+
+        var program = this.program;
+        gl.useProgram(program);
+        gl.uniform2f(program.uScreen, width, height);
+
+        //Create the textbufferTexture
+        gl.activeTexture(gl.TEXTURE2);
+        this.textbufferTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.textbufferTexture);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.textCanvas);
+
+        // Create backbuffer
+        gl.activeTexture(gl.TEXTURE1);
+        this.backbuffer = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.backbuffer);
+
+        this.backbufferTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.backbufferTexture);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.backbufferTexture, 0);
+
+
+        gl.bindTexture(gl.TEXTURE_2D, this.backbufferTexture);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    };
+    ArcGLCanvasAdapter.prototype.setScaleDist = function (value) {
+        var gl = this.context;
+        var program = this.program;
+
+        gl.useProgram(program);
+        gl.uniform1f(program.uScaleDist, value);
+    };
+}
 
 var ArcGL2CanvasAdapter = ArcBaseObject();
 ArcGL2CanvasAdapter.prototype = Object.create(ArcGLCanvasAdapter.prototype);
