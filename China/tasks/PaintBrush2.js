@@ -199,10 +199,21 @@
 		display.drawToDisplay(true);
 	};
 
+	var getPoints = function(image){
+		drawContext.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+		drawContext.drawImage(image, 0, 0, image.width, image.height,
+			image.xOffset, image.yOffset, image.drawWidth, image.drawHeight);
+
+		var test = new ArcSif(drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data, drawCanvas.width, drawCanvas.height);
+			console.log(test.points);
+
+		drawContext.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+	};
 	task.setBackground = function(imageUrl){
 		var img = new Image();
 		img.onload = function(){
 			setDrawProperties(img);
+			getPoints(img);
 		};
 		img.src = imageUrl;
 		
