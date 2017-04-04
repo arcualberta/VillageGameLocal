@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="33">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="34">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
   <image source="../tiles/tileset.png" width="570" height="570"/>
   <terraintypes>
@@ -1256,7 +1256,7 @@
 107,108,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,105,106,107,108,109,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup name="objects">
+ <objectgroup name="objects" visible="0">
   <object id="1" name="MainStart" type="PlayerStart" x="336" y="210.5" width="20" height="19"/>
   <object id="2" name="Farmer" type="NPC" gid="362" x="1263.66" y="479.666" width="30" height="50">
    <properties>
@@ -1458,9 +1458,14 @@ if(performance &amp;&amp; performance.now){
 }</property>
    </properties>
   </object>
+  <object id="33" name="palaceSwitch" type="backgroundMusic" x="1932.06" y="16.8485" width="1038.91" height="911.758">
+   <properties>
+    <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
+   </properties>
+  </object>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
-  <object id="13" name="marketSwitch" type="backgroundMusic" x="20" y="1526" width="2948" height="736">
+ <objectgroup name="triggers">
+  <object id="13" name="marketSwitch" type="backgroundMusic" x="377.576" y="1526" width="2087.39" height="736">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
    </properties>
@@ -1473,6 +1478,7 @@ if(performance &amp;&amp; performance.now){
   <object id="31" name="CloudTrigger" type="Script" x="2500" y="2208" width="451" height="184">
    <properties>
     <property name="oninteract">// TODO: Stop Character
+worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
 if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
 	world.triggers.removeChild(&quot;CloudTrigger&quot;);
 	worldAdapter.showMessage(&quot;CLOUD_1&quot;, false, player, this, function(){
@@ -1483,7 +1489,10 @@ if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
 		cloud.state = &quot;ondropbrush&quot;;
 	});
 }</property>
-    <property name="onstart" value="this.interactEnabled = true;"/>
+    <property name="onstart">this.interactEnabled = true;
+this.fade = 100;
+this.sound = new ArcSound(&quot;CloudMusic&quot;, true, modulePath + &quot;/sound/That_Kid_in_Fourth_Grade_Who_Really_Liked_the_Denver_Broncos.mp3&quot;);
+</property>
    </properties>
   </object>
  </objectgroup>

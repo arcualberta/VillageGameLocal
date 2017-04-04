@@ -62,6 +62,7 @@ ArcAudioAdapter.prototype.loadSound = function (sound, play, onError) {
         var context = this.context;
         var request = new XMLHttpRequest();
         var __this = this;
+        sound.state = 1;
         request.open('GET', sound.url, true);
         request.responseType = 'arraybuffer';
         buffers[sound.name] = false;
@@ -74,6 +75,7 @@ ArcAudioAdapter.prototype.loadSound = function (sound, play, onError) {
                     __this.playSound(sound);
                 }
             }, onError);
+            sound.state = 2;
         };
 
         request.send();

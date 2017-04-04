@@ -177,7 +177,7 @@ VillageObject.prototype.interact = function(left, top, right, bottom, player, wo
 
 var ScriptTrigger = ArcBaseObject();
 ScriptTrigger.prototype = Object.create(ArcTrigger.prototype);
-ScriptTrigger.prototype.init = function(name, type, position, size, rotation, properties) {
+ScriptTrigger.prototype.init = function(name, type, position, size, rotation, properties, modulePath) {
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
     this.clickEnabled = false;
     this.interactEnabled = false;
@@ -186,12 +186,12 @@ ScriptTrigger.prototype.init = function(name, type, position, size, rotation, pr
         var test = key.substring(0, 2);
         var state = 0;
         if(test === "on"){
-            this[key] = Function("time", "player", "world", "worldAdapter", properties[key]);
+            this[key] = Function("time", "player", "world", "worldAdapter", "modulePath", properties[key]);
         }
     }
 
     if(this.onstart){
-        this.onstart();
+        this.onstart(0, null, null, null, modulePath);
     }
 };
 ScriptTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
@@ -381,7 +381,7 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, module
     } else if(triggerType === "backgroundmusic"){
         trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, modulePath + "/" + triggerProperties["file"], gameContext.audio);
     } else if(triggerType === "script"){
-        trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties);
+        trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties, modulePath);
     }else {
         trigger = new Trigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
     }

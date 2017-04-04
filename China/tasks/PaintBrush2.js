@@ -148,12 +148,12 @@
 		let model = this.model;
 		let display = this.displayAdapter;
 		
-		model.bottom = display.size[1] - 20 - 32;
-		model.buttonAccept = [10, display.size[1] - 10 - 32, 32, 32];
+		model.bottom = display.size[1] - 20 - 48;
+		model.buttonAccept = [10, display.size[1] - 10 - 48, 48, 48];
 		model.buttonAccept[2] += model.buttonAccept[0];
 		model.buttonAccept[3] += model.buttonAccept[1];
 		
-		model.buttonClear = [10 +model.buttonAccept[2], display.size[1] - 10 - 32, 32, 32];
+		model.buttonClear = [10 +model.buttonAccept[2], display.size[1] - 10 - 48, 48, 48];
 		model.buttonClear[2] += model.buttonClear[0];
 		model.buttonClear[3] += model.buttonClear[1];
 		

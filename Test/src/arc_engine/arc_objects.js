@@ -1560,6 +1560,7 @@ ArcSound.prototype.init = function (name, repeat, url) {
     this.url = url;
     this.source = null;
     this.gain = null;
+    this.state = 0; //0 - Unloaded, 1 - loading, 2 - loaded
 };
 
 // Used to describe one frame of animation
