@@ -213,7 +213,7 @@
 		var img = new Image();
 		img.onload = function(){
 			setDrawProperties(img);
-			getPoints(img);
+			//getPoints(img);
 		};
 		img.src = imageUrl;
 		
