@@ -259,6 +259,10 @@ ArcGraphicsAdapter.prototype.update = function (timeSinceLast) {
 ArcGraphicsAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
 
 };
+ArcGraphicsAdapter.prototype.resize = function(width, height){
+    this.size[0] = width;
+    this.size[1] = height;
+};
 
 
 var ArcCanvasAdapter = ArcBaseObject();
@@ -381,9 +385,6 @@ ArcCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
     context.moveTo(x1 - offset[0], y1 - offset[1]);
     context.lineTo(x2 - offset[0], y2 - offset[1]);
     context.stroke();
-};
-ArcCanvasAdapter.prototype.resize = function (width, height) {
-
 };
 
 var ArcGLCanvasAdapter = ArcBaseObject();
@@ -1011,6 +1012,8 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         //this.flatContext.drawImage(this.textCanvas, 0, 0);
     };
     ArcGLCanvasAdapter.prototype.resize = function (width, height) {
+        ArcGraphicsAdapter.prototype.resize.call(this, width, height);
+
         var gl = this.context;
 
         gl.viewportWidth = width;

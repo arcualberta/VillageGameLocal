@@ -10,6 +10,9 @@ VillageSettings.prototype.init = function(name){
     this.audio = {
         volume: 1.0
     };
+    this.video = {
+        fps: 30
+    }
 };
 /**
 * @override

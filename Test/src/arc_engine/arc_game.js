@@ -133,6 +133,9 @@ var ArcGame = ArcBaseObject();
 
         this.resize(canvas.width, canvas.height);
     };
+    ArcGame.prototype.setFrameCap = function(fps){
+        this.frameCap = 1000.0 / fps;
+    };
     ArcGame.prototype.resize = function(width, height){
         this.canvas.width = width;
         this.canvas.height = height;
