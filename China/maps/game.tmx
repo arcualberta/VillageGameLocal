@@ -1305,8 +1305,9 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     
 	this.TriggerDialog('WU_HAI_3', worldAdapter, player, openTask);
 }else if(this.properties[&quot;taskComplete&quot;]){
+	var oldState = this.state;
 	this.state = &quot;onwait&quot;;
-	this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = &quot;onidle&quot;});
+	this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = oldState});
 }else if(player.stats[&quot;kindness&quot;] == 3){
     this.TriggerDialog('WU_HAI_5', worldAdapter, player);
 }else if(this.properties[&quot;taskRequested&quot;]) { 
