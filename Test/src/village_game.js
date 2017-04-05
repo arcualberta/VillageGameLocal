@@ -12,7 +12,7 @@ VillageSettings.prototype.init = function(name){
     };
     this.video = {
         fps: 30
-    }
+    };
 };
 /**
 * @override
