@@ -1360,28 +1360,28 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   <object id="6" name="villager_1" type="NPC" gid="362" x="545.606" y="1862.67" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(960, 3120, 1480, 4440);"/>
-    <property name="ontalk" value=" this.TriggerDialog('NPC', worldAdapter, player);"/>
+    <property name="ontalk" value=" this.TriggerDialog('NPC_1', worldAdapter, player);"/>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
   <object id="7" name="villager_2" type="NPC" gid="362" x="606.333" y="1860.67" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(960, 3120, 1480, 4440);"/>
-    <property name="ontalk" value=" this.TriggerDialog('NPC', worldAdapter, player);"/>
+    <property name="ontalk" value=" this.TriggerDialog('NPC_2', worldAdapter, player);"/>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
   <object id="8" name="villager_4" type="NPC" gid="362" x="1028.7" y="1860.67" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(1800, 3120, 2320, 4440);"/>
-    <property name="ontalk" value=" this.TriggerDialog('NPC', worldAdapter, player);"/>
+    <property name="ontalk" value=" this.TriggerDialog('NPC_3', worldAdapter, player);"/>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
   <object id="9" name="villager_3" type="NPC" gid="362" x="967.97" y="1862.67" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(1800, 3120, 2320, 4440);"/>
-    <property name="ontalk" value=" this.TriggerDialog('NPC', worldAdapter, player);"/>
+    <property name="ontalk" value=" this.TriggerDialog('NPC_4', worldAdapter, player);"/>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
