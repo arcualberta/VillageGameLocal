@@ -460,6 +460,7 @@ function SettingsWindow(game){
 function DialogMenu(dialog, name, lineNumber, player, speaker) {
     var menu = new GameMenu("", 500, 200);
     var currentLine = null;
+    var optionLabels = ["A) ", "B) ", "C) "];
     
     menu.variables = {
         player: player,
@@ -503,7 +504,7 @@ function DialogMenu(dialog, name, lineNumber, player, speaker) {
             for (var i = 1; i < 4; ++i) {
                 if (result["OPTION_" + i]) {
                     var option = $("<h4 class='dialog_option'></h4>");
-                    option.text(result["OPTION_" + i]);
+                    option.text(optionLabels[i - 1] + result["OPTION_" + i]);
                     option.click(createOptionClick(i));
                     dialogSection.append(option);
                 };

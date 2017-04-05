@@ -1256,7 +1256,7 @@
 107,108,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,105,106,107,108,109,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup name="objects" visible="0">
+ <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="336" y="210.5" width="20" height="19"/>
   <object id="2" name="Farmer" type="NPC" gid="362" x="1263.66" y="479.666" width="30" height="50">
    <properties>
@@ -1305,7 +1305,8 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     
 	this.TriggerDialog('WU_HAI_3', worldAdapter, player, openTask);
 }else if(this.properties[&quot;taskComplete&quot;]){
-	this.TriggerDialog('WU_HAI_4', worldAdapter, player);
+	this.state = &quot;onwait&quot;;
+	this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = &quot;onidle&quot;});
 }else if(player.stats[&quot;kindness&quot;] == 3){
     this.TriggerDialog('WU_HAI_5', worldAdapter, player);
 }else if(this.properties[&quot;taskRequested&quot;]) { 
@@ -1315,6 +1316,8 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 		if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('WU_HAI_5', worldAdapter, player);
 	});
  }</property>
+    <property name="onwait">this.waypoint[0] = this.location[4];
+this.waypoint[1] = this.location[5];</property>
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
   </object>
@@ -1464,7 +1467,7 @@ if(performance &amp;&amp; performance.now){
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="13" name="marketSwitch" type="backgroundMusic" x="377.576" y="1526" width="2087.39" height="736">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
