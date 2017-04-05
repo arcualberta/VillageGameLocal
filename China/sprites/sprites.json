@@ -487,14 +487,6 @@
             "image": "npc_tattered.png",
             "animation": "animation_30x50"
         },
-        "dancer_male_palette": {
-            "image": "dancer_male_palette.png",
-            "animation": "animation_16x24"
-        },
-        "base_female_large": {
-            "image": "base_female_large.png",
-            "animation": "animation_16x24"
-        },
 		"cloud": {
 			"image": "cloud.png",
 			"animation": "cloud_90x30"
