@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="34">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="37">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
   <image source="../tiles/tileset.png" width="570" height="570"/>
   <terraintypes>
@@ -63,7 +63,7 @@
   </tile>
   <tile id="8">
    <properties>
-    <property name="walkable" value="false"/>
+    <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="9">
@@ -1332,6 +1332,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
 		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('GRANDPA_4', worldAdapter, player);
+		world.objects.getChild(&quot;FishNet&quot;).drawEnabled = true;
 	};
 	
 	var openTask = function(){
@@ -1464,6 +1465,11 @@ if(performance &amp;&amp; performance.now){
   <object id="33" name="palaceSwitch" type="backgroundMusic" x="1932.06" y="16.8485" width="1038.91" height="911.758">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
+   </properties>
+  </object>
+  <object id="36" name="FishNet" type="Object" gid="9" x="215.625" y="999" width="30" height="30">
+   <properties>
+    <property name="onstart" value="this.drawEnabled = false;"/>
    </properties>
   </object>
  </objectgroup>

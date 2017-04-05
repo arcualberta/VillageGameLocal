@@ -135,6 +135,10 @@ VillageObject.prototype.init = function (name, type, position, size, rotation, t
             this[key] = Function("time", "player", "world", "worldAdapter", parameters[key]);
         }
     }
+
+    if(this.onstart){
+        this.onstart(0, null, null, null);
+    }
 };
 VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     displayContext.drawTileById(this.tileId, this.location[0] - xOffset, this.location[1] - yOffset, this.size[0], this.size[1]);

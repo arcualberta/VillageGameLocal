@@ -1274,7 +1274,9 @@ var QuadTree = ArcBaseObject();
         buffer.sort(quadSort);
 
         for(index = 0; index < buffer.length; ++index){
-            buffer[index].draw(displayContext, xOffset, yOffset, width, height);
+            if(buffer[index].drawEnabled){
+                buffer[index].draw(displayContext, xOffset, yOffset, width, height);
+            }
         }
 
         if(window.debugMode){
