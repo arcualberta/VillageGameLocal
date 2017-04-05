@@ -55,155 +55,159 @@ ArcSettings.prototype.load = function(){
 * @class
 */
 var ArcGame = ArcBaseObject();
-// Static functions
-ArcGame.Current = null;
-// Public functions
-ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audioAdapter, fpsCap, useGL) {
-    if (fpsCap === undefined) {
-        fpsCap = 60;
-    }
+{
+    // Private functions
 
-    // Setup Adapters
-    if (!displayAdapter || displayAdapter === null) {
-        displayAdapter = arcGetDisplayAdapter(canvas, useGL);
-    }
-
-    if (!controlAdapter || controlAdapter === null) {
-        controlAdapter = arcGetControlAdapter(canvas);
-    }
-
-    if (!audioAdapter || audioAdapter === null) {
-        audioAdapter = arcGetAudioAdapter();
-    }
-
-    // Setup global variables
-    this.display = displayAdapter;
-    this.control = controlAdapter;
-    this.audio = audioAdapter;
-    this.beginLoopListeners = [];
-    this.endLoopListeners = [];
-    this.updateListeners = [];
-    this.drawListeners = [];
-    this.frameCap = 1000.0 / fpsCap;
-    this.onResize = function (width, height) {
-    };
-
-    var __this = this;
-
-    // Variables used for animation.
-    var fpsScale = 1000.0 / fpsCap;
-    var startTime = Date.now() - fpsScale;
-    var lastTimestamp = startTime;
-    var playTime = 0;
-    var delta = 0;
-    var timestamp = 0;
-    var deltaRemainder = 0;
-    
-    ArcGame.Current = this;
-
-    this.animate = function () {
-        timestamp = Date.now();
-
-        playTime = timestamp - startTime;
-        delta = timestamp - lastTimestamp;
-
-        if (delta > fpsScale) {
-            deltaRemainder = (delta % fpsScale);
-            lastTimestamp = timestamp - deltaRemainder;
-            return delta - deltaRemainder;
+    // Static functions
+    ArcGame.Current = null;
+    // Public functions
+    ArcGame.prototype.init = function (canvas, displayAdapter, controlAdapter, audioAdapter, fpsCap, useGL) {
+        if (fpsCap === undefined) {
+            fpsCap = 60;
         }
 
-        return 0.0;
-    };
-
-    $(document).bind("focusin visibilitychange mozvisibilitychange webkitvisibilitychange msvisibilitychange", function () {
-        lastTimestamp = Date.now();
-    });
-
-    // Useful functions
-    this.getPlayTime = function () {
-        return playTime;
-    };
-
-    var resizeFunction = function () {
-        displayAdapter.resize(canvas.width, canvas.height);
-        if (__this.onResize && __this.onResize !== null) {
-            __this.onResize(canvas.width, canvas.height);
+        // Setup Adapters
+        if (!displayAdapter || displayAdapter === null) {
+            displayAdapter = arcGetDisplayAdapter(canvas, useGL);
         }
-    };
 
-    $(window).resize(function (event) {
-        resizeFunction();
-    });
+        if (!controlAdapter || controlAdapter === null) {
+            controlAdapter = arcGetControlAdapter(canvas);
+        }
 
-    resizeFunction();
-};
-ArcGame.prototype.beginLoop = function(delta){
-    for(var i = 0; i < this.beginLoopListeners.length; ++i){
-        this.beginLoopListeners[i](this, delta);
-    }
-};
-ArcGame.prototype.endLoop = function(){
-    for(var i = 0; i < this.endLoopListeners.length; ++i){
-        this.endLoopListeners[i](this);
-    }
-};
-ArcGame.prototype.update = function(delta){
-    this.display.update(delta);
+        if (!audioAdapter || audioAdapter === null) {
+            audioAdapter = arcGetAudioAdapter();
+        }
 
-    for(var i = 0; i < this.updateListeners.length; ++i){
-        this.updateListeners[i](this, delta);
-    }
-};
-ArcGame.prototype.draw = function(){
-    for(var i = 0; i < this.drawListeners.length; ++i){
-        this.drawListeners[i](this);
-    }
-}
-ArcGame.prototype.start = function () {
-    var __this = this;
-    var delta = 0;
-    var lastFrame = 0;
+        // Setup global variables
+        this.display = displayAdapter;
+        this.control = controlAdapter;
+        this.audio = audioAdapter;
+        this.beginLoopListeners = [];
+        this.endLoopListeners = [];
+        this.updateListeners = [];
+        this.drawListeners = [];
+        this.frameCap = 1000.0 / fpsCap;
+        this.canvas = canvas;
 
-    // Main Game Loop
-    /*var loopGame = function (timestamp) {
-        var time = __this.animate();
-        arcRequestAnimFrame(loopGame);
+        var __this = this;
+
+        // Variables used for animation.
+        var fpsScale = 1000.0 / fpsCap;
+        var startTime = Date.now() - fpsScale;
+        var lastTimestamp = startTime;
+        var playTime = 0;
+        var delta = 0;
+        var timestamp = 0;
+        var deltaRemainder = 0;
         
-        if (time > 0.0) {
-            __this.display.update(time);
+        ArcGame.Current = this;
 
-            for (var index = 0; index < __this.loopListeners.length; ++index) {
-                __this.loopListeners[index](__this, time);
+        this.animate = function () {
+            timestamp = Date.now();
+
+            playTime = timestamp - startTime;
+            delta = timestamp - lastTimestamp;
+
+            if (delta > fpsScale) {
+                deltaRemainder = (delta % fpsScale);
+                lastTimestamp = timestamp - deltaRemainder;
+                return delta - deltaRemainder;
             }
+
+            return 0.0;
+        };
+
+        $(document).bind("focusin visibilitychange mozvisibilitychange webkitvisibilitychange msvisibilitychange", function () {
+            lastTimestamp = Date.now();
+        });
+
+        // Useful functions
+        this.getPlayTime = function () {
+            return playTime;
+        };
+
+        /*$(window).resize(function (event) {
+            resizeFunction.call(__this);
+        });*/
+
+        this.resize(canvas.width, canvas.height);
+    };
+    ArcGame.prototype.resize = function(width, height){
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.display.resize(width, height);
+        if (this.onResize && this.onResize !== null) {
+            this.onResize(canvas.width, canvas.height);
         }
-    };*/
+    }
+    ArcGame.prototype.beginLoop = function(delta){
+        for(var i = 0; i < this.beginLoopListeners.length; ++i){
+            this.beginLoopListeners[i](this, delta);
+        }
+    };
+    ArcGame.prototype.endLoop = function(){
+        for(var i = 0; i < this.endLoopListeners.length; ++i){
+            this.endLoopListeners[i](this);
+        }
+    };
+    ArcGame.prototype.update = function(delta){
+        this.display.update(delta);
 
-    var loopGame = function(timestamp){
-        var loopCount = 0;
-        var redraw = false;
+        for(var i = 0; i < this.updateListeners.length; ++i){
+            this.updateListeners[i](this, delta);
+        }
+    };
+    ArcGame.prototype.draw = function(){
+        for(var i = 0; i < this.drawListeners.length; ++i){
+            this.drawListeners[i](this);
+        }
+    }
+    ArcGame.prototype.start = function () {
+        var __this = this;
+        var delta = 0;
+        var lastFrame = 0;
 
-        delta += timestamp - lastFrame;
-        lastFrame = timestamp;
+        // Main Game Loop
+        /*var loopGame = function (timestamp) {
+            var time = __this.animate();
+            arcRequestAnimFrame(loopGame);
+            
+            if (time > 0.0) {
+                __this.display.update(time);
 
-        if(delta >= __this.frameCap){
-            __this.beginLoop(delta);
+                for (var index = 0; index < __this.loopListeners.length; ++index) {
+                    __this.loopListeners[index](__this, time);
+                }
+            }
+        };*/
 
-            while(delta >= __this.frameCap){
+        var loopGame = function(timestamp){
+            var loopCount = 0;
+            var redraw = false;
 
-                if(++loopCount < 10){
-                    __this.update(__this.frameCap);
+            delta += timestamp - lastFrame;
+            lastFrame = timestamp;
+
+            if(delta >= __this.frameCap){
+                __this.beginLoop(delta);
+
+                while(delta >= __this.frameCap){
+
+                    if(++loopCount < 10){
+                        __this.update(__this.frameCap);
+                    }
+
+                    delta -= __this.frameCap;
                 }
 
-                delta -= __this.frameCap;
+                __this.draw();
+                __this.endLoop();
             }
 
-            __this.draw();
-            __this.endLoop();
+            arcRequestAnimFrame(loopGame);
         }
 
-        arcRequestAnimFrame(loopGame);
-    }
-
-    loopGame(0);
-};
+        loopGame(0);
+    };
+}

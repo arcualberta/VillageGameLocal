@@ -402,6 +402,16 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         __this.villageDisplay.resize(canvas.width, canvas.height);
     });
 };
+VillageGame.prototype.resize = function(width, height) {
+    ArcGame.prototype.resize.call(this, width, height);
+
+    if(this.hud){
+        let canvas = this.canvas;
+        let minimap = this.hud.getChild("Mini Map");
+        minimap.updateSize(Math.floor(canvas.width / 4), Math.floor(canvas.width / 4));
+        minimap.updateLocation(canvas.width - minimap.size[2] - 5, minimap.size[3] + 5);
+    }
+}
 VillageGame.prototype.fullscreen = function () {
     this.display.requestFullscreen();
     //this.villageWorker.postMessage([WORKER_RESIZE, canvas.width, canvas.height]);

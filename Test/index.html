@@ -46,7 +46,13 @@
             var game;
             
             $(document).ready(function(){
-                game = new VillageGame($("#gamePanel")[0], "./src", "./Resources");
+                var canvas = $("#gamePanel")[0];
+                if(window.innerHeight < canvas.height){
+                    canvas.height = Math.max(440, window.innerHeight);
+                    canvas.width = Math.floor(Math.min(window.innerWidth, canvas.height * (4.0/3.0)));
+                }
+
+                game = new VillageGame(canvas, "./src", "./Resources");
                 game.characterScreens = testSpriteList;
                 game.start();
             });
