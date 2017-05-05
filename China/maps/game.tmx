@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="39">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="100" height="80" tilewidth="30" tileheight="30" nextobjectid="40">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
   <image source="../tiles/tileset.png" width="570" height="570"/>
   <terraintypes>
@@ -1473,13 +1473,13 @@ if(performance &amp;&amp; performance.now){
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="13" name="marketSwitch" type="backgroundMusic" x="377.576" y="1526" width="2087.39" height="736">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
    </properties>
   </object>
-  <object id="27" name="MainMusic" type="BackgroundMusic" x="121.758" y="59.5152" width="1677.33" height="739.333">
+  <object id="27" name="MainMusic" type="BackgroundMusic" x="359.758" y="203.515" width="1541.33" height="801.333">
    <properties>
     <property name="file" value="sound/3VariationsOfPlumBlossoms.mp3"/>
    </properties>
@@ -1507,6 +1507,11 @@ this.sound = new ArcSound(&quot;CloudMusic&quot;, true, modulePath + &quot;/soun
   <object id="33" name="palaceSwitch" type="backgroundMusic" x="1932.06" y="16.8485" width="1038.91" height="911.758">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
+   </properties>
+  </object>
+  <object id="39" name="ChangeToLogin" type="BackgroundMusic" x="529.335" y="1072.33" width="1263.33" height="411.333">
+   <properties>
+    <property name="file" value="sound/ChinaAliveMusic.wav"/>
    </properties>
   </object>
  </objectgroup>

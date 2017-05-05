@@ -11,6 +11,7 @@ VillageSettings.prototype.init = function(name){
         volume: 1.0
     };
     this.video = {
+        resolution: [800, 600],
         fps: 30
     };
 };
@@ -31,6 +32,7 @@ VillageSettings.prototype.load = function(game){
     ArcSettings.prototype.load.call(this);
 
     game.audio.setVolume(this.audio.volume);
+    game.setFrameCap(this.video, fps);
 }
 
 /**
