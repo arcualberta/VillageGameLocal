@@ -1,8 +1,8 @@
 {
-	page: {
-		title: "Demo Village",
-		width: 800,
-		height: 600
+	"page": {
+		"title": "Demo Village",
+		"width": 800,
+		"height": 600
 	}
 
 }

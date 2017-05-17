@@ -76,6 +76,8 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
         return messageFunction(_this.module.dialog, message, lineNumber, player, speaker, onComplete);
     };
 
+    this.config = new ArcConfig(this.module.path + "/config.json");
+
     $(function () {
         // Add the css
         var head = document.getElementsByTagName('head')[0];
@@ -319,4 +321,7 @@ WorldAdapter.prototype.getSpriteSheetList = function () {
 };
 WorldAdapter.prototype.getTaskScript = function(taskScript) {
     return this.module.path + "/tasks/" + taskScript + ".js";
+};
+WorldAdapter.prototype.getConfigSetting = function(name){
+    this.config.getEntry(name);
 };

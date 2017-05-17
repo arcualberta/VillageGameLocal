@@ -51,6 +51,78 @@ ArcSettings.prototype.load = function(){
     }
 }
 
+var ArcConfig = ArcBaseObject();
+{
+    var loaded = false;
+
+    function loadConfig(src){
+        var _this = this;
+
+        if(!loaded){
+            $.ajax({
+                dataType: "json",
+                url: src,
+                data: {},
+                success: function(data){
+                    _this.data = data;
+                    _this.loaded = true;
+                },
+                error: function(e){
+                    console.error("Could not load configuration file.");
+                },
+                async: false
+            });
+        }
+    }
+
+    function splitName(name){
+        var n = name.split(".");
+
+        return n;
+    }
+
+    ArcConfig.prototype.init = function(src){
+        this.data = null;
+
+        Object.defineProperty(this, 'isLoaded', {
+            get: function(){
+                return loaded;
+            }
+        });
+
+        this.data = {};
+        loadConfig.call(this, src);
+    };
+    ArcConfig.prototype.containsKey = function(name){
+        var n = splitName(name);
+        var lastVal = this.data;
+
+        for(var i = 0; i < n.length; ++i){
+            if(lastVal.hasOwnProperty(n[i])){
+                lastVal = lastVal[n[i]];
+            }else{
+                return false;
+            }
+        }
+
+        return true;
+    };
+    ArcConfig.prototype.getEntry = function(name){
+        var n = splitName(name);
+        var lastVal = this.data;
+
+        for(var i = 0; i < n.length; ++i){
+            if(lastVal.hasOwnProperty(n[i])){
+                lastVal = lastVal[n[i]];
+            }else{
+                return null;
+            }
+        }
+
+        return lastVal;
+    };
+}
+
 /**
 * @class
 */

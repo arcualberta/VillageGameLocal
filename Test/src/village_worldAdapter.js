@@ -27,3 +27,6 @@ WorldAdapter.prototype.getSpriteSheetList = function () {
 WorldAdapter.prototype.getTaskScript = function(taskScript) {
 
 };
+WorldAdapter.prototype.getConfigSetting = function(name){
+	return null;
+};

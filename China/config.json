@@ -1,11 +1,11 @@
 {
-	page: {
-		title: "China Alive",
-		width: 800,
-		height: 600
+	"page": {
+		"title": "China Alive",
+		"width": 800,
+		"height": 600
 	},
-	title: {
-		music: "/sound/CinaAliveMusic.wav"
+	"title": {
+		"music": "/sound/ChinaAliveMusic.wav"
 	}
 
 }

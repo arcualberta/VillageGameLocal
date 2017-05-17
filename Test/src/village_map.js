@@ -387,7 +387,7 @@ VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, module
     } else if(triggerType === "script"){
         trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties, modulePath);
     }else {
-        trigger = new Trigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
+        trigger = new ArcTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
     }
     
     if(triggerProperties['follow']){

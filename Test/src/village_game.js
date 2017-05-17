@@ -32,7 +32,7 @@ VillageSettings.prototype.load = function(game){
     ArcSettings.prototype.load.call(this);
 
     game.audio.setVolume(this.audio.volume);
-    game.setFrameCap(this.video, fps);
+    game.setFrameCap(this.video.fps);
 }
 
 /**
@@ -382,6 +382,12 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         __this.villageDisplay = new VillageDisplay(__this, worldAdapter, javascriptPath + "/village_worker.js", setDrawScene);
         __this.villageDisplay.resize(canvas.width, canvas.height);
+
+        // Load any needed config properties.
+        if(worldAdapter.config.containsKey("title.music")){
+            var bgMusic = new ArcSound("titleMusic", true, worldAdapter.module.path + worldAdapter.config.getEntry("title.music"));
+            worldAdapter.module.setBackgroundMusic(bgMusic, 0);
+        }
 
         // Show the login window
         menu = new LoginMenu(worldAdapter.login, resourcesPath);
