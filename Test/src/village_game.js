@@ -14,6 +14,15 @@ VillageSettings.prototype.init = function(name){
         resolution: [800, 600],
         fps: 30
     };
+    this.gameplay = {
+        controls: {
+            up: [38, 87], //Up and W
+            down: [40, 83], //Down and S
+            left: [37, 65], //Left and A
+            right: [39, 68], //Right and D
+            select: [13], //Enter
+        }
+    }
 };
 /**
 * @override
