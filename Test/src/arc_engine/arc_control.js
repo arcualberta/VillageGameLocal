@@ -71,6 +71,9 @@ ArcControlAdapter.prototype.init = function(canvas){
     var __this = this;
     var mouseDown = false;
     var jcanvas = $(canvas);
+
+    // 256 key presses are saved in an array as a boolean 0 means key up and 1 means key down.
+    this.keys = new Uint8Array(32);
     
     jcanvas.mousedown(function (e) {
         e.preventDefault();
@@ -111,6 +114,39 @@ ArcControlAdapter.prototype.init = function(canvas){
             });
         }
     });
+
+    jcanvas.keydown(function(e){
+        var key = e.keyCode;
+        __this.setKey(key, true);
+        __this.addAction(CONTROL_KEY_DOWN, {
+            key: key
+        });
+    });
+    
+    jcanvas.keyup(function(e){
+        var key = e.keyCode;
+        __this.setKey(key, false);
+        __this.addAction(CONTROL_KEY_UP, {
+            key: key
+        });
+    });
+};
+ArcControlAdapter.prototype.setKey = function(key, isDown){
+    var i = key >> 3;
+    var val = key & 0x00000007;
+    
+    if(isDown){
+        this.keys[i] |= 1 << val;
+    }else{
+        this.keys[i] &= ~(1 << val);
+    }
+};
+ArcControlAdapter.prototype.getKey = function(key){
+    var i = key >> 3;
+    var val = key & 0x00000007;
+    var mask = 1 << val;
+    
+    return (this.keys[i] & mask) > 0;
 };
 
 var ArcMobileControlAdapter = ArcBaseObject();
