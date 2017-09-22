@@ -440,6 +440,108 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     user.waypoint[0] = this.waypointLoc[0];
     user.waypoint[1] = this.waypointLoc[1];
 };
+
+/**
+* Used the plan paths for objects in the game
+* @class
+* @implements {ArcActor}
+*/
+var Path = ArcBaseObject();
+Path.prototype = Object.create(ArcActor.prototype);
+{
+    function splitLineString(linestring, scale){
+        if(linestring){
+            var substring;
+            var splitString = linestring.split(' ');
+            this.pointCount = splitString.length;
+            this.points = new Float32Array(this.pointCount << 1);
+
+            for(i = 0; i < splitString.length; ++i){
+                substring = splitString[i].split(',');
+                this.points[i << 1] = parseFloat(substring[0]) * scale;
+                this.points[(i << 1) + 1] = parseFloat(substring[1]) * scale;
+            }
+        }else{
+            this.pointCount = 0;
+            this.points = new Float32Array(0);
+        }
+    }
+
+    Path.prototype.init = function(name, type, position, size, parameters, linestring, scale){
+        ArcActor.prototype.init.call(this, true, true, false);
+
+        this.name = name;
+        this.type = type;
+        this.pointCount = 0;
+        this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
+        this.updateSize(size[0], size[1]);
+        this.updateLocation(position[0], position[1]);
+
+        // Process the line
+        splitLineString.call(this, linestring, scale);
+
+        // Get Events
+        for(var key in parameters){
+            var test = key.substring(0, 2);
+            var state = 0;
+            if(test === "on"){
+                this[key] = Function("time", "player", "world", "worldAdapter", parameters[key]);
+            }
+        }
+
+        if(this.ontick){
+            //tick enables
+        }else{
+            tickEnabled = false;
+        }
+
+        if(this.onstart){
+            this.onstart(0, null, null, null);
+        }
+    }
+    Path.prototype.tick = function(deltaMilliSeconds, worldAdapter, village){
+        // Check if we have any click functions
+        var f = this['ontick'];
+
+        if(f){ 
+            f.call(this, deltaMilliSeconds, worldAdapter, village);
+        }
+    }
+    Path.prototype.getPoint = function(index, pointbuffer){
+        if(index < 0 || index >= this.pointCount){
+            return null;
+        }
+
+        var location = index << 1;
+
+        pointbuffer[0] = this.points[location] + this.location[0];
+        pointbuffer[1] = this.points[location + 1] + this.location[1];
+
+        return pointbuffer;
+    }
+
+    Path.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        
+        // Debug features    
+        if(window.debugMode && this.pointCount > 1){    
+            let color = "#0FF";
+
+            let x1 = this.points[0] + this.location[0];
+            let y1 = this.points[1] + this.location[1];
+            for(var i = 2; i < this.points.length; ++i){
+                let x2 = this.points[i] + this.location[0];
+                ++i;
+                let y2 = this.points[i] + this.location[1];
+
+                displayContext.drawLine(x1, y1, x2, y2, color);
+
+                x1 = x2;
+                y1 = y2;
+            }
+        }
+    }
+}
+
 // The basic world adapter object
 var WorldAdapter = ArcBaseObject();
 WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, gameContext) {

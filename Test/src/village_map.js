@@ -673,6 +673,9 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                              object = new NPC(objectName, objectName, "idle", [objectX, objectY], objectProperties);
                              object.spriteSheet = _this.getSpriteSheet(objectProperties["spritesheet"]);
                              _this.objects.insert(object);
+                        } else if (objectType === "path"){
+                             object = new Path(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectProperties, $object.find("polyline").attr("points"), scale);
+                             _this.objects.insert(object);
                         } else {
                             object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
                             tree.insert(object);

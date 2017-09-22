@@ -5,6 +5,8 @@ CharacterScripts.prototype.init = function(parent){
 	
 	this.AttachFunction("WalkRandom");
 	this.AttachFunction("WalkArea");
+	this.AttachFunction("InitializePath");
+	this.AttachFunction("UpdatePath");
 };
 CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 	let waypoint = this.waypoint;
@@ -43,6 +45,56 @@ CharacterScripts.prototype.WalkArea = function(x1, y1, x2, y2){
 		waypoint[1] = (Math.random() * (y2 - y1)) + y1;
 	}
 };
+CharacterScripts.prototype.InitializePath = function(pathName, startingpoint = 0, reversed = false){
+	if(pathName){
+		this.path = {
+			name: pathName,
+			point: startingpoint,
+			reversed: reversed,
+			pointBuffer: new Float32Array(2)
+		}
+
+		this.path.pointBuffer[0] = this.waypoint[0];
+		this.path.pointBuffer[1] = this.waypoint[1];
+
+		this.state = "onfollowpath";
+
+		this.onfollowpath = function(timeSinceLast, worldAdapter, village, player){
+			this.UpdatePath(village);
+		}
+	}
+}
+CharacterScripts.prototype.UpdatePath = function(village){
+	var localPath = this.path;
+	var path = village.objects.getChild(localPath.name);
+
+	if(path){
+		if(localPath.point >= path.pointCount){
+			localPath.point = path.pointCount - 1;
+			localPath.reversed = !localPath.reversed;
+		}else if(localPath.point <= 0){
+			localPath.point = 0;
+			localPath.reversed = !localPath.reversed;
+		}
+
+		path.getPoint(localPath.point, localPath.pointBuffer);
+
+		if(this.waypoint[0] != localPath.pointBuffer[0] || this.waypoint[1] != localPath.pointBuffer[1]){
+			this.waypoint[0] = localPath.pointBuffer[0];
+			this.waypoint[1] = localPath.pointBuffer[1];
+		}else{
+			if(!this.lastStep[2]){ // We reached the waypoint
+				//TODO trigger on reach waypoint
+
+				if(localPath.reversed){
+					--localPath.point;
+				}else{
+					++localPath.point;
+				}
+			}
+		}
+	}
+}
 
 var DialogScripts = new ArcBaseObject();
 DialogScripts.prototype = Object.create(ArcScriptObject.prototype)
