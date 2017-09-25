@@ -111,12 +111,18 @@ HousingSection.prototype.addHouse = function (map, userId, userHouse) {
 // Village Objects
 var VillageObject = ArcBaseObject();
 VillageObject.prototype = Object.create(ArcActor.prototype)
+Object.defineProperty(VillageObject, 'isVillageObject', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
 new DialogScripts(VillageObject.prototype);
-VillageObject.prototype.init = function (name, type, position, size, rotation, tileId, parameters) {
+VillageObject.prototype.init = function (name, type, position, size, rotation, parameters) {
     ArcActor.prototype.init.call(this, true, true, false);  
     this.name = name;
     this.properties = {};
-    this.tileId = tileId;
+    this.tileId = parameters.generated_tileId;
     this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
     this.rotation = rotation;
     this.type = type;
@@ -176,6 +182,15 @@ VillageObject.prototype.interact = function(left, top, right, bottom, player, wo
         player.activeObject = null;
     }
 };
+
+var PlayerStart = ArcBaseObject();
+PlayerStart.prototype = Object.create(VillageObject.prototype)
+Object.defineProperty(PlayerStart, 'isVillageObject', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
 
 // Trigger Objects
 
@@ -625,14 +640,13 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                     $(this).find("object").each(function () {
                         var $object = $(this);
                         var objectName = $object.attr("name");
-                        var objectType = $object.attr("type") ? $object.attr("type").toLowerCase() : "none";
+                        var objectType = $object.attr("type") ? $object.attr("type") : "VillageObject";
                         var objectX = Number($object.attr("x")) * scale; // Double the size for now since we double the map size
                         var objectY = Number($object.attr("y")) * scale;
                         var objectWidth = Number($object.attr("width")) * scale;
                         var objectHeight = Number($object.attr("height")) * scale;
                         var objectTileId = parseInt($object.attr("gid")) - 1;
                         var objectRotation = 0.0;
-                        var objectProperties = {};
                         var object = null;
 
                         if(Number.isNaN(objectWidth)){
@@ -644,6 +658,11 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                         }
 
                         // Load the properties
+                        var objectProperties = {
+                            generated_scale: scale,
+                            generated_map: _this,
+                            generated_tileId: objectTileId
+                        };
                         $object.find("properties > property").each(function () {
                             objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
                         });
@@ -662,6 +681,14 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                             }
                         }
 
+                        var objectConstructor = window[objectType];
+
+                        if(objectConstructor && objectConstructor.isVillageObject){
+                            object = new objectConstructor(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectProperties, $object);
+                            _this.objects.insert(object);
+                        }
+
+                        /*
                         if (objectType === "playerstart") {
                             object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
                             tree.insert(object);
@@ -680,6 +707,7 @@ VillageMap.prototype.load = function (onload, startName, gameContext) {
                             object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
                             tree.insert(object);
                         }
+                        */
                     });
 
                     _this.addChild(tree, name);

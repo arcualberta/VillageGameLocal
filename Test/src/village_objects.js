@@ -1,3 +1,6 @@
+/**
+* Basic game Character
+**/
 var Character = ArcBaseObject();
 Character.prototype = Object.create(ArcCharacter.prototype);
 new CharacterScripts(Character.prototype);
@@ -200,19 +203,26 @@ Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
 
 // A non playable character
 var NPC = ArcBaseObject();
+Object.defineProperty(NPC, 'isVillageObject', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
 NPC.STATE = [
     "idle", // The character does not move
     "talk", // randomly walk around
     "path", // The character follows a given path
 ];
 NPC.prototype = Object.create(Character.prototype);
-NPC.prototype.init = function (id, name, state, location, properties) {
-    Character.prototype.init.call(this, id, name);
+NPC.prototype.init = function (name, type, location, size, roation, properties) { // All village objects need the construction values in this order.
+    Character.prototype.init.call(this, name, name);
     this.properties = properties;
-    this.setState(state);
+    this.setState("idle");
 
     this.clickEnabled = true;
     this.interactEnabled = true;
+    this.spriteSheet = properties.generated_map.getSpriteSheet(properties.spritesheet);
 
     for(var key in properties){
         var test = key.substring(0, 2);
@@ -447,6 +457,12 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
 * @implements {ArcActor}
 */
 var Path = ArcBaseObject();
+Object.defineProperty(Path, 'isVillageObject', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
 Path.prototype = Object.create(ArcActor.prototype);
 {
     function splitLineString(linestring, scale){
@@ -467,7 +483,7 @@ Path.prototype = Object.create(ArcActor.prototype);
         }
     }
 
-    Path.prototype.init = function(name, type, position, size, parameters, linestring, scale){
+    Path.prototype.init = function(name, type, position, size, rotation, parameters, $object){
         ArcActor.prototype.init.call(this, true, true, false);
 
         this.name = name;
@@ -478,7 +494,7 @@ Path.prototype = Object.create(ArcActor.prototype);
         this.updateLocation(position[0], position[1]);
 
         // Process the line
-        splitLineString.call(this, linestring, scale);
+        splitLineString.call(this, $object.find("polyline").attr("points"), parameters.generated_scale);
 
         // Get Events
         for(var key in parameters){
