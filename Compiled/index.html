@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <title>Living Cultures</title>
+        
+        <link rel="stylesheet" type="text/css" href="./Resources/Styles/game_style.css">
+        
+        <script type="text/javascript" src="./config.js"></script>
+
+        <script type="text/javascript" src="./lib/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="./lib/jquery.csv-0.71.min.js"></script>
+        <script type="text/javascript" src="./lib/arcEngine.js"></script>
+        <script type="text/javascript" src="./lib/village.js"></script>
+
+        <style>
+            #testMap > canvas {
+                width: 500px;
+                image-rendering: pixelated;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="game_window">
+            <canvas id="gamePanel" width="800" height="600" role="img"></canvas>
+        </div>
+        <span id="testText"></span>
+
+        <script type="text/javascript">
+            var game;
+            
+            $(document).ready(function(){
+                var canvas = $("#gamePanel")[0];
+                if(window.innerHeight < canvas.height){
+                    canvas.height = Math.max(440, window.innerHeight);
+                    canvas.width = Math.floor(Math.min(window.innerWidth, canvas.height * (4.0/3.0)));
+                }
+
+                game = new VillageGame(canvas, "./src", "./Resources");
+                game.characterScreens = testSpriteList;
+                game.start();
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,162 @@
+body {
+    background-color: #000;
+}
+
+.game_window{
+    font-family: "Arial", arial, sans-serif;
+    display: inline;
+}
+
+.game_window canvas{
+    z-index: 1;
+    background-color: black;
+    position: relative;
+}
+
+.game_dialogWindow{
+    z-index: 10;
+    position: absolute;
+    background-color: rgba(30, 30, 180, 0.8);
+    min-width: 100px;
+    min-height: 100px;
+    padding: 10px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
+.game_dialogWindow p, .game_dialogWindow h1, .game_dialogWindow h2, .game_dialogWindow h3, .game_dialogWindow input, .game_dialogWindow button {
+    font-family: Arial, arial, sans-serif;
+    color: #ECECEC;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+
+.game_dialogWindow h3, .game_dialogWindow input, .game_dialogWindow button {
+    font-size: 1.2em;
+}
+
+.game_dialogWindow input, .game_dialogWindow button {
+    color: #5d5d5d;
+}
+
+.game_dialogWindow input{
+    width: 245px;
+}
+
+.game_iconPanel {
+    z-index: 20;
+    display: inline;
+    position: relative;
+    bottom: 10px;
+    right: 74px;
+}
+
+.game_dialogWindow h1{
+    
+}
+
+.game_dialogWindow h2{
+    
+}
+
+.game_dialogWindow h3{
+    
+}
+
+.game_dialogTitleBar{
+    font-size: 2em;
+    padding: 5px;
+    
+}
+
+.game_dialogBody{
+}
+
+.game_dialogBody input {
+}
+
+.game_dialogBody button {
+    margin-top: 10px;
+}
+
+.game_center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.game_left {
+    float: left;
+}
+.game_right {
+    float: right;
+}
+
+.color_select {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #FFF;
+    border-radius: 12px;
+    border: black solid 1px;
+}
+
+.color_select.active {
+    border: white dashed 1px;
+}
+
+.color_select_div {
+    width: 26px;
+    display: inline-block;
+    margin: 2px;
+}
+
+.color_selector {
+}
+
+/* Message Dialogs */
+.dialog_text {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 60px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 5px 15px;
+    border-radius: 5px;
+}
+
+.dialog_text > h5, .dialog_text > h4, .dialog_text > h3, .dialog_text > h2, .dialog_text > h1{
+    color: white;
+}
+
+.dialog_option {
+    margin: 2px;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+}
+
+.dialog_option:hover{
+    color: lawngreen;
+    cursor: pointer;
+}
+
+.dialog_menu > ul {
+    list-style-type: none;
+    color: #2e2c27;
+    font-weight: bold;
+}
+
+.dialog_menu > ul > li {
+
+}
+
+.dialog_menu > ul > li:hover {
+    color: #1f942a;
+    cursor: pointer;
+}

@@ -1,16 +1,21 @@
 {
-	"name": "Living Cultures Game",
-	"version": "0.1.0",
-	"description": "A base system used to create village games focues on the culture of countries.",
-	"keywords": [
-		"javascript"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/arcualberta/VillageGameLocal"
-	},
-	"author": {
-		"name": "Mark McKellar",
-		"email": "mpm1@ualberta.ca"
-	}
+  "name": "Living-Cultures-Game",
+  "version": "0.1.0",
+  "description": "A base system used to create village games focues on the culture of countries.",
+  "keywords": [
+    "javascript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arcualberta/VillageGameLocal"
+  },
+  "author": {
+    "name": "Mark McKellar",
+    "email": "mpm1@ualberta.ca"
+  },
+  "dependencies": {
+    "fs-extra": "^4.0.2",
+    "uglify-es": "file:..\\..\\..\\AppData\\Local\\Temp\\npm-6660-20c9f0c9\\git-cache-a7627c2e8101\\68645b28d32b426564929fb8f3903e91d31a8bc6",
+    "uglify-js": "git+https://github.com/mishoo/UglifyJS2.git#harmony"
+  }
 }
