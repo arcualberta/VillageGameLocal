@@ -390,6 +390,38 @@ function SettingsWindow(game){
         addMenuItem(parent, name, slider);
     }
 
+    var addRadioGroup = function(parent, name, value, options, onchange){
+        var inputName = name.replace(/\s/g, '');
+        var radioGroup = $("<div></div>");
+
+        for(var i = 0; i < options.length; ++i){
+            var input = $("<input></input>");
+            input.attr("type", "radio");
+            input.attr("name", inputName);
+            input.attr("value", options[i][0]);
+            input.css("width", "auto");
+            radioGroup.append(input);
+
+            if(options[i][0] == value){
+                input[0].checked = true;
+            }
+
+            var label = $("<span></span>");
+            label.text(options[i][1]);
+            radioGroup.append(label);
+
+            input.change(function(){
+                if(this.checked){
+                    recordEvent("Settings", "SetValue", name, this.value);
+
+                    onchange.apply(this, arguments);
+                }
+            })
+        }
+
+        addMenuItem(parent, name, radioGroup);
+    }
+
     var addMenuChange = function(parent, name, menu){
         var li = $("<li></li>").text(name);
         li.click(function(){
@@ -422,6 +454,15 @@ function SettingsWindow(game){
         switch(state){
             case 1:
                 result.titleBar.text("General Settings");
+                addRadioGroup(menu, "Memory Usage", ArcSettings.Current.general.memory, [
+                        [LEVEL_LOW, "Low"],
+                        [LEVEL_MED, "Medium"],
+                        [LEVEL_HIGH, "High"],
+                        [LEVEL_ULTRA, "Ultra"],
+                    ], function(){
+                        game.setMemoryLevel(this.value);
+                        ArcSettings.Current.general.memory = this.value;
+                    });
                 addMenuButtons(dialogSection, ["Back"], [function(){ setMenu(0); }]);
                 break;
             case 2:

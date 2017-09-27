@@ -1158,7 +1158,7 @@
  </layer>
  <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="81.3333" y="79.8333" width="20" height="19"/>
-  <object id="2" name="Guard1" type="NPC" gid="362" x="344.993" y="447.666" width="30" height="50">
+  <object id="2" name="Guard1" type="NPC" gid="362" x="524.993" y="554.333" width="30" height="50">
    <properties>
     <property name="onfarm">if(!this.lastStep[2]){
 	var farming = this.properties[&quot;farming&quot;];
@@ -1221,6 +1221,7 @@ this.waypoint[1] = this.location[5];</property>
   <object id="42" name="Guard2" type="NPC" gid="362" x="779.667" y="113.667" width="30" height="50">
    <properties>
     <property name="onstart">this.InitializePath(&quot;Path1&quot;);
+this.fov.enabled = true;
 </property>
     <property name="spritesheet" value="villager_1"/>
    </properties>
@@ -1257,9 +1258,9 @@ this.waypoint[1] = this.location[5];</property>
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,93,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,130,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,163,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,93,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,94,95,0,

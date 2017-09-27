@@ -1094,6 +1094,23 @@ MiniMap.prototype.fillRect = function(style, x, y, width, height){
 
     context.rect(x, y, width, height);
 };
+MiniMap.prototype.fillTriangle = function(style, x1, y1, x2, y2, x3, y3){
+    let context = this.mapContext;
+
+    if(context.fillStyle != style){
+        context.fill();
+        context.closePath();
+
+        context.fillStyle = style;
+
+        context.beginPath();
+    }
+
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
+    context.lineTo(x3, y3);
+    context.lineTo(x1, y1);
+};
 MiniMap.prototype.endDraw = function(){
     this.mapContext.fill();
     this.mapContext.closePath();
@@ -1155,6 +1172,28 @@ MiniMap.prototype.endDraw = function(){
 
             let xs = Math.floor((cb[0] - x) * scale) + drawX;
             let ys = Math.floor((cb[1] - y) * scale) + drawY;
+
+            let fov = this.fov;
+
+            if(fov.enabled){
+                let n, d;
+
+                d = Math.tan(fov.angle) * (fov.distance * scale);
+
+                if(this.direction == 0 /* down */){
+                    n = ys + (fov.distance * scale);
+                    minimap.fillTriangle('#F80', xs, ys, xs + d, n, xs - d, n);
+                }else if(this.direction == 1 /* left */){
+                    n = xs - (fov.distance * scale);
+                    minimap.fillTriangle('#F80', xs, ys, n, ys + d, n, ys - d);
+                }else if(this.direction == 2 /* up */){
+                    n = ys - (fov.distance * scale);
+                    minimap.fillTriangle('#F80', xs, ys, xs + d, n, xs - d, n);
+                }else if(this.direction == 3 /* right */){
+                    n = xs + (fov.distance * scale);
+                    minimap.fillTriangle('#F80', xs, ys, n, ys + d, n, ys - d);
+                }
+            }
 
             minimap.fillRect('#FF0', xs, ys, cb[2] * scale, this.size[3] * scale);
         }

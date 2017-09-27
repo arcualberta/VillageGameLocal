@@ -996,8 +996,6 @@ var QuadTree = ArcBaseObject();
     QuadTree.prototype.unload = function(){
         this.clear();
     }
-    QuadTree.prototype.MAX_OBJECTS = 5;
-    QuadTree.prototype.MAX_LEVELS = 10;
     QuadTree.prototype.clear = function (onObjectClear) {
         var i = 0;
         var nodes = this.nodes;
@@ -1177,7 +1175,7 @@ var QuadTree = ArcBaseObject();
         }
 
         this.children.push(value);
-        if (this.children.length > this.MAX_OBJECTS && this.level < this.MAX_LEVELS) {
+        if (this.children.length > QuadTree.MAX_OBJECTS && this.level < QuadTree.MAX_LEVELS) {
             if (this.nodes[0] === null) {
                 this.split();
             }
@@ -1299,6 +1297,32 @@ var QuadTree = ArcBaseObject();
     };
     QuadTree.ArrayBuffer = new ArcArrayBuffer();
     QuadTree.StackBuffer = new ArcArrayBuffer();
+
+    QuadTree.MAX_OBJECTS = 5;
+    QuadTree.MAX_LEVELS = 10;
+    QuadTree.setMemoryLevel = function(level){
+        switch(level){
+            case LEVEL_LOW:
+                QuadTree.MAX_OBJECTS = 3;
+                QuadTree.MAX_LEVELS = 5;
+                break;
+
+            case LEVEL_MED:
+                QuadTree.MAX_OBJECTS = 5;
+                QuadTree.MAX_LEVELS = 10;
+                break;
+
+            case LEVEL_HIGH:
+                QuadTree.MAX_OBJECTS = 5;
+                QuadTree.MAX_LEVELS = 15;
+                break;
+
+            case LEVEL_ULTRA:
+                QuadTree.MAX_OBJECTS = 10;
+                QuadTree.MAX_LEVELS = 15;
+                break;   
+        }
+    }
 }
 
 var ArcTileQuadTree_Tile = ArcBaseObject();

@@ -30,6 +30,10 @@ var ArcSettings = ArcBaseObject();
 ArcSettings.Current = null;
 ArcSettings.prototype.init = function(name){
     this.name = name;
+
+    this.general = {
+        memory: LEVEL_MED,
+    };
 };
 /**
 * Saves the settings into local storage.
@@ -40,7 +44,7 @@ ArcSettings.prototype.save = function(){
 /**
 * Loads settings from local storage.
 */
-ArcSettings.prototype.load = function(){
+ArcSettings.prototype.load = function(game){
     let data = null;
     data = JSON.parse(localStorage.getItem(this.name));
 
@@ -49,6 +53,8 @@ ArcSettings.prototype.load = function(){
             this[key] = data[key];
         }
     }
+
+    game.setMemoryLevel(this.general.memory);
 }
 
 var ArcConfig = ArcBaseObject();
@@ -215,6 +221,15 @@ var ArcGame = ArcBaseObject();
         if (this.onResize && this.onResize !== null) {
             this.onResize(canvas.width, canvas.height);
         }
+    }
+    ArcGame.prototype.setMemoryLevel = function(level){
+        if(level < LEVEL_LOW){
+            level = LEVEL_LOW;
+        }else if(level > LEVEL_ULTRA){
+            level = LEVEL_ULTRA;
+        }
+
+        QuadTree.setMemoryLevel(level);
     }
     ArcGame.prototype.beginLoop = function(delta){
         for(var i = 0; i < this.beginLoopListeners.length; ++i){

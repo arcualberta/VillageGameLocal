@@ -24,6 +24,11 @@ Character.prototype.init = function (id, name) {
     this.action = 0;
     this.direction = 0;
     this.blockable = true;
+    this.fov = {
+        enabled: false,
+        distance: 200,
+        angle: 30 * (180 / Math.PI)
+    }
 
     this.updateSize(16, 16);
 };

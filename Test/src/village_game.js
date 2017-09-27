@@ -38,7 +38,7 @@ VillageSettings.prototype.save = function(game){
 * @param {VillageGame} The game to load the settings into.
 */
 VillageSettings.prototype.load = function(game){
-    ArcSettings.prototype.load.call(this);
+    ArcSettings.prototype.load.call(this, game);
 
     game.audio.setVolume(this.audio.volume);
     game.setFrameCap(this.video.fps);
