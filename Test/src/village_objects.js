@@ -2,209 +2,299 @@
 * Basic game Character
 **/
 var Character = ArcBaseObject();
-Character.prototype = Object.create(ArcCharacter.prototype);
-new CharacterScripts(Character.prototype);
-new DialogScripts(Character.prototype);
-Character.prototype.init = function (id, name) {
-    ArcCharacter.prototype.init.call(this);
-    this.id = id;
-    this.name = name;
-    
-    let text = new ArcRenderableText(name, {
-        font: "bold 12px sans-serif",
-        fillStyle: "yellow",
-        textAlign: "center"
-    });
-    text.offset[1] = -12;
-    this.addChild(text, "name");
+{
+    Character.prototype = Object.create(ArcCharacter.prototype);
+    new CharacterScripts(Character.prototype);
+    new DialogScripts(Character.prototype);
 
-    this.lastStep = [0, 0, false];
-    this.waypoint = [0, 0];
-    this.speed = 0.1;
-    this.action = 0;
-    this.direction = 0;
-    this.blockable = true;
-    this.fov = {
-        enabled: false,
-        distance: 200,
-        angle: 30 * (180 / Math.PI)
+    function dot2D(nx, ny, x, y){
+        return (nx * x) + (ny + y);
     }
 
-    this.updateSize(16, 16);
-};
-Character.directions = ["down", "left", "up", "right"];
-Character.actions = ["stand", "walk"];
-Character.prototype.stop = function(){
+    function evaluateViewAngle(angleLow, angleHigh, nX, nY, cX, cY, r1, r2, village){
+        if(angleLow > angleHigh){
+            return null;
+        }
 
-};
-Character.startBuffer = new Float32Array(2);
-Character.endBuffer = new Float32Array(2);
-Character.prototype.isOnGoal = function(village, goal){
-    var start = village.getClosestTileCoord(this.location[4], this.location[5], Character.startBuffer);
-    var end = village.getClosestTileCoord(goal[0], goal[1], Character.endBuffer);
+        var rMax = r2;
 
-    return Math.abs(start[0] - end[0]) < 1 && Math.abs(start[1] - end[1]) < 1;
-};
-Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
-    // Check if we are moving
-    if(this.isOnGoal(village, goal)){
-        output[0] = this.location[4];
-        output[1] = this.location[5];
-        output[2] = false;
+        // Check for blocking
+
+        // If no player was found, check if they exist in the area
+        var players = village.players;
+        var key, player, dist, x, y;
+
+        for(var key in players){
+            player = players[key];
+            x = player.location[4] - cX;
+            y = player.location[5] - cY;
+
+            dist = Math.sqrt((x * x) + (y * y));
+
+            if(dist >= r1 && dist <= rMax){
+                // normalize vector
+                x = x / dist;
+                y = y / dist;
+
+                // Find the angle
+                dist = 1.0 - dot2D(nX, nY, x, y); // Reverse the y due to screen coordinates
+
+                if(dist > angleLow && dist < angleHigh){
+                    return player;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    function evaluateFOV(village){
+        var nx, ny;
+        var angle = Math.cos(this.fov.angle);
+
+        switch(this.direction){
+            case 0: //down
+                nx = 0;
+                ny = -1;
+                break;
+
+            case 1: //left
+                nx = -1;
+                ny = 0;
+                break;
+
+            case 2: //up
+                nx = 0;
+                ny = 1;
+                break;
+
+            default: //right
+                nx = 0;
+                ny = 1;
+                break;
+        }
+
+        var player = evaluateViewAngle(-angle, angle, nx, ny, this.location[4], this.location[5], 0, this.fov.distance, village)
+
+        if(player && this.onsee){
+            this.onsee(player, village);
+        }
+        /*var players = village.players;
+        var player, dist;
+
+        for(var i = 0; i < players.length; ++i){
+            dist = Math.sqrt()
+        }*/
+    }
+
+    Character.prototype.init = function (id, name) {
+        ArcCharacter.prototype.init.call(this);
+        this.id = id;
+        this.name = name;
+        
+        let text = new ArcRenderableText(name, {
+            font: "bold 12px sans-serif",
+            fillStyle: "yellow",
+            textAlign: "center"
+        });
+        text.offset[1] = -12;
+        this.addChild(text, "name");
+
+        this.lastStep = [0, 0, false];
+        this.waypoint = [0, 0];
+        this.speed = 0.1;
+        this.action = 0;
+        this.direction = 0;
+        this.blockable = true;
+        this.fov = {
+            enabled: false,
+            distance: 300,
+            angle: (35 * Math.PI) / 180.0
+        }
+
+        this.updateSize(16, 16);
+    };
+    Character.directions = ["down", "left", "up", "right"];
+    Character.actions = ["stand", "walk"];
+    Character.prototype.stop = function(){
+
+    };
+    Character.startBuffer = new Float32Array(2);
+    Character.endBuffer = new Float32Array(2);
+    Character.prototype.isOnGoal = function(village, goal){
+        var start = village.getClosestTileCoord(this.location[4], this.location[5], Character.startBuffer);
+        var end = village.getClosestTileCoord(goal[0], goal[1], Character.endBuffer);
+
+        return Math.abs(start[0] - end[0]) < 1 && Math.abs(start[1] - end[1]) < 1;
+    };
+    Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
+        // Check if we are moving
+        if(this.isOnGoal(village, goal)){
+            output[0] = this.location[4];
+            output[1] = this.location[5];
+            output[2] = false;
+
+            return output;
+        }
+
+        // Find the movement vector
+        var blockable = this.blockable;
+        var xDif = goal[0] - this.location[4];
+        var yDif = goal[1] - this.location[5];
+        var dist = (speed * time) / Math.sqrt((xDif * xDif) + (yDif * yDif));
+        var x = Math.round(xDif * dist);
+        var y = Math.round(yDif * dist);
+
+        // Set the new values
+        var isChanged = true;
+        var tileBox = this.collisionBox();
+
+        // Set to find where we intersect in the x direction.
+        if(x < 0){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                x = 0; //TODO: go to the edge of the blocking object;
+            }
+        }else if(x > 0){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                x = 0;
+            }
+        }
+
+        if(y < 0){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                y = 0;
+            }
+        }else if(y > 0){
+            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                y = 0;
+            }
+        }
+
+        if(x != 0 || y != 0){
+            this.setMovementVector(x, y);
+        }
+
+        output[0] = this.location[4] + x;
+        output[1] = this.location[5] + y;
+        output[2] = isChanged;
 
         return output;
-    }
+    };
+    Character.prototype.getSpriteSheet = function(displayContext){
+        var spriteSheet = null;
 
-    // Find the movement vector
-    var blockable = this.blockable;
-    var xDif = goal[0] - this.location[4];
-    var yDif = goal[1] - this.location[5];
-    var dist = (speed * time) / Math.sqrt((xDif * xDif) + (yDif * yDif));
-    var x = Math.round(xDif * dist);
-    var y = Math.round(yDif * dist);
-
-    // Set the new values
-    var isChanged = true;
-    var tileBox = this.collisionBox();
-
-    // Set to find where we intersect in the x direction.
-    if(x < 0){
-        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
-            x = 0; //TODO: go to the edge of the blocking object;
+        if (!(spriteSheet = displayContext.spriteSheets[this.spriteSheet.id])){
+            displayContext.addSpriteSheet(this.spriteSheet.id, this.spriteSheet.baseImage.src, this.spriteSheet.animations);
         }
-    }else if(x > 0){
-        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
-            x = 0;
-        }
+
+        return spriteSheet;
+    };
+    Character.prototype.drawBounds = function(displayContext){
+        let color = "#FF0";
+        let x1 = this.location[0];
+        let y1 = this.location[1];
+        let x2 = this.location[2];
+        let y2 = this.location[3];
+
+        displayContext.drawLine(x1, y1, x1, y2, color);
+        displayContext.drawLine(x1, y1, x2, y1, color);
+        displayContext.drawLine(x2, y2, x1, y2, color);
+        displayContext.drawLine(x2, y2, x2, y1, color);
+
+        color = "#F80";
+        x1 = this.lastCollisionBox[0];
+        y1 = this.lastCollisionBox[1];
+        x2 = x1 + this.lastCollisionBox[2];
+        y2 = y1 + this.lastCollisionBox[3];
+
+        displayContext.drawLine(x1, y1, x1, y2, color);
+        displayContext.drawLine(x1, y1, x2, y1, color);
+        displayContext.drawLine(x2, y2, x1, y2, color);
+        displayContext.drawLine(x2, y2, x2, y1, color);
     }
+    Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        var spriteSheet = this.getSpriteSheet(displayContext);
 
-    if(y < 0){
-        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
-            y = 0;
-        }
-    }else if(y > 0){
-        if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
-            y = 0;
-        }
-    }
-
-    if(x != 0 || y != 0){
-        this.setMovementVector(x, y);
-    }
-
-    output[0] = this.location[4] + x;
-    output[1] = this.location[5] + y;
-    output[2] = isChanged;
-
-    return output;
-};
-Character.prototype.getSpriteSheet = function(displayContext){
-    var spriteSheet = null;
-
-    if (!(spriteSheet = displayContext.spriteSheets[this.spriteSheet.id])){
-        displayContext.addSpriteSheet(this.spriteSheet.id, this.spriteSheet.baseImage.src, this.spriteSheet.animations);
-    }
-
-    return spriteSheet;
-};
-Character.prototype.drawBounds = function(displayContext){
-    let color = "#FF0";
-    let x1 = this.location[0];
-    let y1 = this.location[1];
-    let x2 = this.location[2];
-    let y2 = this.location[3];
-
-    displayContext.drawLine(x1, y1, x1, y2, color);
-    displayContext.drawLine(x1, y1, x2, y1, color);
-    displayContext.drawLine(x2, y2, x1, y2, color);
-    displayContext.drawLine(x2, y2, x2, y1, color);
-
-    color = "#F80";
-    x1 = this.lastCollisionBox[0];
-    y1 = this.lastCollisionBox[1];
-    x2 = x1 + this.lastCollisionBox[2];
-    y2 = y1 + this.lastCollisionBox[3];
-
-    displayContext.drawLine(x1, y1, x1, y2, color);
-    displayContext.drawLine(x1, y1, x2, y1, color);
-    displayContext.drawLine(x2, y2, x1, y2, color);
-    displayContext.drawLine(x2, y2, x2, y1, color);
-}
-Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    var spriteSheet = this.getSpriteSheet(displayContext);
-
-    if(spriteSheet){
-        var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
-        
-        var frameCenter = this.location[4] - xOffset;
-        var frameTop = this.location[5] - frame.hHalf - yOffset;
-        
-        displayContext.drawImage(spriteSheet.image,
-                frame.x, frame.y, frame.width, frame.height,
-                frameCenter - frame.wHalf, frameTop,
-                frame.drawWidth, frame.drawHeight);
-        
-        // Debug features    
-        if(window.debugMode){    
-            this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
-            displayContext.drawLine(this.waypoint[0], this.waypoint[1], this.location[4], this.location[5]);
-            this.drawBounds(displayContext);
-        }
-    }
-};
-Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
-    // Calculate new location
-    var newLoc = this.calculateNextStep(village, this.speed, timeSinceLast, this.waypoint, this.lastStep);
-
-    var isChanged = newLoc[2];
-
-    if (isChanged) {
-        // Set the new action
-        this.action = 1;
-
-        // Set the new direciton
-        let angle = this.movementVector[2];
-        if(angle > -ArcActor.MovementAngle.QUARTER){
-            if(angle <= ArcActor.MovementAngle.QUARTER){
-                this.direction = 3;
-            }else if(angle <= ArcActor.MovementAngle.THREE_QUARTER){
-                this.direction = 0;
-            }else{
-                this.direction = 1;
-            }
-        }else{
-            if(angle >= -ArcActor.MovementAngle.THREE_QUARTER){
-                this.direction = 2;
-            }else{
-                this.direction = 1;
+        if(spriteSheet){
+            var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
+            
+            var frameCenter = this.location[4] - xOffset;
+            var frameTop = this.location[5] - frame.hHalf - yOffset;
+            
+            displayContext.drawImage(spriteSheet.image,
+                    frame.x, frame.y, frame.width, frame.height,
+                    frameCenter - frame.wHalf, frameTop,
+                    frame.drawWidth, frame.drawHeight);
+            
+            // Debug features    
+            if(window.debugMode){    
+                this.getChild("name").draw(displayContext, frameCenter, frameTop, width, height);
+                displayContext.drawLine(this.waypoint[0], this.waypoint[1], this.location[4], this.location[5]);
+                this.drawBounds(displayContext);
             }
         }
-
-        // Set the new location
-        this.updateLocation(newLoc[0], newLoc[1]);
-    } else {
-        if (this.action === 1) {
-            this.action = 0;
-            isChanged = true;
-        }
-    }
-
-    if (isChanged) {
+    };
+    Character.prototype.updateAnimation = function(){
         this.setAnimation(Character.actions[this.action] + "_" + Character.directions[this.direction]);
-    } else {
-        this.showWaypoint = false;
-    }
+    };
+    Character.prototype.tick = function(timeSinceLast, worldAdapter, village){
+        // Calculate new location
+        var newLoc = this.calculateNextStep(village, this.speed, timeSinceLast, this.waypoint, this.lastStep);
 
-    //this.updateLocation(newLoc[0], newLoc[1]);
+        var isChanged = newLoc[2];
 
-    this.animateFrame(timeSinceLast);
+        if (isChanged) {
+            // Set the new action
+            this.action = 1;
 
-    // Check if we are the current active object
-    if(parent.activeObject == this){
-        parent.waypointLoc[0] = this.location[3] + this.size[2];
-        parent.waypointLoc[1] = this.location[2];
-    }
-};
+            // Set the new direciton
+            let angle = this.movementVector[2];
+            if(angle > -ArcActor.MovementAngle.QUARTER){
+                if(angle <= ArcActor.MovementAngle.QUARTER){
+                    this.direction = 3;
+                }else if(angle <= ArcActor.MovementAngle.THREE_QUARTER){
+                    this.direction = 0;
+                }else{
+                    this.direction = 1;
+                }
+            }else{
+                if(angle >= -ArcActor.MovementAngle.THREE_QUARTER){
+                    this.direction = 2;
+                }else{
+                    this.direction = 1;
+                }
+            }
+
+            // Set the new location
+            this.updateLocation(newLoc[0], newLoc[1]);
+        } else {
+            if (this.action === 1) {
+                this.action = 0;
+                isChanged = true;
+            }
+        }
+
+        if (isChanged) {
+            this.updateAnimation();
+        } else {
+            this.showWaypoint = false;
+        }
+
+        //this.updateLocation(newLoc[0], newLoc[1]);
+
+        this.animateFrame(timeSinceLast);
+
+        // Check if we are the current active object
+        if(parent.activeObject == this){
+            parent.waypointLoc[0] = this.location[3] + this.size[2];
+            parent.waypointLoc[1] = this.location[2];
+        }
+
+        if(this.fov.enabled){
+            evaluateFOV.call(this, village);
+        }
+    };
+}
 
 // A non playable character
 var NPC = ArcBaseObject();
