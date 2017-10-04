@@ -1214,6 +1214,7 @@ this.fov.enabled = false;
    <properties>
     <property name="onidle">this.directionTime += time;
 var timeCheck = 3500;
+this.fov.color = &quot;#0F0&quot;;
 
 while(this.directionTime &gt; timeCheck){
 this.directionTime -= timeCheck;
@@ -1225,8 +1226,9 @@ this.direction = 0;
 
 this.updateAnimation();
 
-}</property>
-    <property name="onsee" value="console.log(&quot;:o &quot; + Character.directions[this.direction]);"/>
+}
+</property>
+    <property name="onsee" value="this.fov.color = &quot;#F00&quot;;"/>
     <property name="onstart">this.fov.enabled = true;
 this.direction = 3;
 this.directionTime = 0;

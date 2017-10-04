@@ -259,6 +259,9 @@ ArcGraphicsAdapter.prototype.update = function (timeSinceLast) {
 ArcGraphicsAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
 
 };
+ArcGraphicsAdapter.prototype.drawPolygon = function(color, points){
+
+};
 ArcGraphicsAdapter.prototype.resize = function(width, height){
     this.size[0] = width;
     this.size[1] = height;
@@ -993,6 +996,25 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         context.lineTo(x2 - offset[0], y2 - offset[1]);
         context.stroke();
     };
+    ArcGLCanvasAdapter.prototype.drawPolygon = function(color, points){
+        // TODO: modify to use texture and webgl
+
+        var offset = this.camera.offset;
+        var context = this.textContext;
+
+        context.fillStyle = color;
+        context.beginPath();
+        context.moveTo(points[0] - offset[0], points[1] - offset[1]);
+
+        for(var i = 4; i < points.length; i += 4){
+            context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
+        }
+
+        context.closePath();
+
+        context.fill();
+    };
+
     ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
         var gl = this.context;
         var __this = this;

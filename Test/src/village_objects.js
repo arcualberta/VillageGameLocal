@@ -8,10 +8,42 @@ var Character = ArcBaseObject();
     new DialogScripts(Character.prototype);
 
     function dot2D(nx, ny, x, y){
-        return (nx * x) + (ny + y);
+        return (nx * x) + (ny * y);
     }
 
-    function evaluateViewAngle(angleLow, angleHigh, nX, nY, cX, cY, r1, r2, village){
+    function comparePoint(angleLow, angleHigh, nx, ny, r1, r2, x, y){
+        var dist = Math.sqrt((x * x) + (y * y));
+        var side;
+
+        if(dist >= r1 && dist <= r2){
+            // normalize vector
+            x = x / dist;
+            y = y / dist;
+
+            // Find the angle
+            dist = dot2D(nx, ny, x, y); // Reverse the y due to screen coordinates
+
+            if(dist > 0){
+                dist = 1.0 - dist;
+
+                // Find the side of the line
+                side = (nx * y) - (ny * x);
+
+                if(side < 0){
+                    dist = -dist;
+                }
+
+                if(dist > angleLow && dist < angleHigh){
+                    return dist;
+                }
+            }
+        }
+
+
+        return null;
+    }
+
+    function evaluateViewAngle(angleLow, angleHigh, nx, ny, cX, cY, r1, r2, village){
         if(angleLow > angleHigh){
             return null;
         }
@@ -29,19 +61,8 @@ var Character = ArcBaseObject();
             x = player.location[4] - cX;
             y = player.location[5] - cY;
 
-            dist = Math.sqrt((x * x) + (y * y));
-
-            if(dist >= r1 && dist <= rMax){
-                // normalize vector
-                x = x / dist;
-                y = y / dist;
-
-                // Find the angle
-                dist = 1.0 - dot2D(nX, nY, x, y); // Reverse the y due to screen coordinates
-
-                if(dist > angleLow && dist < angleHigh){
-                    return player;
-                }
+            if(comparePoint(angleLow, angleHigh, nx, ny, r1, rMax, x, y) != null){
+                return player;
             }
         }
 
@@ -49,36 +70,82 @@ var Character = ArcBaseObject();
     }
 
     function evaluateFOV(village){
-        var nx, ny;
-        var angle = Math.cos(this.fov.angle);
+        var nx, ny, v;
+        var angle = 1.0 - Math.cos(this.fov.angle);
 
+        // Build the visibility cone
+        var a = this.fov.coneArray;
+        if(a == null){
+            this.fov.coneArray = new Float32Array(12);
+            a = this.fov.coneArray;
+            a[2] = 0.0;
+            a[3] = 0.5;
+
+            a[6] = 1.0;
+            a[7] = 0.0;
+
+            a[10] = 1.0;
+            a[11] = 1.0;
+        }
+
+        a[0] = this.location[4];
+        a[1] = this.location[5];
+        v = Math.tan(this.fov.angle) * this.fov.distance;
+        
+        // Calculate the direction.
         switch(this.direction){
             case 0: //down
                 nx = 0;
-                ny = -1;
+                ny = 1;
+
+                a[4] = -v + a[0];
+                a[5] = this.fov.distance + a[1];
+
+                a[8] = v + a[0];
+                a[9] = this.fov.distance + a[1];
                 break;
 
             case 1: //left
                 nx = -1;
                 ny = 0;
+                
+                a[4] = -this.fov.distance + a[0];
+                a[5] = -v + a[1];
+
+                a[8] = -this.fov.distance + a[0];
+                a[9] = v + a[1];
                 break;
 
             case 2: //up
                 nx = 0;
-                ny = 1;
+                ny = -1;
+
+                a[4] = -v + a[0];
+                a[5] = -this.fov.distance + a[1];
+
+                a[8] = v + a[0];
+                a[9] = -this.fov.distance + a[1];
                 break;
 
             default: //right
-                nx = 0;
-                ny = 1;
+                nx = 1;
+                ny = 0;
+
+                a[4] = this.fov.distance + a[0];
+                a[5] = -v + a[1];
+
+                a[8] = this.fov.distance + a[0];
+                a[9] = v + a[1];
                 break;
         }
 
+        // Check for player interaction
         var player = evaluateViewAngle(-angle, angle, nx, ny, this.location[4], this.location[5], 0, this.fov.distance, village)
 
         if(player && this.onsee){
             this.onsee(player, village);
         }
+
         /*var players = village.players;
         var player, dist;
 
@@ -86,6 +153,8 @@ var Character = ArcBaseObject();
             dist = Math.sqrt()
         }*/
     }
+
+    Character.visionCone = null;
 
     Character.prototype.init = function (id, name) {
         ArcCharacter.prototype.init.call(this);
@@ -109,7 +178,9 @@ var Character = ArcBaseObject();
         this.fov = {
             enabled: false,
             distance: 300,
-            angle: (35 * Math.PI) / 180.0
+            angle: (35 * Math.PI) / 180.0,
+            coneArray: null,
+            color: "#0F0"
         }
 
         this.updateSize(16, 16);
@@ -214,6 +285,10 @@ var Character = ArcBaseObject();
     }
     Character.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
         var spriteSheet = this.getSpriteSheet(displayContext);
+
+        if(this.fov.enabled && this.fov.coneArray){
+            displayContext.drawPolygon(this.fov.color, this.fov.coneArray);
+        }
 
         if(spriteSheet){
             var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
