@@ -69,6 +69,8 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
     this.hud = new ArcRenderableObject(true, true);
 
+    Character.VisionCone.src = resourcesPath + "/Icons/VisionCone.png";
+
     var createHud = function(worldAdapter){
         let mask = new Image();
         mask.src = worldAdapter.module.path + "/images/map_mask.png";

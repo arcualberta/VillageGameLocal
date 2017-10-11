@@ -389,6 +389,27 @@ ArcCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
     context.lineTo(x2 - offset[0], y2 - offset[1]);
     context.stroke();
 };
+ArcCanvasAdapter.prototype.drawPolygon = function(color, points, texture){
+        var offset = this.camera.offset;
+        var context = this.textContext;
+
+        context.fillStyle = "rgba(" + 
+            Math.floor(color[0] * 255) + "," + 
+            Math.floor(color[1] * 255) + "," + 
+            Math.floor(color[2] * 255) + "," + 
+            color[3] + ")";
+
+        context.beginPath();
+        context.moveTo(points[0] - offset[0], points[1] - offset[1]);
+
+        for(var i = 4; i < points.length; i += 4){
+            context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
+        }
+
+        context.closePath();
+
+        context.fill();
+    };
 
 var ArcGLCanvasAdapter = ArcBaseObject();
 {
@@ -694,6 +715,59 @@ var ArcGLCanvasAdapter = ArcBaseObject();
 
         this.waypointProgram = waypointProgram;
 
+        // Create the polygon program
+        var polygonProgram = createProgram(
+                "precision mediump float;\n" +
+                "uniform mat4 mOMatrix;\n" +
+                "uniform mat4 mRMatrix;\n" +
+                "uniform vec2 uScreen;\n" +
+                "uniform vec2 uOffset;\n" +
+                "attribute vec2 aVertPos;\n" +
+                "attribute vec2 aTexPos;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "vTexPos = aTexPos;\n" +
+                "gl_Position.zw = vec2(0.0, 1.0);\n" +
+                "gl_Position.xy = vec2(uScreen.x, -uScreen.y);\n" +
+                "gl_Position.xy = ((2.0 * (aVertPos.xy - uOffset.xy)) - uScreen.xy) / gl_Position.xy;\n" +
+                "gl_Position = mRMatrix * gl_Position;\n" +
+                "gl_Position = mOMatrix * gl_Position;\n" +
+                "}",
+                "precision mediump float;\n" +
+                "uniform vec4 uColor;\n" +
+                "uniform sampler2D uTexture;\n" +
+                "varying vec2 vTexPos;\n" +
+                "void main(void){\n" +
+                "gl_FragColor = texture2D(uTexture, vTexPos) * uColor;\n" +
+                "}"
+            );
+        gl.useProgram(polygonProgram);
+
+        polygonProgram.aVertPos = gl.getAttribLocation(polygonProgram, "aVertPos");
+        polygonProgram.aTexPos = gl.getAttribLocation(polygonProgram, "aTexPos");
+
+        polygonProgram.mOMatrix = gl.getUniformLocation(polygonProgram, "mOMatrix");
+        polygonProgram.mRMatrix = gl.getUniformLocation(polygonProgram, "mRMatrix");
+        polygonProgram.uScreen = gl.getUniformLocation(polygonProgram, "uScreen");
+        polygonProgram.uOffset = gl.getUniformLocation(polygonProgram, "uOffset");
+        polygonProgram.uColor = gl.getUniformLocation(polygonProgram, "uColor");
+        polygonProgram.uTexture = gl.getUniformLocation(polygonProgram, "uTexture");
+
+        gl.uniform1i(polygonProgram.uTexture, 0);
+
+        var orthoMat = new Float32Array(16);
+        generateOrtho(orthoMat, -1.0, 1.0, 1.0, -1.0, -1.0, -10.0);
+        //generatePerspective(orthoMat, 90.0, 0.0, 100.0);
+        gl.uniformMatrix4fv(polygonProgram.mOMatrix, false, orthoMat);
+
+        var rotMat = new Float32Array(16);
+        generateRotationMatrix(rotMat, 0.0);
+        gl.uniformMatrix4fv(polygonProgram.mRMatrix, false, rotMat);
+
+        polygonProgram.bPointBuffer = gl.createBuffer();
+
+        this.polygonProgram = polygonProgram;
+
         // Create the basic image shader
         var program = createProgram(
                 "precision mediump float;\n" +
@@ -794,12 +868,12 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.uniform1i(program.uTexture, 0);
         gl.uniform1f(program.uScaleDist, 0.5);
 
-        var orthoMat = new Float32Array(16);
+        orthoMat = new Float32Array(16);
         generateOrtho(orthoMat, -1.0, 1.0, 1.0, -1.0, -1.0, -10.0);
         //generatePerspective(orthoMat, 90.0, 0.0, 100.0);
         gl.uniformMatrix4fv(program.mOMatrix, false, orthoMat);
 
-        var rotMat = new Float32Array(16);
+        rotMat = new Float32Array(16);
         generateRotationMatrix(rotMat, 0.0);
         gl.uniformMatrix4fv(program.mRMatrix, false, rotMat);
 
@@ -882,6 +956,9 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         }
         gl.bindTexture(gl.TEXTURE_2D, image.texture);
 
+        gl.enableVertexAttribArray(program.aVertPos);
+        gl.vertexAttribPointer(program.aVertPos, this.vBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
         // Draws the polygon to the screen
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vBuffer.numItems);
         //gl.drawArrays(gl.TRIANGLES, 0, vBuffer.numItems);
@@ -962,6 +1039,9 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.useProgram(waypointProgram);
         gl.uniform4f(waypointProgram.uDimension, waypointLoc[0] - offset[0] - 32, waypointLoc[1] - offset[1] - 32, 64, 64);
 
+        gl.enableVertexAttribArray(waypointProgram.aVertPos);
+        gl.vertexAttribPointer(waypointProgram.aVertPos, this.vBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
         //TODO: Add particle effects
         gl.blendFunc(gl.ONE, gl.ONE);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.vBuffer.numItems);
@@ -996,23 +1076,40 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         context.lineTo(x2 - offset[0], y2 - offset[1]);
         context.stroke();
     };
-    ArcGLCanvasAdapter.prototype.drawPolygon = function(color, points){
-        // TODO: modify to use texture and webgl
-
-        var offset = this.camera.offset;
-        var context = this.textContext;
-
-        context.fillStyle = color;
-        context.beginPath();
-        context.moveTo(points[0] - offset[0], points[1] - offset[1]);
-
-        for(var i = 4; i < points.length; i += 4){
-            context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
+    ArcGLCanvasAdapter.prototype.drawPolygon = function(color, points, image){
+        if (!image || !image.complete) {
+            return;
         }
 
-        context.closePath();
+        var gl = this.context;
+        var program = this.polygonProgram;
+        var pointCount = points.length >> 2;
+        var offset = this.camera.offset;
 
-        context.fill();
+        gl.useProgram(program);
+
+        gl.uniform4fv(program.uColor, color);
+        gl.uniform2f(program.uOffset, offset[0], offset[1]);
+
+        gl.activeTexture(gl.TEXTURE0);
+        if (!image.texture) {
+            image.texture = this.loadTexture(image, false);
+        }
+        gl.bindTexture(gl.TEXTURE_2D, image.texture);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, program.bPointBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+
+        gl.enableVertexAttribArray(program.aVertPos);
+        gl.enableVertexAttribArray(program.aTexPos);
+
+        gl.vertexAttribPointer(program.aVertPos, 2, gl.FLOAT, false, 16, 0);
+        gl.vertexAttribPointer(program.aTexPos, 2, gl.FLOAT, false, 16, 8);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, pointCount);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vBuffer);
+        gl.useProgram(this.program);
     };
 
     ArcGLCanvasAdapter.prototype.drawToDisplay = function (clearSwap) {
@@ -1020,6 +1117,9 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         var __this = this;
         var postProgram = this.postProgram;
         var vBuffer = this.vBuffer;
+
+        gl.enableVertexAttribArray(postProgram.aVertPos);
+        gl.vertexAttribPointer(postProgram.aVertPos, this.vBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         if (true) {
             drawNonBlurred(gl, true, postProgram, vBuffer);
@@ -1050,6 +1150,10 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         var waypointProgram = this.waypointProgram;
         gl.useProgram(waypointProgram);
         gl.uniform2f(waypointProgram.uScreen, width, height);
+
+        var polygonProgram = this.polygonProgram;
+        gl.useProgram(polygonProgram);
+        gl.uniform2f(polygonProgram.uScreen, width, height);
 
         var program = this.program;
         gl.useProgram(program);

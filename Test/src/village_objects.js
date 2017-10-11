@@ -154,7 +154,7 @@ var Character = ArcBaseObject();
         }*/
     }
 
-    Character.visionCone = null;
+    Character.VisionCone = new Image();
 
     Character.prototype.init = function (id, name) {
         ArcCharacter.prototype.init.call(this);
@@ -180,7 +180,7 @@ var Character = ArcBaseObject();
             distance: 300,
             angle: (35 * Math.PI) / 180.0,
             coneArray: null,
-            color: "#0F0"
+            color: new Float32Array(4)
         }
 
         this.updateSize(16, 16);
@@ -287,7 +287,7 @@ var Character = ArcBaseObject();
         var spriteSheet = this.getSpriteSheet(displayContext);
 
         if(this.fov.enabled && this.fov.coneArray){
-            displayContext.drawPolygon(this.fov.color, this.fov.coneArray);
+            displayContext.drawPolygon(this.fov.color, this.fov.coneArray, Character.VisionCone);
         }
 
         if(spriteSheet){

@@ -1160,46 +1160,34 @@
   <object id="1" name="MainStart" type="PlayerStart" x="381.333" y="79.8333" width="20" height="19"/>
   <object id="2" name="Guard1" type="NPC" gid="362" x="824.993" y="554.333" width="30" height="50">
    <properties>
+    <property name="onidle">this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;</property>
+    <property name="onsee">this.fov.color[0] = 1.0;
+this.fov.color[1] = 0.0;</property>
     <property name="onstart">this.InitializePath(&quot;Path2&quot;);
-this.fov.enabled = false;
-</property>
-    <property name="ontalk">var _this = this;
+this.fov.enabled = true;
 
-if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
-	var taskCompleted = function(){
-		_this.properties[&quot;taskComplete&quot;] = true;
-		_this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = &quot;onfarm&quot;;});
-	};
-	
-	var openTask = function(){
-		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
-		t.setBackground( worldAdapter.module.path + &quot;/tasks/hoe_outline_dashed.png&quot;);
-		t.setTitle(&quot;Wu Hai's Hoe&quot;);
-	};
-    
-	this.TriggerDialog('WU_HAI_3', worldAdapter, player, openTask);
-}else if(this.properties[&quot;taskComplete&quot;]){
-	var oldState = this.state;
-	this.state = &quot;onwait&quot;;
-	this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = oldState});
-}else if(player.stats[&quot;kindness&quot;] == 3){
-    this.TriggerDialog('WU_HAI_5', worldAdapter, player);
-}else if(this.properties[&quot;taskRequested&quot;]) { 
-    this.TriggerDialog('WU_HAI_2', worldAdapter, player); 
-}else{ 
-    this.TriggerDialog('WU_HAI_1', worldAdapter, player, function(){
-		if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('WU_HAI_5', worldAdapter, player);
-	});
- }</property>
-    <property name="onwait">this.waypoint[0] = this.location[4];
-this.waypoint[1] = this.location[5];</property>
+this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;
+this.fov.color[2] = 0.0;
+this.fov.color[3] = 0.8;
+</property>
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
   </object>
   <object id="42" name="Guard2" type="NPC" gid="362" x="1079.67" y="113.667" width="30" height="50">
    <properties>
+    <property name="onidle">this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;</property>
+    <property name="onsee">this.fov.color[0] = 1.0;
+this.fov.color[1] = 0.0;</property>
     <property name="onstart">this.InitializePath(&quot;Path1&quot;);
-this.fov.enabled = false;
+this.fov.enabled = true;
+
+this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;
+this.fov.color[2] = 0.0;
+this.fov.color[3] = 0.8;
 </property>
     <property name="spritesheet" value="villager_1"/>
    </properties>
@@ -1214,7 +1202,8 @@ this.fov.enabled = false;
    <properties>
     <property name="onidle">this.directionTime += time;
 var timeCheck = 3500;
-this.fov.color = &quot;#0F0&quot;;
+this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;
 
 while(this.directionTime &gt; timeCheck){
 this.directionTime -= timeCheck;
@@ -1228,11 +1217,17 @@ this.updateAnimation();
 
 }
 </property>
-    <property name="onsee" value="this.fov.color = &quot;#F00&quot;;"/>
+    <property name="onsee">this.fov.color[0] = 1.0;
+this.fov.color[1] = 0.0;</property>
     <property name="onstart">this.fov.enabled = true;
 this.direction = 3;
 this.directionTime = 0;
-this.updateAnimation();</property>
+this.updateAnimation();
+
+this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;
+this.fov.color[2] = 0.0;
+this.fov.color[3] = 0.8;</property>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
