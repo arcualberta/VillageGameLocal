@@ -1041,12 +1041,20 @@ var QuadTree = ArcBaseObject();
             } else if (fitSouth) {
                 return 2;
             }
+
+            return -2;
         } else if (x >= hMid) {
             if (fitNorth) {
                 return 0;
             } else if (fitSouth) {
                 return 3;
             }
+
+            return -3;
+        }else if(fitNorth){
+            return -4;
+        }else if(fitSouth){
+            return -5;
         }
 
         return -1;
@@ -1206,13 +1214,26 @@ var QuadTree = ArcBaseObject();
             var nodes = this.nodes;
             if (nodes[0] !== null) {
                 var index = this.getIndex(x, y, width, height);
-                if (index > -1) {
+                if (index >= 0) {
                     nodes[index].getObjects(x, y, width, height, returnObjects, executeFunction);
-                } else {
+                } else if(index == -2){
+                    nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
+                } else if(index == -3){
+                    nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
+                } else if(index == -4){
+                    nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
+                } else if(index == -5){
+                    nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
+                }else{
                     nodes[0].getObjects(x, y, width, height, returnObjects, executeFunction);
                     nodes[1].getObjects(x, y, width, height, returnObjects, executeFunction);
                     nodes[2].getObjects(x, y, width, height, returnObjects, executeFunction);
                     nodes[3].getObjects(x, y, width, height, returnObjects, executeFunction);
+                    
                 }
             }
         }
@@ -1326,31 +1347,33 @@ var QuadTree = ArcBaseObject();
 }
 
 var ArcTileQuadTree_Tile = ArcBaseObject();
-ArcTileQuadTree_Tile.prototype = Object.create(ArcRenderableObject());
-ArcTileQuadTree_Tile.prototype.init = function(tile, x, y, tileWidth, tileHeight){
-    ArcRenderableObject.prototype.init.call(this, false, false);
+{
+    ArcTileQuadTree_Tile.prototype = Object.create(ArcRenderableObject());
+    ArcTileQuadTree_Tile.prototype.init = function(tile, x, y, tileWidth, tileHeight){
+        ArcRenderableObject.prototype.init.call(this, false, false);
 
-    this.location[4] = x + (tileWidth >> 1);
-    this.location[5] = y + (tileWidth >> 1);
+        this.location[4] = x + (tileWidth >> 1);
+        this.location[5] = y + (tileWidth >> 1);
 
-    this.updateSize(tileWidth, tileHeight);
+        this.updateSize(tileWidth, tileHeight);
 
-    this.tile = tile;
-};
-ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom, width, height){
-    if(this.inLocation(left, top, right, bottom)){
-        return !this.tile.walkable;
-    }
+        this.tile = tile;
+    };
+    ArcTileQuadTree_Tile.prototype.isBlocked = function(left, top, right, bottom, width, height){
+        if(this.inLocation(left, top, right, bottom)){
+            return !this.tile.walkable;
+        }
 
-    return null;
-};
-/**
-* @override
-*/
-ArcTileQuadTree_Tile.prototype.trigger = function(action, left, top, right, bottom){
-    let title = "on" + action;
-    if(this.tile.properties[title] && this.inLocation(left, top, right, bottom)){
-        this.tile.properties[title](this);
+        return null;
+    };
+    /**
+    * @override
+    */
+    ArcTileQuadTree_Tile.prototype.trigger = function(action, left, top, right, bottom){
+        let title = "on" + action;
+        if(this.tile.properties[title] && this.inLocation(left, top, right, bottom)){
+            this.tile.properties[title](this);
+        }
     }
 }
 
