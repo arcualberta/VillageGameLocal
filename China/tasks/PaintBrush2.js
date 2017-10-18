@@ -1,7 +1,14 @@
 (function(task, resourcePath){
+	var fontInfo = {
+        font: "bold 20px sans-serif",
+        fillStyle: "yellow",
+        textAlign: "left"
+    };
+
 	// Private params
 	var drawCanvas = document.createElement("canvas");
 	var drawContext = drawCanvas.getContext("2d");
+	var score = 0.0;
 
 	// Private Functions
 	var distance = function(start, end){
@@ -25,6 +32,18 @@
 		img.xOffset = (w / 2) - (img.drawWidth / 2);
 		img.yOffset = (h / 2) - (img.drawHeight / 2);
 	}
+
+	var updateScore = function(){
+		var total = 0;
+		drawnRGBA = drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
+		for(var i = 3; i < drawnRGBA.length; i += 4){
+			if(drawnRGBA[i] > 1){
+				++total;
+			}
+		}
+
+		score = total / (drawCanvas.width * drawCanvas.height);
+	}
 	
 	var drawBrush = function(display, model){
 		var line = model.line;
@@ -46,6 +65,8 @@
 				drawContext.drawImage(model.brushImage, 0, 0, model.brushImage.width, model.brushImage.height, 
 					x - model.brushImage.halfWidth, y - model.brushImage.halfHeight, model.brushImage.scaleWidth, model.brushImage.scaleHeight);
 			}
+
+			updateScore();
 		}
 	};
 	
@@ -195,6 +216,9 @@
 			display.drawImage(drawCanvas, 0, 0, drawCanvas.width, drawCanvas.height,
 				0, 0, drawCanvas.width, drawCanvas.height);
 		}
+
+		//console.error("Score: " + score);
+		display.drawMessage("Score: " + Math.round(score * 100) + "%", model.buttonClear[2] + 10, model.buttonClear[1] + 50, fontInfo);
 
 		display.drawToDisplay(true);
 	};

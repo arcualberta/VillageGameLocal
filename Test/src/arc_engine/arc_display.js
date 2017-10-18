@@ -269,147 +269,149 @@ ArcGraphicsAdapter.prototype.resize = function(width, height){
 
 
 var ArcCanvasAdapter = ArcBaseObject();
-ArcCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
-ArcCanvasAdapter.prototype.init = function (canvas) {
-    ArcGraphicsAdapter.prototype.init.call(this);
-    var swapContext = canvas.getContext("2d");
+{
+    ArcCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
+    ArcCanvasAdapter.prototype.init = function (canvas) {
+        ArcGraphicsAdapter.prototype.init.call(this);
+        var swapContext = canvas.getContext("2d");
 
-    var backgroundCanvas = document.createElement('canvas');
-    backgroundCanvas.width = canvas.width;
-    backgroundCanvas.height = canvas.height;
-    var context = backgroundCanvas.getContext("2d");
+        var backgroundCanvas = document.createElement('canvas');
+        backgroundCanvas.width = canvas.width;
+        backgroundCanvas.height = canvas.height;
+        var context = backgroundCanvas.getContext("2d");
 
-    // Context settings
-    context.imageSmoothingEnabled = false;
+        // Context settings
+        context.imageSmoothingEnabled = false;
 
-    // Private functions and functions requireing those private functions
-    this.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
-        if (fontInfo == undefined) {
-            fontInfo = this.defaultFontInfo;
+        // Private functions and functions requireing those private functions
+        this.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
+            if (fontInfo == undefined) {
+                fontInfo = this.defaultFontInfo;
+            }
+
+            context.font = fontInfo.font;
+            context.textAlign = fontInfo.textAlign;
+
+            if (fillRect) {
+                context.fillStyle = fillColor;
+                context.fillRect(fillRect[0], fillRect[1], fillRect[2], fillRect[3]);
+
+                context.fillStyle = fontInfo.fillStyle;
+                context.fillText(message, x + fillRect[0] + (fillRect[2] >> 1), y + fillRect[1] + (fillRect[3] >> 1));
+            } else {
+                context.fillStyle = fontInfo.fillStyle;
+
+                context.fillText(message, x, y);
+            }
+        };
+
+        this.drawToDisplay = function (clearSwap) {
+            if(clearSwap){
+                swapContext.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            swapContext.drawImage(backgroundCanvas, 0, 0);
+
+            /*if(fps){
+             // Draw the frames per second
+             drawMessage("FPS: " + fps, 10, 10);
+             }*/
+        };
+
+        this.size[0] = canvas.width;
+        this.size[1] = canvas.height;
+        this.context = context;
+        this.canvas = canvas;
+    };
+    ArcCanvasAdapter.prototype.getPixelData = function (x, y, width, height) {
+        return this.context.getImageData(x, y, width, height);
+    };
+    ArcCanvasAdapter.prototype.setPixelData = function (imageData, x, y) {
+        this.context.putImageData(imageData, x, y);
+    };
+    ArcCanvasAdapter.prototype.requestFullscreen = function () {
+        var canvas = this.canvas;
+        var screen = this.screen;
+
+        if (canvas.requestFullscreen) {
+            canvas.requestFullscreen();
+        } else if (canvas.msRequestFullscreen) {
+            canvas.msRequestFullscreen();
+        } else if (canvas.mozRequestFullscreen) {
+            canvas.mozRequestFullscreen();
+        } else if (canvas.webkitRequestFullscreen) {
+            canvas.webkitRequestFullscreen();
         }
 
-        swapContext.font = fontInfo.font;
-        swapContext.textAlign = fontInfo.textAlign;
-
-        if (fillRect) {
-            swapContext.fillStyle = fillColor;
-            swapContext.fillRect(fillRect[0], fillRect[1], fillRect[2], fillRect[3]);
-
-            swapContext.fillStyle = fontInfo.fillStyle;
-            swapContext.fillText(message, x + fillRect[0] + (fillRect[2] >> 1), y + fillRect[1] + (fillRect[3] >> 1));
-        } else {
-            swapContext.fillStyle = fontInfo.fillStyle;
-
-            swapContext.fillText(message, x, y);
+        canvas.width = screen.width;
+        canvas.height = screen.height;
+    };
+    ArcCanvasAdapter.prototype.clear = function () {
+        var context = this.context;
+        var canvas = this.canvas;
+        
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    };
+    ArcCanvasAdapter.prototype.drawTileLayer = function(tiles){
+        this.camera.offset[0] |= 0;
+        this.camera.offset[1] |= 0;
+        ArcGraphicsAdapter.prototype.drawTileLayer.call(this, tiles);
+    };
+    ArcCanvasAdapter.prototype.drawTileLayerWithOffset = function (layer, loopX, loopY) {
+        ArcGraphicsAdapter.prototype.drawTileLayerWithOffset.call(this, layer, loopX, loopY);
+    };
+    ArcCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
+        if(image){
+            this.context.drawImage(image,
+                cx, cy, cwidth, cheight,
+                x, y, width, height);
         }
     };
-
-    this.drawToDisplay = function (clearSwap) {
-        if(clearSwap){
-            swapContext.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        swapContext.drawImage(backgroundCanvas, 0, 0);
-
-        /*if(fps){
-         // Draw the frames per second
-         drawMessage("FPS: " + fps, 10, 10);
-         }*/
-    };
-
-    this.size[0] = canvas.width;
-    this.size[1] = canvas.height;
-    this.context = context;
-    this.canvas = canvas;
-};
-ArcCanvasAdapter.prototype.getPixelData = function (x, y, width, height) {
-    return this.context.getImageData(x, y, width, height);
-};
-ArcCanvasAdapter.prototype.setPixelData = function (imageData, x, y) {
-    this.context.putImageData(imageData, x, y);
-};
-ArcCanvasAdapter.prototype.requestFullscreen = function () {
-    var canvas = this.canvas;
-    var screen = this.screen;
-
-    if (canvas.requestFullscreen) {
-        canvas.requestFullscreen();
-    } else if (canvas.msRequestFullscreen) {
-        canvas.msRequestFullscreen();
-    } else if (canvas.mozRequestFullscreen) {
-        canvas.mozRequestFullscreen();
-    } else if (canvas.webkitRequestFullscreen) {
-        canvas.webkitRequestFullscreen();
-    }
-
-    canvas.width = screen.width;
-    canvas.height = screen.height;
-};
-ArcCanvasAdapter.prototype.clear = function () {
-    var context = this.context;
-    var canvas = this.canvas;
-    
-    context.clearRect(0, 0, canvas.width, canvas.height);
-};
-ArcCanvasAdapter.prototype.drawTileLayer = function(tiles){
-    this.camera.offset[0] |= 0;
-    this.camera.offset[1] |= 0;
-    ArcGraphicsAdapter.prototype.drawTileLayer.call(this, tiles);
-};
-ArcCanvasAdapter.prototype.drawTileLayerWithOffset = function (layer, loopX, loopY) {
-    ArcGraphicsAdapter.prototype.drawTileLayerWithOffset.call(this, layer, loopX, loopY);
-};
-ArcCanvasAdapter.prototype.drawImage = function (image, cx, cy, cwidth, cheight, x, y, width, height) {
-    if(image){
-        this.context.drawImage(image,
-            cx, cy, cwidth, cheight,
-            x, y, width, height);
-    }
-};
-ArcCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
-    var offset = this.camera.offset;
-    var context = this.context;
-
-    context.beginPath();
-    context.fillStyle = "rgba(255, 255, 0, 0.5)";
-    context.arc(waypointLoc[0] - offset[0], waypointLoc[1] - offset[1], 10, 0, 2 * Math.PI, false);
-    context.fill();
-};
-ArcCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
-    var offset = this.camera.offset;
-    var context = this.context;
-
-    if(!(color)){
-        color = "#0F0";
-    };
-    context.strokeStyle = color;
-
-    context.beginPath();
-    context.moveTo(x1 - offset[0], y1 - offset[1]);
-    context.lineTo(x2 - offset[0], y2 - offset[1]);
-    context.stroke();
-};
-ArcCanvasAdapter.prototype.drawPolygon = function(color, points, texture){
+    ArcCanvasAdapter.prototype.drawWaypoint = function (waypointLoc) {
         var offset = this.camera.offset;
-        var context = this.textContext;
-
-        context.fillStyle = "rgba(" + 
-            Math.floor(color[0] * 255) + "," + 
-            Math.floor(color[1] * 255) + "," + 
-            Math.floor(color[2] * 255) + "," + 
-            color[3] + ")";
+        var context = this.context;
 
         context.beginPath();
-        context.moveTo(points[0] - offset[0], points[1] - offset[1]);
-
-        for(var i = 4; i < points.length; i += 4){
-            context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
-        }
-
-        context.closePath();
-
+        context.fillStyle = "rgba(255, 255, 0, 0.5)";
+        context.arc(waypointLoc[0] - offset[0], waypointLoc[1] - offset[1], 10, 0, 2 * Math.PI, false);
         context.fill();
     };
+    ArcCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
+        var offset = this.camera.offset;
+        var context = this.context;
+
+        if(!(color)){
+            color = "#0F0";
+        };
+        context.strokeStyle = color;
+
+        context.beginPath();
+        context.moveTo(x1 - offset[0], y1 - offset[1]);
+        context.lineTo(x2 - offset[0], y2 - offset[1]);
+        context.stroke();
+    };
+    ArcCanvasAdapter.prototype.drawPolygon = function(color, points, texture){
+            var offset = this.camera.offset;
+            var context = this.textContext;
+
+            context.fillStyle = "rgba(" + 
+                Math.floor(color[0] * 255) + "," + 
+                Math.floor(color[1] * 255) + "," + 
+                Math.floor(color[2] * 255) + "," + 
+                color[3] + ")";
+
+            context.beginPath();
+            context.moveTo(points[0] - offset[0], points[1] - offset[1]);
+
+            for(var i = 4; i < points.length; i += 4){
+                context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
+            }
+
+            context.closePath();
+
+            context.fill();
+        };
+}
 
 var ArcGLCanvasAdapter = ArcBaseObject();
 {
