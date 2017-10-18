@@ -8,6 +8,7 @@
 	// Private params
 	var drawCanvas = document.createElement("canvas");
 	var drawContext = drawCanvas.getContext("2d");
+	var testData = null;
 	var score = 0.0;
 
 	// Private Functions
@@ -33,16 +34,37 @@
 		img.yOffset = (h / 2) - (img.drawHeight / 2);
 	}
 
+	var updateTestImage = function(img){
+		var testCanvas = document.createElement("canvas");
+		testCanvas.width = img.drawWidth;
+		testCanvas.height = img.drawHeight;
+
+		var testContext = testCanvas.getContext("2d");
+		testContext.drawImage(img, 0, 0, img.drawWidth, img.drawHeight);
+
+		testData = testContext.getImageData(0, 0, img.drawWidth, img.drawHeight).data;
+	}
+
 	var updateScore = function(){
+		if(!task.model.bgImage){	
+			return;
+		}
+
+		let bgImage = task.model.bgImage;
 		var total = 0;
-		drawnRGBA = drawContext.getImageData(0, 0, drawCanvas.width, drawCanvas.height).data;
-		for(var i = 3; i < drawnRGBA.length; i += 4){
-			if(drawnRGBA[i] > 1){
+		var connected = 0;
+		drawnRGBA = drawContext.getImageData(bgImage.xOffset, bgImage.yOffset, bgImage.drawWidth, bgImage.drawHeight).data;
+		for(var i = 3; i < testData.length; i += 4){
+			if(testData[i] > 1){
 				++total;
+
+				if(drawnRGBA[i] > 1){
+					++connected;
+				}
 			}
 		}
 
-		score = total / (drawCanvas.width * drawCanvas.height);
+		score = connected / total;
 	}
 	
 	var drawBrush = function(display, model){
@@ -218,7 +240,7 @@
 		}
 
 		//console.error("Score: " + score);
-		display.drawMessage("Score: " + Math.round(score * 100) + "%", model.buttonClear[2] + 10, model.buttonClear[1] + 50, fontInfo);
+		display.drawMessage("Score: " + Math.round(score * 100) + "%", model.buttonClear[2] + 20, model.buttonClear[1] + 30, fontInfo);
 
 		display.drawToDisplay(true);
 	};
@@ -237,6 +259,7 @@
 		var img = new Image();
 		img.onload = function(){
 			setDrawProperties(img);
+			updateTestImage(img);
 			//getPoints(img);
 		};
 		img.src = imageUrl;

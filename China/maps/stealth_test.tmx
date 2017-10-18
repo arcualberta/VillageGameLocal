@@ -1228,6 +1228,19 @@ this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;
 this.fov.color[2] = 0.0;
 this.fov.color[3] = 0.8;</property>
+    <property name="ontalk">var _this = this;
+var taskCompleted = function(){
+		_this.properties[&quot;taskComplete&quot;] = true;
+		_this.TriggerDialog('AH_YU_4', worldAdapter, player);
+	};
+	
+	var openTask = function(){
+		var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+		t.setBackground( worldAdapter.module.path + &quot;/tasks/f_clothing_outline_dashed.png&quot;);
+		t.setTitle(&quot;Ah Yu's Dress&quot;);
+	};
+    
+	this.TriggerDialog('AH_YU_3', worldAdapter, player, openTask);</property>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
