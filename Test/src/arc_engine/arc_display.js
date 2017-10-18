@@ -32,13 +32,60 @@ ArcCameraPanAction.prototype.update = function (camera, timeSinceLast) {
     camera.setOffset(this.location[0], this.location[1]);
 };
 
+/**
+* @class
+* @implements {ArcCameraAction}
+*/
+var ArcCameraFadeOut = ArcBaseObject();
+{
+    ArcCameraFadeOut.prototype = Object.create(ArcCameraAction.prototype);
+
+    ArcCameraFadeOut.prototype.init = function(time, onComplete, r, g, b){
+        ArcCameraAction.prototype.init.call(this, time, onComplete);
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+
+    ArcCameraFadeOut.prototype.update = function(camera, timeSinceLast){
+        ArcCameraAction.prototype.update.call(this, camera, timeSinceLast);
+        camera.fade[0] = this.r;
+        camera.fade[1] = this.g;
+        camera.fade[2] = this.b;
+        camera.fade[3] = Math.min(1.0, this.timeComplete / this.timeLimit);
+    }
+}
+
+/**
+* @class
+* @implements {ArcCameraAction}
+*/
+var ArcCameraFadeIn = ArcBaseObject();
+{
+    ArcCameraFadeIn.prototype = Object.create(ArcCameraAction.prototype);
+
+    ArcCameraFadeIn.prototype.init = function(time, onComplete, r, g, b){
+        ArcCameraAction.prototype.init.call(this, time, onComplete);
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+
+    ArcCameraFadeIn.prototype.update = function(camera, timeSinceLast){
+        ArcCameraAction.prototype.update.call(this, camera, timeSinceLast);
+        camera.fade[0] = this.r;
+        camera.fade[1] = this.g;
+        camera.fade[2] = this.b;
+        camera.fade[3] = 1.0 - Math.min(1.0, this.timeComplete / this.timeLimit);
+    }
+}
+
 
 // Camera
 var ArcCamera = ArcBaseObject();
 ArcCamera.prototype.init = function () {
-    this.fade = "black";
+    this.fade = new Float32Array([0.0, 0.0, 0.0, 0.0]);
     this.offset = [0, 0];
-    this.fadeAlpha = 0.0;
     this.actionList = [];
 };
 ArcCamera.prototype.setOffset = function (offsetX, offsetY) {
@@ -420,6 +467,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.useProgram(postProgram);
         gl.disable(gl.BLEND);
         gl.uniform1i(postProgram.uBlurType, 1);
+        gl.uniform4fv(postProgram.uFadeColor, this.camera.fade);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vBuffer.numItems);
 
@@ -437,6 +485,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.useProgram(postProgram);
         gl.disable(gl.BLEND);
         gl.uniform1i(postProgram.uBlurType, 0);
+        gl.uniform4fv(postProgram.uFadeColor, this.camera.fade);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vBuffer.numItems);
@@ -653,6 +702,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
                 "uniform vec2 uSpace;\n" +
                 "uniform lowp int uBlurType;\n" +
                 "uniform sampler2D uTexture;\n" +
+                "uniform vec4 uFadeColor;\n" +
                 "varying vec2 vTexPos;\n" +
                 "varying vec2 vSpace;\n" +
                 "vec4 blur(float p){\n" +
@@ -674,6 +724,9 @@ var ArcGLCanvasAdapter = ArcBaseObject();
                 //"float y = (2.0 * distance((vTexPos * 2.0) - 1.0, vec2(0, 0))) - 1.0;\n" + // Radial focus
                 "y = max(y, 0.0);\n" +
                 "gl_FragColor = blur(y);\n" +
+                "if(uFadeColor.a > 0.0){\n" +
+                "gl_FragColor.rgb = ((1.0 - uFadeColor.a) * gl_FragColor.rgb) + (uFadeColor.a * uFadeColor.rgb);\n" +
+                "}\n" +
                 "}");
         gl.useProgram(postProgram);
         postProgram.aVertPos = gl.getAttribLocation(postProgram, "aVertPos");
@@ -681,6 +734,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         postProgram.uSpace = gl.getUniformLocation(postProgram, "uSpace");
         postProgram.uTexture = gl.getUniformLocation(postProgram, "uTexture");
         postProgram.uBlurType = gl.getUniformLocation(postProgram, "uBlurType");
+        postProgram.uFadeColor = gl.getUniformLocation(postProgram, "uFadeColor");
 
         gl.uniform1i(postProgram.uTexture, 1);
 
@@ -1124,9 +1178,9 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.vertexAttribPointer(postProgram.aVertPos, this.vBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         if (true) {
-            drawNonBlurred(gl, true, postProgram, vBuffer);
+            drawNonBlurred.call(this, gl, true, postProgram, vBuffer);
         } else {
-            drawBlurred(gl, true, postProgram, vBuffer);
+            drawBlurred.call(this, gl, true, postProgram, vBuffer);
         }
 
         // Write messages to the screen
