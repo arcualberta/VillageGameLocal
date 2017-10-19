@@ -36,6 +36,27 @@ ArcCameraPanAction.prototype.update = function (camera, timeSinceLast) {
 * @class
 * @implements {ArcCameraAction}
 */
+var ArcCameraMosaic = ArcBaseObject();
+{
+    ArcCameraMosaic.prototype = Object.create(ArcCameraAction.prototype);
+
+    ArcCameraMosaic.prototype.init = function(time, onComplete, start, end){
+        ArcCameraAction.prototype.init.call(this, time, onComplete);
+        this.start = start;
+        this.end = end;
+    }
+
+    ArcCameraMosaic.prototype.update = function(camera, timeSinceLast){
+        ArcCameraAction.prototype.update.call(this, camera, timeSinceLast);
+        var t = Math.min(1.0, this.timeComplete / this.timeLimit);
+        camera.scale = ((1.0 - t) * this.start) + (t * this.end);
+    }
+}
+
+/**
+* @class
+* @implements {ArcCameraAction}
+*/
 var ArcCameraFadeOut = ArcBaseObject();
 {
     ArcCameraFadeOut.prototype = Object.create(ArcCameraAction.prototype);
@@ -86,6 +107,7 @@ var ArcCamera = ArcBaseObject();
 ArcCamera.prototype.init = function () {
     this.fade = new Float32Array([0.0, 0.0, 0.0, 0.0]);
     this.offset = [0, 0];
+    this.scale = 1.0;
     this.actionList = [];
 };
 ArcCamera.prototype.setOffset = function (offsetX, offsetY) {
@@ -468,6 +490,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.disable(gl.BLEND);
         gl.uniform1i(postProgram.uBlurType, 1);
         gl.uniform4fv(postProgram.uFadeColor, this.camera.fade);
+        gl.uniform1f(postProgram.uScale, this.camera.scale);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vBuffer.numItems);
 
@@ -486,6 +509,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.disable(gl.BLEND);
         gl.uniform1i(postProgram.uBlurType, 0);
         gl.uniform4fv(postProgram.uFadeColor, this.camera.fade);
+        gl.uniform1f(postProgram.uScale, this.camera.scale);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, vBuffer.numItems);
@@ -703,18 +727,24 @@ var ArcGLCanvasAdapter = ArcBaseObject();
                 "uniform lowp int uBlurType;\n" +
                 "uniform sampler2D uTexture;\n" +
                 "uniform vec4 uFadeColor;\n" +
+                "uniform float uScale;\n" +
                 "varying vec2 vTexPos;\n" +
                 "varying vec2 vSpace;\n" +
+                "vec4 getTexture(sampler2D tex, vec2 pos){\n" +
+                "if(uScale == 1.0) { return texture2D(tex, pos); };\n" +
+                "vec2 tileLocation = (floor(uScale * (pos / uSpace)) / uScale) * uSpace;\n" + 
+                "return texture2D(tex, tileLocation);\n" +
+                "}\n" +
                 "vec4 blur(float p){\n" +
-                "vec4 tMain = texture2D(uTexture, vTexPos);\n" +
+                "vec4 tMain = getTexture(uTexture, vTexPos);\n" +
                 "if(p <= 0.0) { return tMain; }\n" +
                 "vec4 left, right;\n" +
                 "if(uBlurType == 1){\n" +
-                "left = texture2D(uTexture, vec2(vTexPos.x, vTexPos.y - uSpace.y));\n" +
-                "right = texture2D(uTexture, vec2(vTexPos.x, vTexPos.y + uSpace.y));\n" +
+                "left = getTexture(uTexture, vec2(vTexPos.x, vTexPos.y - uSpace.y));\n" +
+                "right = getTexture(uTexture, vec2(vTexPos.x, vTexPos.y + uSpace.y));\n" +
                 "}else if(uBlurType == 2){\n" +
-                "left = texture2D(uTexture, vec2(vTexPos.x - uSpace.x, vTexPos.y));\n" +
-                "right = texture2D(uTexture, vec2(vTexPos.x + uSpace.x, vTexPos.y));\n" +
+                "left = getTexture(uTexture, vec2(vTexPos.x - uSpace.x, vTexPos.y));\n" +
+                "right = getTexture(uTexture, vec2(vTexPos.x + uSpace.x, vTexPos.y));\n" +
                 "}else{return tMain;}\n" +
                 "float outP = sqrt(p * 2.0) / 3.0;\n" +
                 "return (outP * (left + right)) + ((1.0 - (2.0 * outP)) * tMain);\n" +
@@ -735,6 +765,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         postProgram.uTexture = gl.getUniformLocation(postProgram, "uTexture");
         postProgram.uBlurType = gl.getUniformLocation(postProgram, "uBlurType");
         postProgram.uFadeColor = gl.getUniformLocation(postProgram, "uFadeColor");
+        postProgram.uScale = gl.getUniformLocation(postProgram, "uScale");
 
         gl.uniform1i(postProgram.uTexture, 1);
 

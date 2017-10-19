@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="46">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="47">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
   <image source="../tiles/tileset.png" width="570" height="570"/>
   <terraintypes>
@@ -1245,7 +1245,20 @@ var taskCompleted = function(){
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers"/>
+ <objectgroup name="triggers">
+  <object id="46" name="CloudTrigger" type="Script" x="406.5" y="673.333" width="115" height="117.333">
+   <properties>
+    <property name="oninteract">var _this = this;
+if(this.triggerable){
+	this.triggerable = false;
+	game.display.camera.addAction(new ArcCameraMosaic(1000, function(camera){ camera.addAction(new ArcCameraMosaic(2000, function(camera){ _this.triggerable = true; }, 0.001, 1.0)); }, 1.0, 0.001));
+}</property>
+    <property name="onstart">this.interactEnabled = true;
+this.triggerable = true;
+</property>
+   </properties>
+  </object>
+ </objectgroup>
  <layer name="higher" width="40" height="30" opacity="0.82">
   <data encoding="csv">
 0,56,94,94,94,94,56,0,0,0,0,56,0,0,180,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,56,0,
