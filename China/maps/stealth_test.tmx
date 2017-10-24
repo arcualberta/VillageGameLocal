@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="47">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="48">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
   <image source="../tiles/tileset.png" width="570" height="570"/>
   <terraintypes>
@@ -1149,7 +1149,7 @@
 0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,36,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,38,75,0,
 0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,
 0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,
-0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,
+0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,
 0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,
 0,0,0,0,0,0,0,0,0,0,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,75,0,
 0,0,0,0,0,0,0,0,0,0,0,36,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,37,38,0,
@@ -1160,7 +1160,7 @@
   <object id="1" name="MainStart" type="PlayerStart" x="381.333" y="79.8333" width="20" height="19"/>
   <object id="2" name="Guard1" type="NPC" gid="362" x="824.993" y="554.333" width="30" height="50">
    <properties>
-    <property name="onidle">this.fov.color[0] = 0.0;
+    <property name="onnosee">this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;</property>
     <property name="onsee">this.fov.color[0] = 1.0;
 this.fov.color[1] = 0.0;</property>
@@ -1177,7 +1177,7 @@ this.fov.color[3] = 0.8;
   </object>
   <object id="42" name="Guard2" type="NPC" gid="362" x="1079.67" y="113.667" width="30" height="50">
    <properties>
-    <property name="onidle">this.fov.color[0] = 0.0;
+    <property name="onnosee">this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;</property>
     <property name="onsee">this.fov.color[0] = 1.0;
 this.fov.color[1] = 0.0;</property>
@@ -1251,7 +1251,19 @@ var taskCompleted = function(){
     <property name="oninteract">var _this = this;
 if(this.triggerable){
 	this.triggerable = false;
-	game.display.camera.addAction(new ArcCameraMosaic(1000, function(camera){ camera.addAction(new ArcCameraMosaic(2000, function(camera){ _this.triggerable = true; }, 0.001, 1.0)); }, 1.0, 0.001));
+	game.display.camera.addAction(new ArcCameraMosaic(2000, function(camera){ camera.addAction(new ArcCameraMosaic(2000, function(camera){ _this.triggerable = true; }, 0.001, 1.0)); }, 1.0, 0.001));
+}</property>
+    <property name="onstart">this.interactEnabled = true;
+this.triggerable = true;
+</property>
+   </properties>
+  </object>
+  <object id="47" name="CloudTrigger" type="Script" x="538" y="747.333" width="35" height="34.333">
+   <properties>
+    <property name="oninteract">var _this = this;
+if(this.triggerable){
+	this.triggerable = false;
+	game.display.camera.addAction(new ArcCameraFadeOut(1000, function(camera){ camera.addAction(new ArcCameraFadeIn(2000, function(camera){ _this.triggerable = true; }, 0.2, 0.01, 0.0)); }, 0.2, 0.01, 0.0));
 }</property>
     <property name="onstart">this.interactEnabled = true;
 this.triggerable = true;

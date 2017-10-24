@@ -144,6 +144,8 @@ var Character = ArcBaseObject();
 
         if(player && this.onsee){
             this.onsee(player, village);
+        }else if(this.onnosee){
+            this.onnosee(player, village);
         }
 
         /*var players = village.players;
