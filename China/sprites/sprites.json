@@ -490,6 +490,14 @@
 		"cloud": {
 			"image": "cloud.png",
 			"animation": "cloud_90x30"
+		},
+		"market_npc_1": {
+			"image": "market_npc_1.png",
+			"animation": "animation_30x50"
+		},
+		"market_npc_2": {
+			"image": "market_npc_2.png",
+			"animation": "animation_30x50"
 		}
     }
 }
