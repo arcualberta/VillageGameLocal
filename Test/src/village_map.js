@@ -327,441 +327,476 @@ ArcBackgroundMusicTrigger.prototype.interact = function (left, top, right, botto
 
 // Map Objects
 var VillageMap = ArcBaseObject();
-VillageMap.prototype = Object.create(ArcMap.prototype);
-VillageMap.prototype.init = function (parent, mapName, studentList) {
-    ArcMap.prototype.init.call(this, parent, mapName);
-    this.housingSections = [];
-    this.studentList = [
-        //Temp students
-        {
-            id: 721,
-            name: "Demo Student"
-        }
-    ];
-    this.waypointIndex = 0;
-    
-    this.players = {};
-    this.waypoint = new ArcWaypoint(); // TODO: add before objects
-    this.triggers = null;
-    this.objects = null;
-};
-VillageMap.prototype.addPlayer = function(player){
-    this.players[player.id] = player;
-
-    if(this.objects){
-        this.objects.insert(player);
-    }
-}
-VillageMap.prototype.setWaypointLocation = function(location){
-    let waypoint = this.waypoint;
-    
-    if(location !== null){
-        waypoint.isVisible = true;
-        waypoint.location[0] = location[0];
-        waypoint.location[1] = location[1];
-    }else{
-        waypoint.isVisible = false;
-    }
-};
-VillageMap.prototype.cast = function () {
-    var map = new VillageMap(this.name);
-
-    for (var key in this) {
-        map[key] = this[key];
-    }
-
-    return map;
-};
-VillageMap.prototype.getSpriteSheet = function(name){
-    return this.parent.getSpriteSheet(name);
-};
-VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, modulePath, gameContext) {
-    var triggerName = $trigger.attr("name");
-    var triggerType = $trigger.attr("type").toLowerCase();
-    var triggerX = Number($trigger.attr("x")) * scale; // Double the size for now since we double the map size
-    var triggerY = Number($trigger.attr("y")) * scale;
-    var triggerWidth = Number($trigger.attr("width")) * scale;
-    var triggerHeight = Number($trigger.attr("height")) * scale;
-    var triggerRotation = 0.0;
-    var triggerProperties = {};
-    var trigger = null;
-
-    // Load the properties
-    $trigger.find("properties > property").each(function () {
-        triggerProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
-    });
-
-    if (triggerType === "changemap") {
-        trigger = new ChangeMapTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, this.parent, triggerProperties["map"], triggerProperties["start"]);
-    } else if (triggerType === "clickread") {
-        trigger = new ClickReadTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["message"], triggerProperties["object"]);
-    } else if(triggerType === "clicktask"){
-        trigger = new ClickTaskTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["title"], triggerProperties["task"]);
-    } else if(triggerType === "backgroundmusic"){
-        trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, modulePath + "/" + triggerProperties["file"], gameContext.audio);
-    } else if(triggerType === "script"){
-        trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties, modulePath);
-    }else {
-        trigger = new ArcTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
-    }
-    
-    if(triggerProperties['follow']){
-        trigger.followObject = triggerProperties['follow'];
-    }
-
-    triggerTree.insert(trigger);
-};
-VillageMap.prototype.load = function (onload, startName, gameContext) {
-    // Check if the map is already loaded
-    if (this.loaded) {
-        var startLocation = [0, 0];
-        if (startName) {
-            var startObject = this.objects.getByName(startName);
-            if (startObject !== null) {
-                startLocation = startObject.centre.slice();
+{
+    VillageMap.prototype = Object.create(ArcMap.prototype);
+    VillageMap.prototype.init = function (parent, mapName, studentList) {
+        ArcMap.prototype.init.call(this, parent, mapName);
+        this.housingSections = [];
+        this.studentList = [
+            //Temp students
+            {
+                id: 721,
+                name: "Demo Student"
             }
-        }
+        ];
+        this.waypointIndex = 0;
+        
+        this.players = {};
+        this.waypoint = new ArcWaypoint(); // TODO: add before objects
+        this.triggers = null;
+        this.objects = null;
+        this.neighbors = [null, null, null, null]; // Up, Right, Down, Left
+    };
+    VillageMap.prototype.addPlayer = function(player){
+        this.players[player.id] = player;
 
-        // Return the function
-        this.loaded = true;
-        if (onload && onload !== null) {
-            onload(this, startLocation);
+        if(this.objects){
+            this.objects.insert(player);
         }
-        return;
     }
+    VillageMap.prototype.setWaypointLocation = function(location){
+        let waypoint = this.waypoint;
+        
+        if(location !== null){
+            waypoint.isVisible = true;
+            waypoint.location[0] = location[0];
+            waypoint.location[1] = location[1];
+        }else{
+            waypoint.isVisible = false;
+        }
+    };
+    VillageMap.prototype.cast = function () {
+        var map = new VillageMap(this.name);
 
-    // Load the map
-    var modulePath = this.parent.path;
-    var _this = this;
-    var scale = 2.0;
-    $.get(modulePath + "/maps/" + this.name + ".tmx", function (data) {
-        var tiledFile = null;
-        if (typeof data === "string") {
-            data = $.parseXML(data);
+        for (var key in this) {
+            map[key] = this[key];
         }
 
-        tiledFile = $(data.children[0]);
-        // Setup Dimensions
-        _this.width = parseInt(tiledFile.attr("width"));
-        _this.height = parseInt(tiledFile.attr("height"));
-        _this.tileWidth = parseInt(tiledFile.attr("tilewidth")) * scale;
-        _this.tileHeight = parseInt(tiledFile.attr("tileheight")) * scale;
+        return map;
+    };
+    VillageMap.prototype.getSpriteSheet = function(name){
+        return this.parent.getSpriteSheet(name);
+    };
+    VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, modulePath, gameContext) {
+        var triggerName = $trigger.attr("name");
+        var triggerType = $trigger.attr("type").toLowerCase();
+        var triggerX = Number($trigger.attr("x")) * scale; // Double the size for now since we double the map size
+        var triggerY = Number($trigger.attr("y")) * scale;
+        var triggerWidth = Number($trigger.attr("width")) * scale;
+        var triggerHeight = Number($trigger.attr("height")) * scale;
+        var triggerRotation = 0.0;
+        var triggerProperties = {};
+        var trigger = null;
 
-        // Setup tiles
-        var tiles = _this.tiles;
-        var addTile = function (tileSheet, index, imageWidth, tileWidth, tileHeight, properties) {
-            if (index < tileSheet.firstGid) {
-                return null;
+        // Load the properties
+        $trigger.find("properties > property").each(function () {
+            triggerProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
+        });
+
+        if (triggerType === "changemap") {
+            trigger = new ChangeMapTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, this.parent, triggerProperties["map"], triggerProperties["start"]);
+        } else if (triggerType === "clickread") {
+            trigger = new ClickReadTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["message"], triggerProperties["object"]);
+        } else if(triggerType === "clicktask"){
+            trigger = new ClickTaskTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["title"], triggerProperties["task"]);
+        } else if(triggerType === "backgroundmusic"){
+            trigger = new ArcBackgroundMusicTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, modulePath + "/" + triggerProperties["file"], gameContext.audio);
+        } else if(triggerType === "script"){
+            trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties, modulePath);
+        }else {
+            trigger = new ArcTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
+        }
+        
+        if(triggerProperties['follow']){
+            trigger.followObject = triggerProperties['follow'];
+        }
+
+        triggerTree.insert(trigger);
+    };
+    VillageMap.prototype.getObject = function(name, traverseNeighbors = false){
+        var result = this.objects.findChild(name);
+
+        return result;
+    }
+    VillageMap.prototype.load = function (onload, startName, gameContext) {
+        // Check if the map is already loaded
+        if (this.loaded) {
+            var startLocation = [0, 0];
+            if (startName) {
+                var startObject = this.objects.getByName(startName);
+                if (startObject !== null) {
+                    startLocation = startObject.centre.slice();
+                }
             }
 
-            if (tiles[index]) {
-                return tiles[index];
+            // Return the function
+            this.loaded = true;
+            if (onload && onload !== null) {
+                onload(this, startLocation);
+            }
+            return;
+        }
+
+        // Load the map
+        var modulePath = this.parent.path;
+        var _this = this;
+        var scale = 2.0;
+        $.get(modulePath + "/maps/" + this.name + ".tmx", function (data) {
+            var tiledFile = null;
+            if (typeof data === "string") {
+                data = $.parseXML(data);
             }
 
-            var i = index - tileSheet.firstGid;
-            var width = Math.floor(imageWidth / tileWidth);
-            var y = Math.floor(i / width);
-            var x = i - (y * width);
-            x *= tileWidth;
-            y *= tileHeight;
-            tiles[index] = new ArcTile(x, y, tileWidth, tileHeight, true, false, index);
-            tiles[index].tileSheetName = tileSheet.name;
-            return tiles[index];
-        };
-        var addAnimationTile = function (tileSheet, index, imageWidth, tileWidth, tileHeight, $animations) {
-            var animations = new ArcAnimation();
-            $animations.each(function () {
-                var duration = parseInt($(this).attr('duration'));
+            tiledFile = $(data.children[0]);
+            // Setup Dimensions
+            _this.width = parseInt(tiledFile.attr("width"));
+            _this.height = parseInt(tiledFile.attr("height"));
+            _this.tileWidth = parseInt(tiledFile.attr("tilewidth")) * scale;
+            _this.tileHeight = parseInt(tiledFile.attr("tileheight")) * scale;
 
-                var i = parseInt($(this).attr('tileid'));
+            // Setup tiles
+            var tiles = _this.tiles;
+            var addTile = function (tileSheet, index, imageWidth, tileWidth, tileHeight, properties) {
+                if (index < tileSheet.firstGid) {
+                    return null;
+                }
+
+                if (tiles[index]) {
+                    return tiles[index];
+                }
+
+                var i = index - tileSheet.firstGid;
                 var width = Math.floor(imageWidth / tileWidth);
                 var y = Math.floor(i / width);
                 var x = i - (y * width);
                 x *= tileWidth;
                 y *= tileHeight;
+                tiles[index] = new ArcTile(x, y, tileWidth, tileHeight, true, false, index);
+                tiles[index].tileSheetName = tileSheet.name;
+                return tiles[index];
+            };
+            var addAnimationTile = function (tileSheet, index, imageWidth, tileWidth, tileHeight, $animations) {
+                var animations = new ArcAnimation();
+                $animations.each(function () {
+                    var duration = parseInt($(this).attr('duration'));
 
-                animations.addFrame(x, y, tileWidth, tileHeight, duration, false, false);
-            });
-            tiles[index] = new ArcAnimatedTile(animations, true, false, index);
-            tiles[index].tileSheetName = tileSheet.name;
-            return tiles[index];
-        };
-        // Setup the tilesheets
-        tiledFile.find('tileset').each(function () {
-            var $tileset = $(this);
-            var start = parseInt($tileset.attr("firstgid")) - 1;
+                    var i = parseInt($(this).attr('tileid'));
+                    var width = Math.floor(imageWidth / tileWidth);
+                    var y = Math.floor(i / width);
+                    var x = i - (y * width);
+                    x *= tileWidth;
+                    y *= tileHeight;
 
-            if(!($tileset.attr("name")) && $tileset.attr("source")){
-                // Load the source tileset file
-                $.ajax({
-                    url: modulePath + "/maps/" + $tileset.attr("source"),
-                    method: 'GET',
-                    success: function(result){
-                        $tileset = $($.parseXML(result)).children();
-                    },
-                    async: false
+                    animations.addFrame(x, y, tileWidth, tileHeight, duration, false, false);
                 });
-            }
+                tiles[index] = new ArcAnimatedTile(animations, true, false, index);
+                tiles[index].tileSheetName = tileSheet.name;
+                return tiles[index];
+            };
 
-            var tileWidth = parseInt($tileset.attr("tilewidth"));
-            var tileHeight = parseInt($tileset.attr("tileheight"));
-            var $image = $tileset.find("image");
-            var imageWidth = parseInt($image.attr("width"));
-            // Create the tilesheet
-            var tileSheet = new ArcTileSheet($tileset.attr("name"),
-                    modulePath + "/maps/" + $image.attr("source"), tiles, false,
-                    start, tileWidth, tileHeight, false, imageWidth, parseInt($image.attr("height")));
-            var firstGid = tileSheet.firstGid;
-            _this.tileSheets[tileSheet.name] = tileSheet;
-            
-            // Create any special tiles
-            $tileset.find("tile").each(function () {
-                var $tile = $(this);
-                var tileId = parseInt($tile.attr("id")) + firstGid;
-                
-                $image = $tile.find("image");
-                if ($image[0]){
-                imageWidth = parseInt($image.attr("width"));
-                        tileWidth = imageWidth;
-                        tileHeight = parseInt($image.attr("height"));
-                        tileSheet = new ArcTileSheet($tileset.attr("name") + tileId,
-                                modulePath + "/maps/" + $image.attr("source"), tiles, false,
-                                tileId, imageWidth, tileHeight, false, imageWidth, tileHeight);
-                        _this.tileSheets[tileSheet.name] = tileSheet;
-                }
-                
-                var tile;
-                // First check if this is a normal tile or an animated one
-                var $animation = $tile.find("animation");
-                if ($animation.length > 0) {
-                    tile = addAnimationTile(tileSheet, tileId, imageWidth, tileWidth, tileHeight, $animation.find("frame"));
-                } else {
-                    tile = addTile(tileSheet, tileId, imageWidth, tileWidth, tileHeight);
+            // Setup the tilesheets
+            tiledFile.find('tileset').each(function () {
+                var $tileset = $(this);
+                var start = parseInt($tileset.attr("firstgid")) - 1;
+
+                if(!($tileset.attr("name")) && $tileset.attr("source")){
+                    // Load the source tileset file
+                    $.ajax({
+                        url: modulePath + "/maps/" + $tileset.attr("source"),
+                        method: 'GET',
+                        success: function(result){
+                            $tileset = $($.parseXML(result)).children();
+                        },
+                        async: false
+                    });
                 }
 
-                $tile.find("properties > property").each(function () {
-                    var propName = $(this).attr("name");
-                    var value = $(this).attr("value") ? $(this).attr("value") : $(this).text();
-
-                    if (propName === "walkable") {
-                        tile.walkable = "false" !== value.toLowerCase();
-                    }else if(propName === "drawable"){
-                        tile.isDrawable = "false" !== value.toLowerCase();
-                    }else if(propName.substring(0,2) === "on"){
-                        tile.properties[propName] = Function("caller", "time", "player", "world", "worldAdapter", value);
-                    }else {
-                        tile.properties[propName] = value;
+                var tileWidth = parseInt($tileset.attr("tilewidth"));
+                var tileHeight = parseInt($tileset.attr("tileheight"));
+                var $image = $tileset.find("image");
+                var imageWidth = parseInt($image.attr("width"));
+                // Create the tilesheet
+                var tileSheet = new ArcTileSheet($tileset.attr("name"),
+                        modulePath + "/maps/" + $image.attr("source"), tiles, false,
+                        start, tileWidth, tileHeight, false, imageWidth, parseInt($image.attr("height")));
+                var firstGid = tileSheet.firstGid;
+                _this.tileSheets[tileSheet.name] = tileSheet;
+                
+                // Create any special tiles
+                $tileset.find("tile").each(function () {
+                    var $tile = $(this);
+                    var tileId = parseInt($tile.attr("id")) + firstGid;
+                    
+                    $image = $tile.find("image");
+                    if ($image[0]){
+                    imageWidth = parseInt($image.attr("width"));
+                            tileWidth = imageWidth;
+                            tileHeight = parseInt($image.attr("height"));
+                            tileSheet = new ArcTileSheet($tileset.attr("name") + tileId,
+                                    modulePath + "/maps/" + $image.attr("source"), tiles, false,
+                                    tileId, imageWidth, tileHeight, false, imageWidth, tileHeight);
+                            _this.tileSheets[tileSheet.name] = tileSheet;
                     }
+                    
+                    var tile;
+                    // First check if this is a normal tile or an animated one
+                    var $animation = $tile.find("animation");
+                    if ($animation.length > 0) {
+                        tile = addAnimationTile(tileSheet, tileId, imageWidth, tileWidth, tileHeight, $animation.find("frame"));
+                    } else {
+                        tile = addTile(tileSheet, tileId, imageWidth, tileWidth, tileHeight);
+                    }
+
+                    $tile.find("properties > property").each(function () {
+                        var propName = $(this).attr("name");
+                        var value = $(this).attr("value") ? $(this).attr("value") : $(this).text();
+
+                        if (propName === "walkable") {
+                            tile.walkable = "false" !== value.toLowerCase();
+                        }else if(propName === "drawable"){
+                            tile.isDrawable = "false" !== value.toLowerCase();
+                        }else if(propName.substring(0,2) === "on"){
+                            tile.properties[propName] = Function("caller", "time", "player", "world", "worldAdapter", value);
+                        }else {
+                            tile.properties[propName] = value;
+                        }
+                    });
                 });
+                
             });
-            
-        });
-        // Layers
-        var workingLowerLevels = true;
-        tiledFile.children().each(function () {
-            var type = this.localName;
-            var name = $(this).attr("name");
-            if (type === "layer") {
-                var $layer = $(this);
-                var layerWidth = parseInt($layer.attr("width"));
-                var layerHeight = parseInt($layer.attr("height"));
-                var layerProperties = {};
 
-                // Load the properties
-                $layer.find("properties > property").each(function () {
-                    var layerPropertyName = $(this).attr("name").toLowerCase();
-                    var value = $(this).attr("value");
-                    
-                    if(layerPropertyName === "scrollx" || layerPropertyName === "scrolly"){
-                        value = parseInt(value);
-                    }
-                    
-                    layerProperties[layerPropertyName] = value;
-                });
+            // Layers
+            var workingLowerLevels = true;
+            tiledFile.children().each(function () {
+                var type = this.localName;
+                var name = $(this).attr("name");
+                if (type === "layer") {
+                    var $layer = $(this);
+                    var layerWidth = parseInt($layer.attr("width"));
+                    var layerHeight = parseInt($layer.attr("height"));
+                    var layerProperties = {};
 
-                // Create the map layer object
-                var mapLayer = new ArcTileMap(name, layerWidth, layerHeight, _this.tileWidth, _this.tileHeight, layerProperties["scrollx"], layerProperties["scrolly"]);
-                mapLayer.setTileSheet(this.tileSheets, this.tileWidth, this.tileHeight);
-                // Parse the data
-                var data = mapLayer;
-                var dataStrings = $layer.find("data").text().split(",");
-
-                for (var i in dataStrings) {
-                    var index = parseInt(dataStrings[i]) - 1;
-                    if (index >= 0) {
-                        // Build the tile in case it does not exist
-                        var tileSheet = _this.getTileSheetForTile(index);
-                        if (tileSheet !== null) {
-                            addTile(tileSheet, index, tileSheet.imageWidth, tileSheet.tileWidth, tileSheet.tileHeight);
+                    // Load the properties
+                    $layer.find("properties > property").each(function () {
+                        var layerPropertyName = $(this).attr("name").toLowerCase();
+                        var value = $(this).attr("value");
+                        
+                        if(layerPropertyName === "scrollx" || layerPropertyName === "scrolly"){
+                            value = parseInt(value);
                         }
+                        
+                        layerProperties[layerPropertyName] = value;
+                    });
 
-                        var tileX = (i % layerWidth) * _this.tileWidth;
-                        var tileY = Math.floor(i / layerWidth) * _this.tileHeight;
-                        var tileWidth = tileSheet.tileWidth * scale;
-                        var tileHeight = tileSheet.tileHeight * scale;
+                    // Create the map layer object
+                    var mapLayer = new ArcTileMap(name, layerWidth, layerHeight, _this.tileWidth, _this.tileHeight, layerProperties["scrollx"], layerProperties["scrolly"]);
+                    mapLayer.setTileSheet(this.tileSheets, this.tileWidth, this.tileHeight);
+                    // Parse the data
+                    var data = mapLayer;
+                    var dataStrings = $layer.find("data").text().split(",");
 
-                        if (tileHeight > _this.tileHeight) {
-                            tileY = tileY - tileHeight + _this.tileHeight;
-                        }
+                    for (var i in dataStrings) {
+                        var index = parseInt(dataStrings[i]) - 1;
+                        if (index >= 0) {
+                            // Build the tile in case it does not exist
+                            var tileSheet = _this.getTileSheetForTile(index);
+                            if (tileSheet !== null) {
+                                addTile(tileSheet, index, tileSheet.imageWidth, tileSheet.tileWidth, tileSheet.tileHeight);
+                            }
 
-                        var arcTile = data.setTile(_this.tiles[index], tileX, tileY, tileWidth, tileHeight);
-                        arcTile.setTile = function(tileId){
-                            if(tileId >= 0 && tileId < tiles.length){
-                                this.tile = tiles[tileId];
+                            var tileX = (i % layerWidth) * _this.tileWidth;
+                            var tileY = Math.floor(i / layerWidth) * _this.tileHeight;
+                            var tileWidth = tileSheet.tileWidth * scale;
+                            var tileHeight = tileSheet.tileHeight * scale;
+
+                            if (tileHeight > _this.tileHeight) {
+                                tileY = tileY - tileHeight + _this.tileHeight;
+                            }
+
+                            var arcTile = data.setTile(_this.tiles[index], tileX, tileY, tileWidth, tileHeight);
+                            arcTile.setTile = function(tileId){
+                                if(tileId >= 0 && tileId < tiles.length){
+                                    this.tile = tiles[tileId];
+                                }
                             }
                         }
                     }
-                }
 
-                // Add the layer to the appropriate section
-                _this.addChild(mapLayer, name);
-            } else if (type === "objectgroup") {
-                let tree = new QuadTree(0, 0, _this.width * _this.tileWidth, _this.height * _this.tileHeight);
+                    // Add the layer to the appropriate section
+                    _this.addChild(mapLayer, name);
+                } else if (type === "objectgroup") {
+                    let tree = new QuadTree(0, 0, _this.width * _this.tileWidth, _this.height * _this.tileHeight);
 
-                if (name === "triggers") {
-                    _this.triggers  = tree;
-                    tree.drawEnabled = false;
-                    tree.tickEnabled = false;
-                    // Handle map triggers
-                    $(this).find("object").each(function () {
-                        _this.addTrigger($(this), scale, tree, modulePath, gameContext);
-                    });
-                    _this.addChild(tree, name);
-                } else if (name === "objects") {
-                    if(!(this.objects)){
-                        _this.objects = tree;
-                        _this.waypointIndex = _this.children.length;
-                        _this.addChild(_this.waypoint, "waypoint");
-                    }
-                    
-                    // Handle map objects
-                    workingLowerLevels = false;
-
-                    $(this).find("object").each(function () {
-                        var $object = $(this);
-                        var objectName = $object.attr("name");
-                        var objectType = $object.attr("type") ? $object.attr("type") : "VillageObject";
-                        var objectX = Number($object.attr("x")) * scale; // Double the size for now since we double the map size
-                        var objectY = Number($object.attr("y")) * scale;
-                        var objectWidth = Number($object.attr("width")) * scale;
-                        var objectHeight = Number($object.attr("height")) * scale;
-                        var objectTileId = parseInt($object.attr("gid")) - 1;
-                        var objectRotation = 0.0;
-                        var object = null;
-
-                        if(Number.isNaN(objectWidth)){
-                            objectWidth = 0;
+                    if (name === "triggers") {
+                        _this.triggers  = tree;
+                        tree.drawEnabled = false;
+                        tree.tickEnabled = false;
+                        // Handle map triggers
+                        $(this).find("object").each(function () {
+                            _this.addTrigger($(this), scale, tree, modulePath, gameContext);
+                        });
+                        _this.addChild(tree, name);
+                    } else if (name === "objects") {
+                        if(!(this.objects)){
+                            _this.objects = tree;
+                            _this.waypointIndex = _this.children.length;
+                            _this.addChild(_this.waypoint, "waypoint");
                         }
+                        
+                        // Handle map objects
+                        workingLowerLevels = false;
 
-                        if(Number.isNaN(objectHeight)){
-                            objectHeight = 0;
-                        }
+                        $(this).find("object").each(function () {
+                            var $object = $(this);
+                            var objectName = $object.attr("name");
+                            var objectType = $object.attr("type") ? $object.attr("type") : "VillageObject";
+                            var objectX = Number($object.attr("x")) * scale; // Double the size for now since we double the map size
+                            var objectY = Number($object.attr("y")) * scale;
+                            var objectWidth = Number($object.attr("width")) * scale;
+                            var objectHeight = Number($object.attr("height")) * scale;
+                            var objectTileId = parseInt($object.attr("gid")) - 1;
+                            var objectRotation = 0.0;
+                            var object = null;
 
-                        // Load the properties
-                        var objectProperties = {
-                            generated_scale: scale,
-                            generated_map: _this,
-                            generated_tileId: objectTileId
-                        };
-                        $object.find("properties > property").each(function () {
-                            objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
+                            if(Number.isNaN(objectWidth)){
+                                objectWidth = 0;
+                            }
+
+                            if(Number.isNaN(objectHeight)){
+                                objectHeight = 0;
+                            }
+
+                            // Load the properties
+                            var objectProperties = {
+                                generated_scale: scale,
+                                generated_map: _this,
+                                generated_tileId: objectTileId
+                            };
+                            $object.find("properties > property").each(function () {
+                                objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
+                            });
+
+                            // Find the matching tile if needed
+                            if (objectTileId) {
+                                objectTileId = parseInt(objectTileId);
+                                var tileSheet = _this.getTileSheetForTile(objectTileId);
+                                if (tileSheet !== null) {
+                                    var tile = addTile(tileSheet, objectTileId, tileSheet.imageWidth, tileSheet.tileWidth * scale, tileSheet.tileHeight * scale).drawable();
+                                    objectWidth = Math.round(objectWidth == 0 ? tile.width * scale : objectWidth);
+                                    objectHeight = Math.round(objectHeight == 0 ? tile.height * scale : objectHeight);
+
+                                    objectY -= (objectHeight >> 1);
+                                    objectX += (objectWidth >> 1);
+                                }
+                            }
+
+                            var objectConstructor = window[objectType];
+
+                            if(objectConstructor && objectConstructor.isVillageObject){
+                                object = new objectConstructor(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectProperties, $object);
+                                _this.objects.insert(object);
+                            }
+
+                            /*
+                            if (objectType === "playerstart") {
+                                object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
+                                tree.insert(object);
+                            } else if (objectType === "studenthouse") {
+                                //_this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps'], objectProperties));
+                            } else if (objectType === "none") {
+
+                            } else if (objectType === "npc"){
+                                 object = new NPC(objectName, objectName, "idle", [objectX, objectY], objectProperties);
+                                 object.spriteSheet = _this.getSpriteSheet(objectProperties["spritesheet"]);
+                                 _this.objects.insert(object);
+                            } else if (objectType === "path"){
+                                 object = new Path(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectProperties, $object.find("polyline").attr("points"), scale);
+                                 _this.objects.insert(object);
+                            } else {
+                                object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
+                                tree.insert(object);
+                            }
+                            */
                         });
 
-                        // Find the matching tile if needed
-                        if (objectTileId) {
-                            objectTileId = parseInt(objectTileId);
-                            var tileSheet = _this.getTileSheetForTile(objectTileId);
-                            if (tileSheet !== null) {
-                                var tile = addTile(tileSheet, objectTileId, tileSheet.imageWidth, tileSheet.tileWidth * scale, tileSheet.tileHeight * scale).drawable();
-                                objectWidth = Math.round(objectWidth == 0 ? tile.width * scale : objectWidth);
-                                objectHeight = Math.round(objectHeight == 0 ? tile.height * scale : objectHeight);
+                        _this.addChild(tree, name);
+                        //_this.addChild(_this.players, "players");
+                    }
+                } else if(type === "properties") {
+                    /*$(this).children().each(function(){
+                        var name = $(this).attr("name");
+                        var value = $(this).attr("value");
 
-                                objectY -= (objectHeight >> 1);
-                                objectX += (objectWidth >> 1);
-                            }
+                        switch(name){
+                            case "up":
+                                _this.neighbors[0] = _this.parent.load(value, false, false);
+                                break;
+
+                            case "right":
+                                _this.neighbors[1] = _this.parent.load(value, false, false);
+                                break;
+
+                            case "down":
+                                _this.neighbors[2] = _this.parent.load(value, false, false);
+                                break;
+
+                            case "left":
+                                _this.neighbors[3] = _this.parent.load(value, false, false);
+                                break
                         }
+                    })*/
+                }
+            });
 
-                        var objectConstructor = window[objectType];
 
-                        if(objectConstructor && objectConstructor.isVillageObject){
-                            object = new objectConstructor(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectProperties, $object);
-                            _this.objects.insert(object);
-                        }
 
-                        /*
-                        if (objectType === "playerstart") {
-                            object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
-                            tree.insert(object);
-                        } else if (objectType === "studenthouse") {
-                            //_this.housingSections.push(new HousingSection(objectName, objectX, objectY, objectWidth, objectHeight, _this.tileWidth, _this.tileHeight, modulePath + "/maps/", objectProperties['maps'], objectProperties));
-                        } else if (objectType === "none") {
-
-                        } else if (objectType === "npc"){
-                             object = new NPC(objectName, objectName, "idle", [objectX, objectY], objectProperties);
-                             object.spriteSheet = _this.getSpriteSheet(objectProperties["spritesheet"]);
-                             _this.objects.insert(object);
-                        } else if (objectType === "path"){
-                             object = new Path(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectProperties, $object.find("polyline").attr("points"), scale);
-                             _this.objects.insert(object);
-                        } else {
-                            object = new VillageObject(objectName, objectType, [objectX, objectY], [objectWidth, objectHeight], objectRotation, objectTileId, objectProperties);
-                            tree.insert(object);
-                        }
-                        */
-                    });
-
-                    _this.addChild(tree, name);
-                    //_this.addChild(_this.players, "players");
+            var startLocation = [0, 0];
+            if (startName) {
+                var startObject = _this.getChild("objects").getByName(startName);
+                if (startObject !== null) {
+                    startLocation[0] = startObject.location[4];
+                    startLocation[1] = startObject.location[5];
                 }
             }
+
+            // Return the function
+            _this.loaded = true;
+            if (onload && onload !== null) {
+                onload(_this, startLocation);
+            }
         });
+    };
+    VillageMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
+        return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
+    };
+    // Checks if a rectangular area is blocked.
+    VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
+        let checkVal = null;
+        let child = null;
 
-        var startLocation = [0, 0];
-        if (startName) {
-            var startObject = _this.getChild("objects").getByName(startName);
-            if (startObject !== null) {
-                startLocation[0] = startObject.location[4];
-                startLocation[1] = startObject.location[5];
+        for(var i = this.waypointIndex - 1; i > -1; --i){
+            child = this.children[i];
+            
+            if(child.isBlocked){
+                checkVal = this.children[i].isBlocked(x1, y1, x2, y2, width, height);
+                if(checkVal !== null){
+                    return checkVal;
+                }
             }
         }
 
-        // Return the function
-        _this.loaded = true;
-        if (onload && onload !== null) {
-            onload(_this, startLocation);
+        return false;
+    };
+    VillageMap.prototype.trigger = function(action, left, top, right, bottom){
+        let child = null;
+
+        for(var i = this.waypointIndex - 1; i > -1; --i){
+            child = this.children[i];
+            
+            child.trigger(action, left, top, right, bottom);
         }
-    });
-};
-VillageMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
-    return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
-};
-// Checks if a rectangular area is blocked.
-VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
-    let checkVal = null;
-    let child = null;
-
-    for(var i = this.waypointIndex - 1; i > -1; --i){
-        child = this.children[i];
-        
-        if(child.isBlocked){
-            checkVal = this.children[i].isBlocked(x1, y1, x2, y2, width, height);
-            if(checkVal !== null){
-                return checkVal;
-            }
-        }
-    }
-
-    return false;
-};
-VillageMap.prototype.trigger = function(action, left, top, right, bottom){
-    let child = null;
-
-    for(var i = this.waypointIndex - 1; i > -1; --i){
-        child = this.children[i];
-        
-        child.trigger(action, left, top, right, bottom);
-    }
-};
+    };
+}
 /*VillageMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
     let buffer = QuadTree.ArrayBuffer;
     let index = 0;
@@ -830,126 +865,130 @@ VillageMap.prototype.trigger = function(action, left, top, right, bottom){
 * @inherits {ArcBaseObject}
 */
 var VillageModule = ArcBaseObject();
-VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded, onMapChange) {
-    this.path = path;
-    this.maps = {};
-    this.onMapChange = onMapChange;
-    this.css = path + "/css/style.css";
-    this.spriteSheets = {};
-    this.gameContext = gameContext;
-    this.backgroundMusic = null;
+{
+    VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded, onMapChange) {
+        this.path = path;
+        this.maps = {};
+        this.onMapChange = onMapChange;
+        this.css = path + "/css/style.css";
+        this.spriteSheets = {};
+        this.gameContext = gameContext;
+        this.backgroundMusic = null;
 
-    // Load the spritesheets
-    this.loadSpritesheets(path + "/sprites/");
+        // Load the spritesheets
+        this.loadSpritesheets(path + "/sprites/");
 
-    // Load the current map
-    var map = new VillageMap(this, initialMap);
-    this.maps[initialMap] = map;
-    this.currentMap = map;
+        // Load the current map
+        var map = new VillageMap(this, initialMap);
+        this.maps[initialMap] = map;
+        this.currentMap = map;
 
-    // Load the dialog
-    this.dialog = arcGetDialogAdapter(path + "/scenes/dialog.csv");
+        // Load the dialog
+        this.dialog = arcGetDialogAdapter(path + "/scenes/dialog.csv");
 
-    map.load(onLoaded, "MainStart", gameContext);
-};
-VillageModule.prototype.setBackgroundMusic = function(sound, fade){
-    if(this.backgroundMusic){
-        if(sound === this.backgroundMusic){
-            return;
-        }
-
-        // Stop the current background music
-        this.gameContext.audio.stopSound(this.backgroundMusic, fade);
-    }
-
-    this.backgroundMusic = sound;
-    this.gameContext.audio.playSound(this.backgroundMusic, fade);
-};
-VillageModule.prototype.loadSpritesheets = function (path) {
-    var _this = this;
-    $.ajax({
-        url: path + "sprites.json",
-        method: "GET",
-        async: false,
-        success: function (result) {
-            var data = result;
-
-            if (typeof data === "string") {
-                data = JSON.parse(result);
+        map.load(onLoaded, "MainStart", gameContext);
+    };
+    VillageModule.prototype.setBackgroundMusic = function(sound, fade){
+        if(this.backgroundMusic){
+            if(sound === this.backgroundMusic){
+                return;
             }
 
-            // Load the animations
-            var animationSet = {};
+            // Stop the current background music
+            this.gameContext.audio.stopSound(this.backgroundMusic, fade);
+        }
 
-            for (var i in data.animations) {
-                var animations = {};
+        this.backgroundMusic = sound;
+        this.gameContext.audio.playSound(this.backgroundMusic, fade);
+    };
+    VillageModule.prototype.loadSpritesheets = function (path) {
+        var _this = this;
+        $.ajax({
+            url: path + "sprites.json",
+            method: "GET",
+            async: false,
+            success: function (result) {
+                var data = result;
 
-                for (var key in data.animations[i]) {
-                    var dataAnimation = data.animations[i][key];
-                    var animation = new ArcAnimation();
+                if (typeof data === "string") {
+                    data = JSON.parse(result);
+                }
 
-                    for (var index = 0; index < dataAnimation.length; ++index) {
-                        var frame = dataAnimation[index];
-                        animation.addFrame(frame.x, frame.y, frame.width, frame.height, frame.time, false, false);
+                // Load the animations
+                var animationSet = {};
+
+                for (var i in data.animations) {
+                    var animations = {};
+
+                    for (var key in data.animations[i]) {
+                        var dataAnimation = data.animations[i][key];
+                        var animation = new ArcAnimation();
+
+                        for (var index = 0; index < dataAnimation.length; ++index) {
+                            var frame = dataAnimation[index];
+                            animation.addFrame(frame.x, frame.y, frame.width, frame.height, frame.time, false, false);
+                        }
+
+                        animations[key] = animation;
                     }
 
-                    animations[key] = animation;
+                    animationSet[i] = animations;
                 }
 
-                animationSet[i] = animations;
-            }
+                // Create the sprites
+                for (var i in data.sprites) {
+                    var dataSprite = data.sprites[i];
+                    var sprite = new ArcSpriteSheet(path + dataSprite.image, false);
+                    sprite.id = i;
+                    var animation = animationSet[dataSprite.animation];
 
-            // Create the sprites
-            for (var i in data.sprites) {
-                var dataSprite = data.sprites[i];
-                var sprite = new ArcSpriteSheet(path + dataSprite.image, false);
-                sprite.id = i;
-                var animation = animationSet[dataSprite.animation];
+                    for (var key in animation) {
+                        sprite.setAnimation(key, animation[key]);
+                    }
 
-                for (var key in animation) {
-                    sprite.setAnimation(key, animation[key]);
+                    _this.spriteSheets[i] = sprite;
                 }
-
-                _this.spriteSheets[i] = sprite;
             }
+        });
+    };
+    VillageModule.prototype.getSpriteSheet = function(name){
+        return this.spriteSheets[name];
+    }
+    VillageModule.prototype.load = function (mapName, startName, isCurrent = true) {
+        var _this = this;
+        var map = this.maps[mapName];
+        if (map && map !== null) {
+
+        } else {
+            map = new VillageMap(this, mapName);
+            this.maps[mapName] = map;
         }
-    });
-};
-VillageModule.prototype.getSpriteSheet = function(name){
-    return this.spriteSheets[name];
+
+        if (startName && startName !== null && startName.length > 0) {
+
+        } else {
+            startName = "MainStart";
+        }
+
+        // Load the map
+        if(isCurrent){
+            map.load(function (loadedMap, startLocation) {
+                var module = loadedMap.parent;
+
+                function unloadMap(mapName) {
+                    //module.maps[mapName].unload(); //Some reason this is not working
+                }
+                unloadMap(module.currentMap.name);
+
+                module.currentMap = loadedMap;
+
+                if (module.onMapChange) {
+                    module.onMapChange(module.currentMap, startLocation);
+                }
+            }, startName, _this.gameContext);
+        }
+    };
 }
-VillageModule.prototype.load = function (mapName, startName) {
-    var _this = this;
-    var map = this.maps[mapName];
-    if (map && map !== null) {
-
-    } else {
-        map = new VillageMap(this, mapName);
-        this.maps[mapName] = map;
-    }
-
-    if (startName && startName !== null && startName.length > 0) {
-
-    } else {
-        startName = "MainStart";
-    }
-
-    // Load the map
-    map.load(function (loadedMap, startLocation) {
-        var module = loadedMap.parent;
-
-        function unloadMap(mapName) {
-            //module.maps[mapName].unload(); //Some reason this is not working
-        }
-        unloadMap(module.currentMap.name);
-
-        module.currentMap = loadedMap;
-
-        if (module.onMapChange) {
-            module.onMapChange(module.currentMap, startLocation);
-        }
-    }, startName, _this.gameContext);
-};
 
 // Minimap code
 var MiniMap = ArcBaseObject();
