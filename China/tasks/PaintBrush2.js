@@ -10,6 +10,8 @@
 	var drawContext = drawCanvas.getContext("2d");
 	var testData = null;
 	var score = 0.0;
+	var minScore = 0.8;
+	var maxScore = 1.1; // Over 1 to prevent any errors
 
 	// Private Functions
 	var distance = function(start, end){
@@ -212,7 +214,7 @@
 		
 		display.clear();
 		
-		if(model.acceptImage){	
+		if(model.acceptImage && score >= minScore){	
 			display.drawImage(model.acceptImage, 0, 0, model.acceptImage.width, model.acceptImage.height, 
 				model.buttonAccept[0], model.buttonAccept[1], 
 				model.buttonAccept[2] - model.buttonAccept[0], 
