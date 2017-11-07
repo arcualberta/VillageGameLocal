@@ -2237,6 +2237,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
 		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('AH_YU_4', worldAdapter, player);
+		++player.stats.kindness;
 	};
 	
 	var openTask = function(){

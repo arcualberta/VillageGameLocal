@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="34" tilewidth="30" tileheight="30" nextobjectid="44">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="34" tilewidth="30" tileheight="30" nextobjectid="45">
  <properties>
   <property name="right" value="game_2"/>
  </properties>
- <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
-  <image source="../tiles/tileset.png" width="570" height="570"/>
+ <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
+  <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
    <terrain name="Water" tile="33"/>
    <terrain name="Path" tile="81"/>
@@ -61,7 +61,7 @@
   </tile>
   <tile id="7">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="9">
@@ -178,19 +178,19 @@
   <tile id="35">
    <properties>
     <property name="minimap" value="#7d7875"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="36">
    <properties>
     <property name="minimap" value="#7d7875"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="37">
    <properties>
     <property name="minimap" value="#7d7875"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="38" terrain=",0,,0">
@@ -276,7 +276,7 @@
   </tile>
   <tile id="55">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="57" terrain=",0,,">
@@ -368,7 +368,7 @@
   <tile id="74">
    <properties>
     <property name="minimap" value="#7d7875"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="76" terrain=",,,1">
@@ -422,17 +422,17 @@
   </tile>
   <tile id="92">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="93">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="94">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="95" terrain=",1,,1">
@@ -621,7 +621,7 @@
   <tile id="231">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="231" duration="500"/>
@@ -631,7 +631,7 @@
   <tile id="232">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="232" duration="500"/>
@@ -677,7 +677,7 @@
   <tile id="250">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="250" duration="500"/>
@@ -687,7 +687,7 @@
   <tile id="251">
    <properties>
     <property name="minimap" value="#28aeee"/>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
    <animation>
     <frame tileid="251" duration="500"/>
@@ -1040,7 +1040,7 @@
   </tile>
   <tile id="342">
    <properties>
-    <property name="walkable" type="bool" value="false"/>
+    <property name="walkable" value="false"/>
    </properties>
   </tile>
   <tile id="352">
@@ -1080,7 +1080,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="362" name="Villager Placeholder" tilewidth="30" tileheight="50" tilecount="12" columns="3">
+ <tileset firstgid="647" name="Villager Placeholder" tilewidth="30" tileheight="50" tilecount="12" columns="3">
   <image source="../sprites/villager1.png" width="90" height="200"/>
   <tile id="6">
    <properties>
@@ -1088,7 +1088,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="374" name="brush" tilewidth="30" tileheight="30" tilecount="1" columns="1">
+ <tileset firstgid="659" name="brush" tilewidth="30" tileheight="30" tilecount="1" columns="1">
   <image source="../tiles/Brush.png" width="30" height="30"/>
  </tileset>
  <layer name="lower" width="60" height="34">
@@ -1169,7 +1169,7 @@
  </layer>
  <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="336" y="210.5" width="20" height="19"/>
-  <object id="2" name="Farmer" type="NPC" gid="362" x="1263.66" y="479.666" width="30" height="50">
+  <object id="2" name="Farmer" type="NPC" gid="647" x="1263.66" y="479.666" width="30" height="50">
    <properties>
     <property name="onfarm">if(!this.lastStep[2]){
 	var farming = this.properties[&quot;farming&quot;];
@@ -1205,7 +1205,7 @@ this.direction = 0;
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
 		_this.properties[&quot;taskComplete&quot;] = true;
-		_this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = &quot;onfarm&quot;;});
+		_this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = &quot;onfarm&quot;; ++player.stats.kindness;});
 	};
 	
 	var openTask = function(){
@@ -1233,7 +1233,7 @@ this.waypoint[1] = this.location[5];</property>
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
   </object>
-  <object id="4" name="Fisherman" type="NPC" gid="362" x="238.333" y="985.667" width="30" height="50">
+  <object id="4" name="Fisherman" type="NPC" gid="647" x="238.333" y="985.667" width="30" height="50">
    <properties>
     <property name="onidle" value="//TODO: Fish"/>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false; 
@@ -1245,6 +1245,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('GRANDPA_4', worldAdapter, player);
 		world.objects.getChild(&quot;FishNet&quot;).drawEnabled = true;
+		++player.stats.kindness;
 	};
 	
 	var openTask = function(){
@@ -1275,6 +1276,29 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   </object>
   <object id="42" name="FromSouth1" type="PlayerStart" x="502" y="940" width="14" height="16"/>
   <object id="43" name="FromSouth2" type="PlayerStart" x="1192" y="920" width="14" height="16"/>
+  <object id="44" name="ChangeSceneWaiter" type="VillageObject" gid="118" x="1560" y="120" width="30" height="30" visible="0">
+   <properties>
+    <property name="onidle">if(player){
+	if(!(player.stats.act)){
+		player.stats.act = 1;
+	}else if(player.stats.act == 1 &amp;&amp; player.stats.kindness == 6){
+		player.stats.act = 2;
+		var parent = this.parameters.generated_map.parent;
+		
+		var afterFadeOut = function(camera){
+			parent.load(&quot;game_2&quot;, &quot;FromNorth1&quot;);
+			game.display.camera.addAction(new ArcCameraFadeIn(3000, afterFadeIn, 0.0, 0.0, 0.0));
+		};
+		
+		var afterFadeIn = function(camera){
+			
+		};
+		
+		game.display.camera.addAction(new ArcCameraFadeOut(3000, afterFadeOut, 0.0, 0.0, 0.0));
+	}
+}</property>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup name="triggers">
   <object id="27" name="MainMusic" type="BackgroundMusic" x="131.758" y="161.515" width="1541.33" height="801.333">

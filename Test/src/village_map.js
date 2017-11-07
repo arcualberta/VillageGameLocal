@@ -110,78 +110,92 @@ HousingSection.prototype.addHouse = function (map, userId, userHouse) {
 };
 // Village Objects
 var VillageObject = ArcBaseObject();
-VillageObject.prototype = Object.create(ArcActor.prototype)
-Object.defineProperty(VillageObject, 'isVillageObject', {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: true
-});
-new DialogScripts(VillageObject.prototype);
-VillageObject.prototype.init = function (name, type, position, size, rotation, parameters) {
-    ArcActor.prototype.init.call(this, true, true, false);  
-    this.name = name;
-    this.properties = {};
-    this.tileId = parameters.generated_tileId;
-    this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
-    this.rotation = rotation;
-    this.type = type;
-    this.parameters = parameters;
+{
+    VillageObject.prototype = Object.create(ArcActor.prototype)
+    Object.defineProperty(VillageObject, 'isVillageObject', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: true
+    });
+    new DialogScripts(VillageObject.prototype);
+    VillageObject.prototype.init = function (name, type, position, size, rotation, parameters) {
+        ArcActor.prototype.init.call(this, true, true, false);  
+        this.name = name;
+        this.properties = {};
+        this.tileId = parameters.generated_tileId;
+        this.centre = [position[0] + size[0] / 2, position[1] + size[1] / 2];
+        this.rotation = rotation;
+        this.type = type;
+        this.parameters = parameters;
 
-    this.clickEnabled = true;
-    this.interactEnabled = true;
+        this.clickEnabled = true;
+        this.interactEnabled = true;
 
-    this.updateSize(size[0], size[1]);
-    this.updateLocation(position[0], position[1]);
+        this.updateSize(size[0], size[1]);
+        this.updateLocation(position[0], position[1]);
 
-    for(var key in parameters){
-        var test = key.substring(0, 2);
-        var state = 0;
-        if(test === "on"){
-            this[key] = Function("time", "player", "world", "worldAdapter", parameters[key]);
+        for(var key in parameters){
+            var test = key.substring(0, 2);
+            var state = 0;
+            if(test === "on"){
+                this[key] = Function("time", "player", "world", "worldAdapter", parameters[key]);
+            }
         }
-    }
 
-    if(this.onstart){
-        this.onstart(0, null, null, null);
-    }
-};
-VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    displayContext.drawTileById(this.tileId, this.location[0] - xOffset, this.location[1] - yOffset, this.size[0], this.size[1]);
+        if(this.onstart){
+            this.onstart(0, null, null, null);
+        }
+    };
+    VillageObject.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        if(this.parameters.visible){
+            displayContext.drawTileById(this.tileId, this.location[0] - xOffset, this.location[1] - yOffset, this.size[0], this.size[1]);
+        }
 
-    if(window.debugMode){
-        displayContext.drawLine(this.location[0], this.location[1], this.location[0], this.location[3], '#F00');
-        displayContext.drawLine(this.location[0], this.location[1], this.location[2], this.location[1], '#F00');
-        displayContext.drawLine(this.location[2], this.location[3], this.location[0], this.location[3], '#F00');
-        displayContext.drawLine(this.location[2], this.location[3], this.location[2], this.location[1], '#F00');
-    }
-};
-VillageObject.prototype.click = function(x, y, player, world){
-    // Set as the active object
-    player.activeObject = this;
+        if(window.debugMode){
+            displayContext.drawLine(this.location[0], this.location[1], this.location[0], this.location[3], '#F00');
+            displayContext.drawLine(this.location[0], this.location[1], this.location[2], this.location[1], '#F00');
+            displayContext.drawLine(this.location[2], this.location[3], this.location[0], this.location[3], '#F00');
+            displayContext.drawLine(this.location[2], this.location[3], this.location[2], this.location[1], '#F00');
+        }
+    };
+    VillageObject.prototype.click = function(x, y, player, world){
+        // Set as the active object
+        player.activeObject = this;
 
-    // Check if we have any click functions
-    var f = this['onclick'];
+        // Check if we have any click functions
+        var f = this['onclick'];
 
-    if(f){ f.call(this, null, player, world); }
-};
-VillageObject.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
-    var f = this['onwalk'];
-
-    if(f){
-        f.call(this, null, player, world, worldAdapter);
-    }
-
-    if(player.activeObject === this){
-        f = this['oninteract'];
+        if(f){ f.call(this, null, player, world); }
+    };
+    VillageObject.prototype.interact = function(left, top, right, bottom, player, world, worldAdapter){
+        var f = this['onwalk'];
 
         if(f){
             f.call(this, null, player, world, worldAdapter);
         }
 
-        player.activeObject = null;
-    }
-};
+        if(player.activeObject === this){
+            f = this['oninteract'];
+
+            if(f){
+                f.call(this, null, player, world, worldAdapter);
+            }
+
+            player.activeObject = null;
+        }
+    };
+    VillageObject.prototype.tick = function (timeSinceLast, worldAdapter, village, player) {
+
+        // Check for functions
+        var f = this["onidle"];
+
+        if(f){ f.call(this, timeSinceLast, player, village, worldAdapter); }
+
+        // Execute parent functions
+        ArcActor.prototype.tick.apply(this, arguments);
+    };
+}
 
 var PlayerStart = ArcBaseObject();
 PlayerStart.prototype = Object.create(VillageObject.prototype)
@@ -675,6 +689,8 @@ var VillageMap = ArcBaseObject();
                             $object.find("properties > property").each(function () {
                                 objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
                             });
+
+                            objectProperties.visible = $object.attr("visible") ? $object.attr("visible") != "0" : true;
 
                             // Find the matching tile if needed
                             if (objectTileId) {
