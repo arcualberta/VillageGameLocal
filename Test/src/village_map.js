@@ -364,7 +364,7 @@ var VillageMap = ArcBaseObject();
     VillageMap.prototype.addPlayer = function(player){
         this.players[player.id] = player;
 
-        if(this.objects){
+        if(this.objects && this.objects.getChild(player.name) == null){
             this.objects.insert(player);
         }
     }
