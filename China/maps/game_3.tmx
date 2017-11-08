@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="49" tilewidth="30" tileheight="30" nextobjectid="42">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="49" tilewidth="30" tileheight="30" nextobjectid="45">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2105,8 +2105,9 @@ if(performance &amp;&amp; performance.now){
    </properties>
   </object>
   <object id="40" name="FromEast1" type="PlayerStart" x="47" y="906" width="14" height="16"/>
+  <object id="42" name="FromNorth1" type="PlayerStart" x="622.333" y="50.6667" width="14" height="16"/>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="13" name="marketSwitch" type="backgroundMusic" x="-1422.42" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
@@ -2136,6 +2137,12 @@ this.sound = new ArcSound(&quot;CloudMusic&quot;, true, modulePath + &quot;/soun
    <properties>
     <property name="Map" value="game_2"/>
     <property name="Start" value="FromWest1"/>
+   </properties>
+  </object>
+  <object id="44" name="NorthChange1" type="ChangeMap" x="604.417" y="1.54168" width="48.5" height="13.5833">
+   <properties>
+    <property name="Map" value="game_4"/>
+    <property name="Start" value="FromSouth1"/>
    </properties>
   </object>
  </objectgroup>
