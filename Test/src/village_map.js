@@ -229,12 +229,12 @@ ScriptTrigger.prototype.init = function(name, type, position, size, rotation, pr
 };
 ScriptTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
     if(this.oninteract){
-        this.oninteract(0, player, world, worldAdapter);
+        this.oninteract.call(this, 0, player, world, worldAdapter);
     }
 };
 ScriptTrigger.prototype.click = function (x, y, player, world){
     if(this.onclick){
-        this.onclick(0, player, world, null);
+        this.onclick.call(this, 0, player, world, null);
     }
 };
 

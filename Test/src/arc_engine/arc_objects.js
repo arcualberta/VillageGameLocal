@@ -1920,45 +1920,71 @@ ArcTileMap.prototype.trigger = function(action, left, top, right, bottom){
 * @implements {ArcRenderableObject} 
 */
 var ArcMap = ArcBaseObject();
-ArcMap.prototype = Object.create(ArcRenderableObject.prototype);
-ArcMap.prototype.init = function(parent, mapName){
-    ArcRenderableObject.prototype.init.call(this, true, true);
-    this.parent = parent;
-    this.name = mapName;
-    this.tileSheets = {};
-    this.width = 100;
-    this.height = 100;
-    this.tileWidth = 16;
-    this.tileHeight = 16;
-    this.tiles = [];
-    this.loaded = false;
+{
+    ArcMap.prototype = Object.create(ArcRenderableObject.prototype);
+    ArcMap.prototype.init = function(parent, mapName){
+        ArcRenderableObject.prototype.init.call(this, true, true);
+        this.parent = parent;
+        this.name = mapName;
+        this.tileSheets = {};
+        this.width = 100;
+        this.height = 100;
+        this.tileWidth = 16;
+        this.tileHeight = 16;
+        this.tiles = [];
+        this.loaded = false;
 
-    // TODO: Use the children object to render the map as a single tree.
-};
-/**
-* @override
-*/
-ArcMap.prototype.unload = function(){
-    this.loaded = false;
-    ArcRenderableObject.prototype.unload.call(this);
+        // TODO: Use the children object to render the map as a single tree.
+    };
+    /**
+    * @override
+    */
+    ArcMap.prototype.unload = function(){
+        this.loaded = false;
+        ArcRenderableObject.prototype.unload.call(this);
 
-    this.tiles.length = 0;
-};
-/**
-* @param {index} name The index of the tile to obtain the tilesheet for.
-* @return The tilesheet for a specified tile. If no tilesheet is found, null is returned.  
-*/
-ArcMap.prototype.getTileSheetForTile = function (index) {
-    var currentTilesheet = null;
-    for (var i in this.tileSheets) {
-        var tileSheet = this.tileSheets[i];
-        if (tileSheet.firstGid <= index && (currentTilesheet == null || currentTilesheet.firstGid < tileSheet.firstGid)) {
-            currentTilesheet = tileSheet;
+        this.tiles.length = 0;
+    };
+    /**
+    * @param {index} name The index of the tile to obtain the tilesheet for.
+    * @return The tilesheet for a specified tile. If no tilesheet is found, null is returned.  
+    */
+    ArcMap.prototype.getTileSheetForTile = function (index) {
+        var currentTilesheet = null;
+        for (var i in this.tileSheets) {
+            var tileSheet = this.tileSheets[i];
+            if (tileSheet.firstGid <= index && (currentTilesheet == null || currentTilesheet.firstGid < tileSheet.firstGid)) {
+                currentTilesheet = tileSheet;
+            }
         }
-    }
 
-    return currentTilesheet;
-};
+        return currentTilesheet;
+    };
+
+    /**
+    */
+    /*ArcMap.prototype.load = function(onLoad, startName, gameContext){
+        this.onBeforeLoad(gameContext);
+
+        if(this.loaded){
+            this.onAlreadyLoaded(gameContext);
+
+            // Return the function
+            this.loaded = true;
+            if (onload && onload !== null) {
+                onload(this, startLocation);
+            }
+            return;
+        }
+
+        this.onAfterLoad(gameContext);
+    };*/
+
+    // Abstract functions
+    /*ArcMap.prototype.onAlreadyLoaded = function(gameContext){};
+    ArcMap.prototype.onBeforeLoad = function(gameContext){};
+    ArcMap.prototype.onAfterLoad = function(gameContext){};*/ //TODO: Move map creation to the arc engine
+}
 
 // Triggers that can be used on the map
 

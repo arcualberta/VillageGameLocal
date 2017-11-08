@@ -2199,7 +2199,7 @@
 107,108,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,105,106,107,108
 </data>
  </layer>
- <objectgroup name="objects" visible="0">
+ <objectgroup name="objects">
   <object id="6" name="villager_1" type="NPC" gid="647" x="545.606" y="932.67" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(1016, 1316, 2268, 2580);"/>
@@ -2236,8 +2236,7 @@
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
 		_this.properties[&quot;taskComplete&quot;] = true;
-		_this.TriggerDialog('AH_YU_4', worldAdapter, player);
-		++player.stats.kindness;
+		_this.TriggerDialog('AH_YU_4', worldAdapter, player, function(){ ++player.stats.kindness; } );
 	};
 	
 	var openTask = function(){
@@ -2265,7 +2264,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   <object id="46" name="FromNorth2" type="PlayerStart" x="1191" y="36" width="14" height="16"/>
   <object id="48" name="FromWest1" type="PlayerStart" x="1724" y="904" width="14" height="16"/>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="13" name="marketSwitch" type="backgroundMusic" x="377.576" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
@@ -2294,7 +2293,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,118,0,0,118,0,0,0,0,0,0,0,0,0,11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,49,50,51,52,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,30,31,32,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,12,13,66,67,68,69,70,71,0,11,
-0,11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,49,50,51,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,30,31,32,33,0,0,0,0,0,29,30,
+0,11,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,49,50,51,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,30,31,32,33,0,0,0,0,0,29,30,
 29,30,31,32,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,66,67,68,69,70,71,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,49,50,51,52,0,0,0,0,47,48,49,
 48,49,50,51,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,66,67,68,69,70,71,11,12,13,0,66,67,68,
 67,68,69,70,71,11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,30,31,32,33,0,0,11,

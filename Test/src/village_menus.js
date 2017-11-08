@@ -71,7 +71,8 @@ function GameMenu(title, width, height, backgroundImageUrl, classes) {
 function LoginMenu(loginFunction) {
     var menu = new GameMenu("Login", 300, 400, false, "login_menu");
     var passField = $("<input type='text' name='passcode' class='game_center passcode_input'></input>");
-    var submit = $("<button class='game_center login_button'>Login</button>");
+    var submit = $("<button class='game_center login_button'>Loading...</button>");
+    submit[0].disabled = true;
 
     /*menu.body.css("position", "absolute");
      menu.body.css("left", "35px");
@@ -104,6 +105,11 @@ function LoginMenu(loginFunction) {
             // TODO: Show error
         }
     });
+
+    setTimeout(function(){
+        submit.text("Login");
+        submit[0].disabled = false;
+    }, 1000)
 
     return menu;
 }

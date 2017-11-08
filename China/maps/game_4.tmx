@@ -1158,17 +1158,17 @@
  </layer>
  <objectgroup name="objects">
   <object id="40" name="FromSouth1" type="PlayerStart" x="621" y="833" width="14" height="16"/>
-  <object id="41" name="SouthChange1" type="ChangeMap" x="605.75" y="882.208" width="48.5" height="13.5833">
-   <properties>
-    <property name="Map" value="game_3"/>
-    <property name="Start" value="FromNorth1"/>
-   </properties>
-  </object>
  </objectgroup>
  <objectgroup name="triggers">
   <object id="33" name="palaceSwitch" type="backgroundMusic" x="132.06" y="16.8485" width="1038.91" height="911.758">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
+   </properties>
+  </object>
+  <object id="41" name="SouthChange1" type="ChangeMap" x="605.75" y="882.208" width="48.5" height="13.5833">
+   <properties>
+    <property name="Map" value="game_3"/>
+    <property name="Start" value="FromNorth1"/>
    </properties>
   </object>
  </objectgroup>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="34" tilewidth="30" tileheight="30" nextobjectid="45">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="34" tilewidth="30" tileheight="30" nextobjectid="48">
  <properties>
   <property name="right" value="game_2"/>
  </properties>
@@ -1243,9 +1243,8 @@ this.properties[&quot;taskComplete&quot;] = false;</property>
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
 		_this.properties[&quot;taskComplete&quot;] = true;
-		_this.TriggerDialog('GRANDPA_4', worldAdapter, player);
+		_this.TriggerDialog('GRANDPA_4', worldAdapter, player, function(){ ++player.stats.kindness; });
 		world.objects.getChild(&quot;FishNet&quot;).drawEnabled = true;
-		++player.stats.kindness;
 	};
 	
 	var openTask = function(){
@@ -1316,6 +1315,15 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
    <properties>
     <property name="Map" value="game_2"/>
     <property name="Start" value="FromNorth2"/>
+   </properties>
+  </object>
+  <object id="45" name="IntroductionTrigger" type="Script" x="325" y="198" width="47" height="44">
+   <properties>
+    <property name="oninteract">	var _this = this;
+	worldAdapter.showMessage('INTRODUCTION', false, player, this, function(){
+		world.triggers.removeChild(_this.name);
+	});</property>
+    <property name="onstart" value="this.interactEnabled = true;"/>
    </properties>
   </object>
  </objectgroup>

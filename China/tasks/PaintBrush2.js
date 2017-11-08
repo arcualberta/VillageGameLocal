@@ -10,7 +10,7 @@
 	var drawContext = drawCanvas.getContext("2d");
 	var testData = null;
 	var score = 0.0;
-	var minScore = 0.8;
+	var minScore = 0.75;
 	var maxScore = 1.1; // Over 1 to prevent any errors
 
 	// Private Functions
