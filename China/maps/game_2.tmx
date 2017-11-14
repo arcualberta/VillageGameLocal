@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="52">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="83">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2188,7 +2188,7 @@
 0,0,0,0,105,106,107,108,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,613,614,615,0,0,0,0,0,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,
 87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,631,632,633,634,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,
 106,107,108,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,498,499,500,501,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,363,364,401,402,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,
+0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,
 0,0,0,0,105,106,107,108,109,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,86,87,88,89,90,0,0,
 87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,86,
@@ -2263,8 +2263,16 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   <object id="44" name="FromNorth1" type="PlayerStart" x="503" y="75" width="14" height="16"/>
   <object id="46" name="FromNorth2" type="PlayerStart" x="1191" y="36" width="14" height="16"/>
   <object id="48" name="FromWest1" type="PlayerStart" x="1724" y="904" width="14" height="16"/>
+  <object id="73" name="RiceBag1_3" type="VillageObject" gid="364" x="1092" y="1222" width="30" height="30"/>
+  <object id="74" name="RiceBag1_4" type="VillageObject" gid="363" x="1062" y="1222" width="30" height="30"/>
+  <object id="75" name="RiceBag1_2" type="VillageObject" gid="345" x="1092" y="1192" width="30" height="30"/>
+  <object id="76" name="RiceBag1_1" type="VillageObject" gid="344" x="1062" y="1192" width="30" height="30"/>
+  <object id="78" name="SpiceBag1_1" type="VillageObject" gid="382" x="1163.04" y="1186.96" width="30" height="30"/>
+  <object id="79" name="SpiceBag1_2" type="VillageObject" gid="383" x="1193.03" y="1186.94" width="30" height="30"/>
+  <object id="80" name="SpiceBag1_3" type="VillageObject" gid="401" x="1162.99" y="1216.96" width="30" height="30"/>
+  <object id="81" name="SpiceBag1_4" type="VillageObject" gid="402" x="1192.97" y="1216.95" width="30" height="30"/>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="13" name="marketSwitch" type="ArcBackgroundMusicTrigger" x="377.576" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
@@ -2290,7 +2298,82 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   </object>
   <object id="51" name="Silk1" type="ClickReadTrigger" x="720" y="997" width="113" height="112">
    <properties>
-    <property name="message" value=""/>
+    <property name="message" value="SILK"/>
+   </properties>
+  </object>
+  <object id="54" name="Silk2" type="ClickReadTrigger" x="871.5" y="999" width="113" height="112">
+   <properties>
+    <property name="message" value="SILK"/>
+   </properties>
+  </object>
+  <object id="55" name="Silk3" type="ClickReadTrigger" x="460.5" y="727" width="88" height="112">
+   <properties>
+    <property name="message" value="SILK"/>
+   </properties>
+  </object>
+  <object id="56" name="Silk4" type="ClickReadTrigger" x="879" y="817" width="88" height="112">
+   <properties>
+    <property name="message" value="SILK"/>
+   </properties>
+  </object>
+  <object id="57" name="Fish1" type="ClickReadTrigger" x="664.5" y="607" width="113" height="112">
+   <properties>
+    <property name="message" value="FISH"/>
+   </properties>
+  </object>
+  <object id="58" name="Rice1" type="ClickReadTrigger" x="540.5" y="606" width="113" height="112">
+   <properties>
+    <property name="message" value="RICE"/>
+   </properties>
+  </object>
+  <object id="59" name="Rice2" type="ClickReadTrigger" x="881" y="696" width="88" height="112">
+   <properties>
+    <property name="message" value="RICE"/>
+   </properties>
+  </object>
+  <object id="60" name="Peaches1" type="ClickReadTrigger" x="460" y="848" width="88" height="112">
+   <properties>
+    <property name="message" value="PEACHES"/>
+   </properties>
+  </object>
+  <object id="61" name="Peaches2" type="ClickReadTrigger" x="773" y="727" width="88" height="112">
+   <properties>
+    <property name="message" value="PEACHES"/>
+   </properties>
+  </object>
+  <object id="62" name="Peaches3" type="ClickReadTrigger" x="1134" y="728" width="88" height="112">
+   <properties>
+    <property name="message" value="PEACHES"/>
+   </properties>
+  </object>
+  <object id="63" name="Peaches4" type="ClickReadTrigger" x="1117" y="605" width="56" height="112">
+   <properties>
+    <property name="message" value="PEACHES"/>
+   </properties>
+  </object>
+  <object id="65" name="Apricots1" type="ClickReadTrigger" x="1173" y="603" width="54" height="122">
+   <properties>
+    <property name="message" value="APRICOTS"/>
+   </properties>
+  </object>
+  <object id="66" name="Spices1" type="ClickReadTrigger" x="1135" y="935" width="88" height="112">
+   <properties>
+    <property name="message" value="POWDER"/>
+   </properties>
+  </object>
+  <object id="67" name="Spices2" type="ClickReadTrigger" x="772" y="846" width="88" height="112">
+   <properties>
+    <property name="message" value="POWDER"/>
+   </properties>
+  </object>
+  <object id="68" name="Spices3" type="ClickReadTrigger" x="449.5" y="997" width="113" height="112">
+   <properties>
+    <property name="message" value="POWDER"/>
+   </properties>
+  </object>
+  <object id="69" name="Peppers1" type="ClickReadTrigger" x="1080.5" y="1092" width="113" height="112">
+   <properties>
+    <property name="message" value="PEPPERS"/>
    </properties>
   </object>
  </objectgroup>
@@ -2335,7 +2418,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 49,50,51,52,0,11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,346,347,348,349,0,0,0,0,0,0,0,0,0,11,12,13,66,67,68,69,70,71,0,0,
 68,69,70,71,29,30,31,32,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,30,31,32,33,0,0,0,0,0,0,0,
 0,0,0,47,48,49,50,51,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,178,0,0,0,0,0,0,0,47,48,49,50,51,52,0,11,12,13,0,0,0,
-11,12,13,66,67,68,69,70,71,0,0,0,0,0,0,0,0,0,0,0,0,0,195,0,0,0,0,0,0,0,0,0,0,0,0,0,344,345,382,383,0,0,0,0,0,0,0,66,67,68,69,70,71,29,30,31,32,33,0,0,
+11,12,13,66,67,68,69,70,71,0,0,0,0,0,0,0,0,0,0,0,0,0,195,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,66,67,68,69,70,71,29,30,31,32,33,0,0,
 30,31,32,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,47,48,49,50,51,52,0,29,
 49,50,51,52,0,0,0,0,0,0,0,0,0,125,126,127,128,129,130,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,125,126,127,128,129,130,0,0,0,0,0,0,0,0,0,66,67,68,69,70,71,47,48,
 68,69,70,71,11,12,13,0,0,0,0,0,0,144,145,146,147,148,149,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,144,145,146,147,148,149,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,66,67,
