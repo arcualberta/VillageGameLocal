@@ -60,6 +60,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     var menu = false;
     var userId = null;
     var userName = null;
+    var isLoaded = false;
 
     var settings = new VillageSettings("arc.ualberta.villagegame");
     settings.load(this)
@@ -130,7 +131,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     });
 
     this.drawListeners.push(function(game){
-        __this.villageDisplay.triggerDraw()
+        __this.villageDisplay.triggerDraw();
     });
 
     var updateSounds = function (location) {
@@ -402,7 +403,6 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         // Show the login window
         menu = new LoginMenu(worldAdapter.login, resourcesPath);
-        menu.show(canvas);
 
         menu.closeComplete = function () {
             userId = menu.userId;
@@ -417,7 +417,11 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         worldAdapter.requestWorldState(null);
         addSlideAction(this.display.camera);
 
-        ArcGame.prototype.start.call(this);
+        worldAdapter.onAfterLoaded(function(adapter){ // Wait for the game to be completly loaded.
+            ArcGame.prototype.start.call(__this);
+
+            menu.show(canvas);
+        });
     };
 
     $(window).resize(function (event) {

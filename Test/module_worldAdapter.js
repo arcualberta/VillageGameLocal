@@ -55,6 +55,7 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
     this.playerStart = [0, 0];
     this.module = null;
     this.user = null;
+    this.loaded = false;
     function mapChangeFunction(map, playerStart) {
         this.playerStart = playerStart.splice();
 
@@ -325,3 +326,10 @@ WorldAdapter.prototype.getTaskScript = function(taskScript) {
 WorldAdapter.prototype.getConfigSetting = function(name){
     this.config.getEntry(name);
 };
+WorldAdapter.prototype.isLoaded = function(){
+    var loaded = true;
+
+    loaded = loaded && this.module.dialog.loaded;
+
+    return loaded; 
+}

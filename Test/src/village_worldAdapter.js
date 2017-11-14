@@ -30,3 +30,16 @@ WorldAdapter.prototype.getTaskScript = function(taskScript) {
 WorldAdapter.prototype.getConfigSetting = function(name){
 	return null;
 };
+WorldAdapter.prototype.isLoaded = function(){
+	return true;
+}
+WorldAdapter.prototype.onAfterLoaded = function(loadedFunction){
+    if(this.isLoaded()){
+        loadedFunction(adapter);
+    }else{
+    	var _this = this;
+        setTimeout(function(){
+            onAfterLoaded(loadedFunction);
+        }, 1000);
+    }
+}

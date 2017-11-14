@@ -771,3 +771,16 @@ WorldAdapter.prototype.showMessage = function (message, lineNumber, player, spea
     console.log(message);
     onComplete();
 };
+WorldAdapter.prototype.isLoaded = function(){
+    return true;
+};
+WorldAdapter.prototype.onAfterLoaded = function(loadedFunction){
+    if(this.isLoaded()){
+        loadedFunction(_this);
+    }else{
+        var _this = this;
+        setTimeout(function(){
+            _this.onAfterLoaded(loadedFunction);
+        }, 1000);
+    }
+};
