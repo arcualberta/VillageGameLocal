@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="49">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="52">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2264,28 +2264,33 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   <object id="46" name="FromNorth2" type="PlayerStart" x="1191" y="36" width="14" height="16"/>
   <object id="48" name="FromWest1" type="PlayerStart" x="1724" y="904" width="14" height="16"/>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
-  <object id="13" name="marketSwitch" type="backgroundMusic" x="377.576" y="66" width="2087.39" height="1266">
+ <objectgroup name="triggers">
+  <object id="13" name="marketSwitch" type="ArcBackgroundMusicTrigger" x="377.576" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
    </properties>
   </object>
-  <object id="42" name="NorthChange2" type="ChangeMap" x="1171.75" y="0.875" width="56.5" height="24.25">
+  <object id="42" name="NorthChange2" type="ChangeMapTrigger" x="1171.75" y="0.875" width="56.5" height="24.25">
    <properties>
     <property name="Map" value="game_1"/>
     <property name="Start" value="FromSouth2"/>
    </properties>
   </object>
-  <object id="47" name="WestChange1" type="ChangeMap" x="1772.75" y="877.875" width="21.5" height="70.25">
+  <object id="47" name="WestChange1" type="ChangeMapTrigger" x="1772.75" y="877.875" width="21.5" height="70.25">
    <properties>
     <property name="Map" value="game_3"/>
     <property name="Start" value="FromEast1"/>
    </properties>
   </object>
-  <object id="40" name="NorthChange1" type="ChangeMap" x="480.75" y="1.875" width="56.5" height="24.25">
+  <object id="40" name="NorthChange1" type="ChangeMapTrigger" x="480.75" y="1.875" width="56.5" height="24.25">
    <properties>
     <property name="Map" value="game_1"/>
     <property name="Start" value="FromSouth1"/>
+   </properties>
+  </object>
+  <object id="51" name="Silk1" type="ClickReadTrigger" x="720" y="997" width="113" height="112">
+   <properties>
+    <property name="message" value=""/>
    </properties>
   </object>
  </objectgroup>

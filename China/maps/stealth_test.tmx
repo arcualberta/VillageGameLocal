@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="48">
- <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="361" columns="19">
-  <image source="../tiles/tileset.png" width="570" height="570"/>
+ <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
+  <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
    <terrain name="Water" tile="33"/>
    <terrain name="Path" tile="81"/>
@@ -1077,7 +1077,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="362" name="Villager Placeholder" tilewidth="30" tileheight="50" tilecount="12" columns="3">
+ <tileset firstgid="647" name="Villager Placeholder" tilewidth="30" tileheight="50" tilecount="12" columns="3">
   <image source="../sprites/villager1.png" width="90" height="200"/>
   <tile id="6">
    <properties>
@@ -1085,7 +1085,7 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="374" name="brush" tilewidth="30" tileheight="30" tilecount="1" columns="1">
+ <tileset firstgid="659" name="brush" tilewidth="30" tileheight="30" tilecount="1" columns="1">
   <image source="../tiles/Brush.png" width="30" height="30"/>
  </tileset>
  <layer name="lower" width="40" height="30">
@@ -1158,7 +1158,7 @@
  </layer>
  <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="381.333" y="79.8333" width="20" height="19"/>
-  <object id="2" name="Guard1" type="NPC" gid="362" x="824.993" y="554.333" width="30" height="50">
+  <object id="2" name="Guard1" type="NPC" gid="647" x="824.993" y="554.333" width="30" height="50">
    <properties>
     <property name="onnosee">this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;</property>
@@ -1175,7 +1175,7 @@ this.fov.color[3] = 0.8;
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
   </object>
-  <object id="42" name="Guard2" type="NPC" gid="362" x="1079.67" y="113.667" width="30" height="50">
+  <object id="42" name="Guard2" type="NPC" gid="647" x="1079.67" y="113.667" width="30" height="50">
    <properties>
     <property name="onnosee">this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;</property>
@@ -1198,7 +1198,7 @@ this.fov.color[3] = 0.8;
   <object id="44" name="Path1" type="Path" x="1053.33" y="78.6667">
    <polyline points="0,0 -298.667,24 -69.3333,121.333 62.6667,118.667 68,353.333 -106.667,352 -113.333,146.667 -278.667,148 -286.667,352 -405.333,357.333 -409.333,5.33333 -502.667,2.66667 -521.333,714.667 68,716 68,621.333 -472,626.667 -469.333,498.667 70.6667,557.333 66.6667,441.333 -473.333,446.667"/>
   </object>
-  <object id="45" name="Guard3" type="NPC" gid="362" x="121" y="164.333" width="30" height="50">
+  <object id="45" name="Guard3" type="NPC" gid="647" x="121" y="164.333" width="30" height="50">
    <properties>
     <property name="onidle">this.directionTime += time;
 var timeCheck = 3500;
@@ -1246,7 +1246,7 @@ var taskCompleted = function(){
   </object>
  </objectgroup>
  <objectgroup name="triggers">
-  <object id="46" name="CloudTrigger" type="Script" x="406.5" y="673.333" width="115" height="117.333">
+  <object id="46" name="CloudTrigger" type="ScriptTrigger" x="406.5" y="673.333" width="115" height="117.333">
    <properties>
     <property name="oninteract">var _this = this;
 if(this.triggerable){
@@ -1258,7 +1258,7 @@ this.triggerable = true;
 </property>
    </properties>
   </object>
-  <object id="47" name="CloudTrigger" type="Script" x="538" y="747.333" width="35" height="34.333">
+  <object id="47" name="CloudTrigger" type="ScriptTrigger" x="538" y="747.333" width="35" height="34.333">
    <properties>
     <property name="oninteract">var _this = this;
 if(this.triggerable){

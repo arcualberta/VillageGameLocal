@@ -210,7 +210,13 @@ Object.defineProperty(PlayerStart, 'isVillageObject', {
 
 var ScriptTrigger = ArcBaseObject();
 ScriptTrigger.prototype = Object.create(ArcTrigger.prototype);
-ScriptTrigger.prototype.init = function(name, type, position, size, rotation, properties, modulePath) {
+Object.defineProperty(ScriptTrigger, 'isVillageTrigger', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
+ScriptTrigger.prototype.init = function(name, type, position, size, rotation, properties) {
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
     this.clickEnabled = false;
     this.interactEnabled = false;
@@ -224,7 +230,7 @@ ScriptTrigger.prototype.init = function(name, type, position, size, rotation, pr
     }
 
     if(this.onstart){
-        this.onstart(0, null, null, null, modulePath);
+        this.onstart(0, null, null, null, properties["modulePath"]);
     }
 };
 ScriptTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
@@ -240,11 +246,17 @@ ScriptTrigger.prototype.click = function (x, y, player, world){
 
 var ChangeMapTrigger = ArcBaseObject();
 ChangeMapTrigger.prototype = Object.create(ArcTrigger.prototype);
-ChangeMapTrigger.prototype.init = function (name, type, position, size, rotation, module, mapName, start) {
+Object.defineProperty(ChangeMapTrigger, 'isVillageTrigger', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
+ChangeMapTrigger.prototype.init = function (name, type, position, size, rotation, properties) {
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
-    this.module = module;
-    this.mapName = mapName;
-    this.start = start;
+    this.module = properties["module"];
+    this.mapName = properties["map"];
+    this.start = properties["start"];
 };
 ChangeMapTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
     this.module.load(this.mapName, this.start);
@@ -252,10 +264,16 @@ ChangeMapTrigger.prototype.interact = function (left, top, right, bottom, player
 
 var ClickReadTrigger = ArcBaseObject();
 ClickReadTrigger.prototype = Object.create(ArcTrigger.prototype);
-ClickReadTrigger.prototype.init = function (name, type, position, size, rotation, message, connectedObject) {
+Object.defineProperty(ClickReadTrigger, 'isVillageTrigger', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
+ClickReadTrigger.prototype.init = function (name, type, position, size, rotation, properties) {
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
-    this.message = message;
-    this.connectedObject = connectedObject;
+    this.message = properties["message"];
+    this.connectedObject = properties["object"];
     this.activated = false;
     this.clickEnabled = true;
 };
@@ -286,10 +304,16 @@ ClickReadTrigger.prototype.interact = function (left, top, right, bottom, player
 
 var ClickTaskTrigger = ArcBaseObject();
 ClickTaskTrigger.prototype = Object.create(ArcTrigger.prototype);
-ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation, title, task){
+Object.defineProperty(ClickTaskTrigger, 'isVillageTrigger', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
+ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation, properties){
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
-    this.task = task;
-    this.title = title;
+    this.task = properties["task"];
+    this.title = properties["title"];
     this.activated = false;
     this.clickEnabled = true;
 }
@@ -322,10 +346,16 @@ ClickTaskTrigger.prototype.interact = function (left, top, right, bottom, player
 */
 var ArcBackgroundMusicTrigger = ArcBaseObject();
 ArcBackgroundMusicTrigger.prototype = Object.create(ArcTrigger.prototype);
-ArcBackgroundMusicTrigger.prototype.init = function(name, type, position, size, rotation, url, audioContext){
+Object.defineProperty(ArcBackgroundMusicTrigger, 'isVillageTrigger', {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: true
+});
+ArcBackgroundMusicTrigger.prototype.init = function(name, type, position, size, rotation, properties){
     ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
-    this.audio = audioContext;
-    this.sound = new ArcSound(name, true, url);
+    this.audio = properties["gameContext"].audio;
+    this.sound = new ArcSound(name, true, properties["modulePath"] + "/" + properties["file"]);
     this.isPlaying = false;
     this.fade = 100;
 
@@ -393,7 +423,7 @@ var VillageMap = ArcBaseObject();
     };
     VillageMap.prototype.addTrigger = function ($trigger, scale, triggerTree, modulePath, gameContext) {
         var triggerName = $trigger.attr("name");
-        var triggerType = $trigger.attr("type").toLowerCase();
+        var triggerType = $trigger.attr("type");
         var triggerX = Number($trigger.attr("x")) * scale; // Double the size for now since we double the map size
         var triggerY = Number($trigger.attr("y")) * scale;
         var triggerWidth = Number($trigger.attr("width")) * scale;
@@ -403,11 +433,26 @@ var VillageMap = ArcBaseObject();
         var trigger = null;
 
         // Load the properties
+        triggerProperties["modulePath"] = modulePath;
         $trigger.find("properties > property").each(function () {
             triggerProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
         });
+        triggerProperties["gameContext"] = gameContext;
+        triggerProperties["module"] = this.parent;
 
-        if (triggerType === "changemap") {
+        var triggerConstructor = window[triggerType];
+
+        if(triggerConstructor && triggerConstructor.isVillageTrigger){
+            trigger = new triggerConstructor(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties);
+
+            if(triggerProperties['follow']){
+                trigger.followObject = triggerProperties['follow'];
+            }
+
+            triggerTree.insert(trigger);
+        }
+
+        /*if (triggerType === "changemap") {
             trigger = new ChangeMapTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, this.parent, triggerProperties["map"], triggerProperties["start"]);
         } else if (triggerType === "clickread") {
             trigger = new ClickReadTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties["message"], triggerProperties["object"]);
@@ -419,13 +464,7 @@ var VillageMap = ArcBaseObject();
             trigger = new ScriptTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation, triggerProperties, modulePath);
         }else {
             trigger = new ArcTrigger(triggerName, triggerType, [triggerX, triggerY], [triggerWidth, triggerHeight], triggerRotation);
-        }
-        
-        if(triggerProperties['follow']){
-            trigger.followObject = triggerProperties['follow'];
-        }
-
-        triggerTree.insert(trigger);
+        }*/
     };
     VillageMap.prototype.getObject = function(name, traverseNeighbors = false){
         var result = this.objects.findChild(name);

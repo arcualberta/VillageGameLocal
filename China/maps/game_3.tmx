@@ -2108,12 +2108,12 @@ if(performance &amp;&amp; performance.now){
   <object id="42" name="FromNorth1" type="PlayerStart" x="622.333" y="50.6667" width="14" height="16"/>
  </objectgroup>
  <objectgroup name="triggers">
-  <object id="13" name="marketSwitch" type="backgroundMusic" x="-1422.42" y="66" width="2087.39" height="1266">
+  <object id="13" name="marketSwitch" type="ArcBackgroundMusicTrigger" x="-1422.42" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
    </properties>
   </object>
-  <object id="31" name="CloudTrigger" type="Script" x="700" y="1278" width="451" height="184">
+  <object id="31" name="CloudTrigger" type="ScriptTrigger" x="700" y="1278" width="451" height="184">
    <properties>
     <property name="oninteract">// TODO: Stop Character
 worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
@@ -2133,13 +2133,13 @@ this.sound = new ArcSound(&quot;CloudMusic&quot;, true, modulePath + &quot;/soun
 </property>
    </properties>
   </object>
-  <object id="41" name="EastChange1" type="ChangeMap" x="1.08333" y="873.208" width="23.1667" height="75.5833">
+  <object id="41" name="EastChange1" type="ChangeMapTrigger" x="1.08333" y="873.208" width="23.1667" height="75.5833">
    <properties>
     <property name="Map" value="game_2"/>
     <property name="Start" value="FromWest1"/>
    </properties>
   </object>
-  <object id="44" name="NorthChange1" type="ChangeMap" x="604.417" y="1.54168" width="48.5" height="13.5833">
+  <object id="44" name="NorthChange1" type="ChangeMapTrigger" x="604.417" y="1.54168" width="48.5" height="13.5833">
    <properties>
     <property name="Map" value="game_4"/>
     <property name="Start" value="FromSouth1"/>

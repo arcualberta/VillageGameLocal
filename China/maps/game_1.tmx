@@ -1280,17 +1280,21 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     <property name="onidle">if(player){
 	if(!(player.stats.act)){
 		player.stats.act = 1;
-	}else if(player.stats.act == 1 &amp;&amp; player.stats.kindness == 6){
+	}else if(player.stats.act == 1 &amp;&amp; player.stats.kindness &gt;= 6){
 		player.stats.act = 2;
 		var parent = this.parameters.generated_map.parent;
 		
 		var afterFadeOut = function(camera){
+			worldAdapter.showMessage('TRANSITION_1', false, player, this, afterDialog);
 			parent.load(&quot;game_2&quot;, &quot;FromNorth1&quot;);
-			game.display.camera.addAction(new ArcCameraFadeIn(3000, afterFadeIn, 0.0, 0.0, 0.0));
 		};
 		
 		var afterFadeIn = function(camera){
 			
+		};
+
+		var afterDialog = function(){
+			game.display.camera.addAction(new ArcCameraFadeIn(3000, afterFadeIn, 0.0, 0.0, 0.0));
 		};
 		
 		game.display.camera.addAction(new ArcCameraFadeOut(3000, afterFadeOut, 0.0, 0.0, 0.0));
@@ -1300,24 +1304,24 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
   </object>
  </objectgroup>
  <objectgroup name="triggers" visible="0">
-  <object id="27" name="MainMusic" type="BackgroundMusic" x="131.758" y="161.515" width="1541.33" height="801.333">
+  <object id="27" name="MainMusic" type="ArcBackgroundMusicTrigger" x="131.758" y="161.515" width="1541.33" height="801.333">
    <properties>
     <property name="file" value="sound/3VariationsOfPlumBlossoms.mp3"/>
    </properties>
   </object>
-  <object id="40" name="SouthChange1" type="ChangeMap" x="479.75" y="993.875" width="56.5" height="24.25">
+  <object id="40" name="SouthChange1" type="ChangeMapTrigger" x="479.75" y="993.875" width="56.5" height="24.25">
    <properties>
     <property name="Map" value="game_2"/>
     <property name="Start" value="FromNorth1"/>
    </properties>
   </object>
-  <object id="41" name="SouthChange2" type="ChangeMap" x="1170.75" y="992.875" width="56.5" height="24.25">
+  <object id="41" name="SouthChange2" type="ChangeMapTrigger" x="1170.75" y="992.875" width="56.5" height="24.25">
    <properties>
     <property name="Map" value="game_2"/>
     <property name="Start" value="FromNorth2"/>
    </properties>
   </object>
-  <object id="45" name="IntroductionTrigger" type="Script" x="325" y="198" width="47" height="44">
+  <object id="45" name="IntroductionTrigger" type="ScriptTrigger" x="325" y="198" width="47" height="44">
    <properties>
     <property name="oninteract">	var _this = this;
 	worldAdapter.showMessage('INTRODUCTION', false, player, this, function(){
