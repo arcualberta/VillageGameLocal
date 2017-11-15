@@ -1,36 +1,40 @@
 // Actions for the Camera
 var ArcCameraAction = ArcBaseObject();
-ArcCameraAction.prototype.init = function (time, onComplete) {
-    this.timeLimit = time;
-    this.timeComplete = 0;
-    this.complete = false;
-    this.onComplete = onComplete;
-};
-ArcCameraAction.prototype.update = function (camera, timeSinceLast) {
-    this.timeComplete += timeSinceLast;
+{
+    ArcCameraAction.prototype.init = function (time, onComplete) {
+        this.timeLimit = time;
+        this.timeComplete = 0;
+        this.complete = false;
+        this.onComplete = onComplete;
+    };
+    ArcCameraAction.prototype.update = function (camera, timeSinceLast) {
+        this.timeComplete += timeSinceLast;
 
-    if (this.timeComplete >= this.timeLimit) {
-        this.complete = true;
-        if (this.onComplete) {
-            this.onComplete(camera);
+        if (this.timeComplete >= this.timeLimit) {
+            this.complete = true;
+            if (this.onComplete) {
+                this.onComplete(camera);
+            }
         }
-    }
-};
+    };
+}
 
 var ArcCameraPanAction = ArcBaseObject();
-ArcCameraPanAction.prototype = Object.create(ArcCameraAction.prototype);
-ArcCameraPanAction.prototype.init = function (time, onComplete, xStart, yStart, xEnd, yEnd) {
-    ArcCameraAction.prototype.init.call(this, time, onComplete);
-    this.velocity = new Float32Array([(xEnd - xStart) / time, (yEnd - yStart) / time]);
-    this.location = new Float32Array([xStart, yStart]);
-};
-ArcCameraPanAction.prototype.update = function (camera, timeSinceLast) {
-    ArcCameraAction.prototype.update.call(this, camera, timeSinceLast);
-    this.location[0] += timeSinceLast * this.velocity[0];
-    this.location[1] += timeSinceLast * this.velocity[1];
+{
+    ArcCameraPanAction.prototype = Object.create(ArcCameraAction.prototype);
+    ArcCameraPanAction.prototype.init = function (time, onComplete, xStart, yStart, xEnd, yEnd) {
+        ArcCameraAction.prototype.init.call(this, time, onComplete);
+        this.velocity = new Float32Array([(xEnd - xStart) / time, (yEnd - yStart) / time]);
+        this.location = new Float32Array([xStart, yStart]);
+    };
+    ArcCameraPanAction.prototype.update = function (camera, timeSinceLast) {
+        ArcCameraAction.prototype.update.call(this, camera, timeSinceLast);
+        this.location[0] += timeSinceLast * this.velocity[0];
+        this.location[1] += timeSinceLast * this.velocity[1];
 
-    camera.setOffset(this.location[0], this.location[1]);
-};
+        camera.setOffset(this.location[0], this.location[1]);
+    };
+}
 
 /**
 * @class
@@ -342,7 +346,6 @@ var ArcCanvasAdapter = ArcBaseObject();
     ArcCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
     ArcCanvasAdapter.prototype.init = function (canvas) {
         ArcGraphicsAdapter.prototype.init.call(this);
-        var swapContext = canvas.getContext("2d");
 
         var backgroundCanvas = document.createElement('canvas');
         backgroundCanvas.width = canvas.width;
@@ -352,45 +355,73 @@ var ArcCanvasAdapter = ArcBaseObject();
         // Context settings
         context.imageSmoothingEnabled = false;
 
-        // Private functions and functions requireing those private functions
-        this.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
-            if (fontInfo == undefined) {
-                fontInfo = this.defaultFontInfo;
-            }
-
-            context.font = fontInfo.font;
-            context.textAlign = fontInfo.textAlign;
-
-            if (fillRect) {
-                context.fillStyle = fillColor;
-                context.fillRect(fillRect[0], fillRect[1], fillRect[2], fillRect[3]);
-
-                context.fillStyle = fontInfo.fillStyle;
-                context.fillText(message, x + fillRect[0] + (fillRect[2] >> 1), y + fillRect[1] + (fillRect[3] >> 1));
-            } else {
-                context.fillStyle = fontInfo.fillStyle;
-
-                context.fillText(message, x, y);
-            }
-        };
-
-        this.drawToDisplay = function (clearSwap) {
-            if(clearSwap){
-                swapContext.clearRect(0, 0, canvas.width, canvas.height);
-            }
-
-            swapContext.drawImage(backgroundCanvas, 0, 0);
-
-            /*if(fps){
-             // Draw the frames per second
-             drawMessage("FPS: " + fps, 10, 10);
-             }*/
-        };
-
         this.size[0] = canvas.width;
         this.size[1] = canvas.height;
         this.context = context;
         this.canvas = canvas;
+    };
+    ArcCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
+        var context = this.context;
+
+        if (fontInfo == undefined) {
+            fontInfo = this.defaultFontInfo;
+        }
+
+        context.font = fontInfo.font;
+        context.textAlign = fontInfo.textAlign;
+
+        if (fillRect) {
+            context.fillStyle = fillColor;
+            context.fillRect(fillRect[0], fillRect[1], fillRect[2], fillRect[3]);
+
+            context.fillStyle = fontInfo.fillStyle;
+            context.fillText(message, x + fillRect[0] + (fillRect[2] >> 1), y + fillRect[1] + (fillRect[3] >> 1));
+        } else {
+            context.fillStyle = fontInfo.fillStyle;
+
+            context.fillText(message, x, y);
+        }
+    };
+    ArcCanvasAdapter.prototype.drawToDisplay = function(clearSwap){
+        var canvas = this.canvas;
+        var swapContext = canvas.getContext("2d");
+        var backgroundCanvas = this.context.canvas;
+
+        if(clearSwap){
+            swapContext.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        if(this.camera.scale != 1.0){
+            var scale = this.camera.scale;
+            var cx = canvas.width * scale;
+            var cy = canvas.height * scale;
+
+
+            swapContext.drawImage(backgroundCanvas, 0, 0, canvas.width, canvas.height, 0, 0, cx, cy);
+            swapContext.drawImage(canvas, 0, 0, cx, cy, 0, 0, canvas.width, canvas.height);
+        }else{
+            swapContext.drawImage(backgroundCanvas, 0, 0);
+        }
+
+        var fade = this.camera.fade;
+        if(fade[3] >= 0.0){
+            swapContext.fillStyle = "rgba(" + 
+                    Math.floor(fade[0] * 255) + "," + 
+                    Math.floor(fade[1] * 255) + "," + 
+                    Math.floor(fade[2] * 255) + "," + 
+                    fade[3] + ")";
+
+            swapContext.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        /*gl.uniform4fv(postProgram.uFadeColor, this.camera.fade);
+        gl.uniform1f(postProgram.uScale, this.camera.scale);*/
+
+
+
+        /*if(fps){
+         // Draw the frames per second
+         drawMessage("FPS: " + fps, 10, 10);
+         }*/
     };
     ArcCanvasAdapter.prototype.getPixelData = function (x, y, width, height) {
         return this.context.getImageData(x, y, width, height);
@@ -461,24 +492,26 @@ var ArcCanvasAdapter = ArcBaseObject();
     };
     ArcCanvasAdapter.prototype.drawPolygon = function(color, points, texture){
             var offset = this.camera.offset;
-            var context = this.textContext;
+            var context = this.context;
 
-            context.fillStyle = "rgba(" + 
-                Math.floor(color[0] * 255) + "," + 
-                Math.floor(color[1] * 255) + "," + 
-                Math.floor(color[2] * 255) + "," + 
-                color[3] + ")";
+            if(context){
+                context.fillStyle = "rgba(" + 
+                    Math.floor(color[0] * 255) + "," + 
+                    Math.floor(color[1] * 255) + "," + 
+                    Math.floor(color[2] * 255) + "," + 
+                    color[3] + ")";
 
-            context.beginPath();
-            context.moveTo(points[0] - offset[0], points[1] - offset[1]);
+                context.beginPath();
+                context.moveTo(points[0] - offset[0], points[1] - offset[1]);
 
-            for(var i = 4; i < points.length; i += 4){
-                context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
+                for(var i = 4; i < points.length; i += 4){
+                    context.lineTo(points[i] - offset[0], points[i + 1] - offset[1]);
+                }
+
+                context.closePath();
+
+                context.fill();
             }
-
-            context.closePath();
-
-            context.fill();
         };
 }
 
