@@ -143,9 +143,9 @@ var Character = ArcBaseObject();
         var player = evaluateViewAngle(-angle, angle, nx, ny, this.location[4], this.location[5], 0, this.fov.distance, village)
 
         if(player && this.onsee){
-            this.onsee(player, village);
+            this.onsee(-1, player, village);
         }else if(this.onnosee){
-            this.onnosee(player, village);
+            this.onnosee(-1, player, village);
         }
 
         /*var players = village.players;
@@ -395,6 +395,8 @@ NPC.prototype.init = function (name, type, location, size, roation, properties) 
     this.clickEnabled = true;
     this.interactEnabled = true;
     this.spriteSheet = properties.generated_map.getSpriteSheet(properties.spritesheet);
+
+    this.stats = {};
 
     for(var key in properties){
         var test = key.substring(0, 2);

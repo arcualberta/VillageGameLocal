@@ -7,6 +7,8 @@ CharacterScripts.prototype.init = function(parent){
 	this.AttachFunction("WalkArea");
 	this.AttachFunction("InitializePath");
 	this.AttachFunction("UpdatePath");
+	this.AttachFunction("FollowPlayer");
+	this.AttachFunction("WalktToLocationAndTurn");
 };
 CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 	let waypoint = this.waypoint;
@@ -35,6 +37,21 @@ CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 				break;
 		}
 	}
+};
+CharacterScripts.prototype.WalktToLocationAndTurn = function(x, y, direction){
+	let waypoint = this.waypoint;
+
+	if(waypoint[0] == x && waypoint[1] == y){
+		if(this.direction != direction){
+			this.direction = direction;
+			this.updateAnimation();
+		}
+	}else{
+		waypoint[0] = x;
+		waypoint[1] = y;
+	}
+
+
 };
 CharacterScripts.prototype.WalkArea = function(x1, y1, x2, y2){
 	let waypoint = this.waypoint;
@@ -94,6 +111,10 @@ CharacterScripts.prototype.UpdatePath = function(village){
 			}
 		}
 	}
+}
+CharacterScripts.prototype.FollowPlayer = function(player){
+	this.waypoint[0] = player.location[0];
+	this.waypoint[1] = player.location[1];
 }
 
 var DialogScripts = new ArcBaseObject();

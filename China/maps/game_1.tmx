@@ -1286,7 +1286,9 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 		
 		var afterFadeOut = function(camera){
 			worldAdapter.showMessage('TRANSITION_1', false, player, this, afterDialog);
-			parent.load(&quot;game_2&quot;, &quot;FromNorth1&quot;);
+			parent.load(&quot;game_2_2&quot;, &quot;MainStart&quot;);
+			world.triggers.getChild('SouthChange1').mapName = &quot;game_2_2&quot;;
+			world.triggers.getChild('SouthChange2').mapName = &quot;game_2_2&quot;;
 		};
 		
 		var afterFadeIn = function(camera){
