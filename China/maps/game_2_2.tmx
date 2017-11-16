@@ -2248,25 +2248,29 @@
   <object id="83" name="MainStart" type="PlayerStart" x="802.333" y="322" width="14" height="16"/>
   <object id="84" name="Guard1" type="NPC" gid="647" x="495.667" y="30.3333" width="30" height="50">
    <properties>
+    <property name="oncooling">this.CoolDown(time);
+this.WalkRandom(time, 100, 0.3);
+
+if(this.stats.coolDown &lt;= 0){
+this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
+this.state = &quot;onwait&quot;;
+}</property>
     <property name="onnosee">this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;
 
 // Return to position
-//TODO: cool down search.
-this.waypoint[0] = this.stats.initialLocation[0];
-this.waypoint[1] = this.stats.initialLocation[1];</property>
+if(this.state == &quot;onfollowing&quot;){
+this.state == &quot;oncooling&quot;;
+this.stats.coolDown = 3000;
+}
+</property>
     <property name="onsee">this.fov.color[0] = 1.0;
 this.fov.color[1] = 0.0;
 
-this.FollowPlayer(player);</property>
-    <property name="onstart">this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-
-this.stats.initialLocation = new Float32Array([this.location[0], this.location[1]]);</property>
+this.FollowPlayer(player);
+this.state = &quot;onfollowing&quot;</property>
+    <property name="onstart" value="this.SetupFOVCharacter();"/>
+    <property name="onwait" value="this.SetDirection(0);"/>
     <property name="spritesheet" value="npc_tattered"/>
    </properties>
   </object>
