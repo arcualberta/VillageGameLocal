@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="85">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="86">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2249,19 +2249,23 @@
   <object id="84" name="Guard1" type="NPC" gid="647" x="495.667" y="30.3333" width="30" height="50">
    <properties>
     <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.3);
+this.WalkRandom(time, 100, 0.01);
 
 if(this.stats.coolDown &lt;= 0){
 this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
 this.state = &quot;onwait&quot;;
+}</property>
+    <property name="oninteract">if(!this.stats.caught){
+this.stats.caught = true;
+world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
 }</property>
     <property name="onnosee">this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;
 
 // Return to position
 if(this.state == &quot;onfollowing&quot;){
-this.state == &quot;oncooling&quot;;
-this.stats.coolDown = 3000;
+this.state = &quot;oncooling&quot;;
+this.stats.coolDown = 10000;
 }
 </property>
     <property name="onsee">this.fov.color[0] = 1.0;
@@ -2269,9 +2273,23 @@ this.fov.color[1] = 0.0;
 
 this.FollowPlayer(player);
 this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart" value="this.SetupFOVCharacter();"/>
+    <property name="onstart">this.SetupFOVCharacter();
+this.stats.caught = false;</property>
     <property name="onwait" value="this.SetDirection(0);"/>
     <property name="spritesheet" value="npc_tattered"/>
+   </properties>
+  </object>
+  <object id="85" name="CatchPlayerEvent" type="VillageObject" gid="118" x="869" y="183.667" width="30" height="30" visible="0">
+   <properties>
+    <property name="onstart">this.playerCaught = function(npc, player, worldAdapter){
+	var afterDialog = function(){
+		game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
+	};
+	var afterBump = function(camera){
+		 npc.TriggerDialog('GUARD_2', worldAdapter, player,  afterDialog);		
+	};
+	game.display.camera.addAction(new ArcCameraMosaic(1000, afterBump, 1.0, 0.001));
+}</property>
    </properties>
   </object>
  </objectgroup>

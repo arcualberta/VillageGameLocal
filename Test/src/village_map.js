@@ -467,7 +467,7 @@ var VillageMap = ArcBaseObject();
         }*/
     };
     VillageMap.prototype.getObject = function(name, traverseNeighbors = false){
-        var result = this.objects.findChild(name);
+        var result = this.objects.getChild(name);
 
         return result;
     }

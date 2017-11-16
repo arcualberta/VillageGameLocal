@@ -132,10 +132,10 @@ var CharacterScripts = new ArcBaseObject();
 		this.state = state;
 	};
 	CharacterScripts.prototype.CoolDown = function(timeSinceLast){
-		this.coolDown -= timeSinceLast;
+		this.stats.coolDown -= timeSinceLast;
 
-		if(coolDown < 0){
-			coolDown == 0;
+		if(this.stats.coolDown < 0){
+			this.stats.coolDown == 0;
 		}
 	};
 }
