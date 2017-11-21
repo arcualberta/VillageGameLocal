@@ -34,6 +34,11 @@
                 width: 500px;
                 image-rendering: pixelated;
             }
+
+            #testText {
+                display: block;
+                color: white;
+            }
         </style>
     </head>
     <body>
@@ -55,6 +60,10 @@
                 game = new VillageGame(canvas, "./src", "./Resources");
                 game.characterScreens = testSpriteList;
                 game.start();
+
+                game.beginLoopListeners.push(function(caller, delta){
+                    $("#testText").text(caller.frameCap + " - " + delta);
+                });
             });
         </script>
     </body>

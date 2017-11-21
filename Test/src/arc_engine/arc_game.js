@@ -257,6 +257,7 @@ var ArcGame = ArcBaseObject();
         var __this = this;
         var delta = 0;
         var lastFrame = 0;
+        var loopCount = 0;
 
         // Main Game Loop
         /*var loopGame = function (timestamp) {
@@ -273,13 +274,13 @@ var ArcGame = ArcBaseObject();
         };*/
 
         var loopGame = function(timestamp){
-            var loopCount = 0;
-            var redraw = false;
-
+            arcRequestAnimFrame(loopGame);
+            
             delta += timestamp - lastFrame;
-            lastFrame = timestamp;
 
             if(delta >= __this.frameCap){
+                loopCount = 0;
+
                 __this.beginLoop(delta);
 
                 while(delta >= __this.frameCap){
@@ -293,9 +294,10 @@ var ArcGame = ArcBaseObject();
 
                 __this.draw();
                 __this.endLoop();
+
             }
 
-            arcRequestAnimFrame(loopGame);
+            lastFrame = timestamp;
         }
 
         loopGame(0);
