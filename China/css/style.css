@@ -1,5 +1,18 @@
 .game_dialogWindow{
     background-image: url('../images/dialog_background.png');
+    background-color: rgba(30, 30, 180, 0);
+}
+
+.game_dialogWindow .dialog_text {
+    bottom: 18px;
+    left: 33px;
+    right: 33px;
+}
+
+.game_dialogWindow .game_dialogTitleBar
+{
+    padding-left: 25px;
+    padding-right: 25px;
 }
 
 .login_menu {
