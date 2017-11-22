@@ -174,7 +174,7 @@
 						break;
 
 					case CONTROL_MOUSE1_UP:
-						if(&& score >= minScore && !(action.data.x < model.buttonAccept[0] || action.data.x > model.buttonAccept[2]
+						if(score >= minScore && !(action.data.x < model.buttonAccept[0] || action.data.x > model.buttonAccept[2]
 							|| action.data.y < model.buttonAccept[1] || action.data.y > model.buttonAccept[3])){
 							this.close();
 						}else if(!(action.data.x < model.buttonClear[0] || action.data.x > model.buttonClear[2]
