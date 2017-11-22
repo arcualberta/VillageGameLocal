@@ -2276,16 +2276,19 @@ this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;</property>
     <property name="onwait" value="this.SetDirection(0);"/>
-    <property name="spritesheet" value="npc_tattered"/>
+    <property name="spritesheet" value="guard"/>
    </properties>
   </object>
   <object id="85" name="CatchPlayerEvent" type="VillageObject" gid="118" x="869" y="183.667" width="30" height="30" visible="0">
    <properties>
     <property name="onstart">this.playerCaught = function(npc, player, worldAdapter){
+	var parent = this.parameters.generated_map.parent;
+
 	var afterDialog = function(){
 		game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
 	};
 	var afterBump = function(camera){
+		parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
 		 npc.TriggerDialog('GUARD_2', worldAdapter, player,  afterDialog);		
 	};
 	game.display.camera.addAction(new ArcCameraMosaic(1000, afterBump, 1.0, 0.001));
