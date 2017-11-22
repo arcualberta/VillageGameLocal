@@ -498,6 +498,14 @@
 		"market_npc_2": {
 			"image": "market_npc_2.png",
 			"animation": "animation_30x50"
-		}
+		},
+        "guard": {
+            "image": "guard.png",
+            "animation": "animation_30x50"
+        },
+        "imperial_guard": {
+            "image": "imperial%20guard.png",
+            "animation": "animation_30x50"
+        }
     }
 }
