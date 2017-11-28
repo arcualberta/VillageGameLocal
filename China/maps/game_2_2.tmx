@@ -2281,7 +2281,15 @@ this.stats.caught = false;</property>
   </object>
   <object id="85" name="CatchPlayerEvent" type="VillageObject" gid="118" x="869" y="183.667" width="30" height="30" visible="0">
    <properties>
-    <property name="onstart">this.playerCaught = function(npc, player, worldAdapter){
+    <property name="onstart">var audio = this.parameters[&quot;gameContext&quot;].audio;
+
+var sound = new ArcSound(&quot;HitSound&quot;, true, this.parameters[&quot;modulePath&quot;] + &quot;/sound/effects/Metallic_Clank.mp3&quot;);
+sound.loop = false;
+audio.loadSound(sound, false, function(error){
+        console.log(&quot;Error loading sound: &quot; + url);
+});
+
+this.playerCaught = function(npc, player, worldAdapter){
 	var parent = this.parameters.generated_map.parent;
 
 	var afterDialog = function(){
@@ -2291,6 +2299,9 @@ this.stats.caught = false;</property>
 		parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
 		 npc.TriggerDialog('GUARD_2', worldAdapter, player,  afterDialog);		
 	};
+
+	worldAdapter.module.stopBackgroundMusic(0);
+	audio.playSound(sound, 0);
 	game.display.camera.addAction(new ArcCameraMosaic(1000, afterBump, 1.0, 0.001));
 }</property>
    </properties>

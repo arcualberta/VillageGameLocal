@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="30" height="23" tilewidth="20" tileheight="20" nextobjectid="5">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="30" height="23" tilewidth="20" tileheight="20" nextobjectid="6">
  <tileset firstgid="1" source="jail_cell.tsx"/>
  <tileset firstgid="253" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
@@ -2122,6 +2122,7 @@ this.clickEnabled = false;
 var L = this.location;
 
 var taskCompleted = function(){
+	_this.audio.playSound(_this.sound, 0);
 	world.trigger(&quot;open&quot;, L[0], L[1], L[2], L[3]);
 	world.triggers.removeChild(_this.name);
 }
@@ -2131,6 +2132,16 @@ var t = worldAdapter.loadTask(task, worldAdapter.getTaskScript(task), taskComple
 t.setBackground( worldAdapter.module.path + &quot;/tasks/jail_key.png&quot;);
 t.setTitle(&quot;Jail Key&quot;);
 </property>
+    <property name="onstart">var audio = worldAdapter.gameContext.audio;
+
+var sound = new ArcSound(&quot;BreakSound&quot;, true, modulePath + &quot;/sound/effects/Debris_Hits.mp3&quot;);
+sound.loop = false;
+audio.loadSound(sound, false, function(error){
+        console.log(&quot;Error loading sound: &quot; + url);
+});
+
+this.sound = sound;
+this.audio = audio;</property>
    </properties>
   </object>
   <object id="4" name="NorthChange1" type="ChangeMapTrigger" x="341.75" y="316.875" width="56.5" height="24.25">

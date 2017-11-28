@@ -295,6 +295,10 @@ var ClickInteractTrigger = ArcBaseObject();
                 this[key] = Function("time", "player", "world", "worldAdapter", "modulePath", properties[key]);
             }
         }
+
+        if(this.onstart){
+            this.onstart(0, null, null, properties["module"], properties["modulePath"]);
+        }
     };
     ClickInteractTrigger.prototype.click = function (x, y, player, world) {
         player.showWaypoint = false;
@@ -763,7 +767,9 @@ var VillageMap = ArcBaseObject();
                             var objectProperties = {
                                 generated_scale: scale,
                                 generated_map: _this,
-                                generated_tileId: objectTileId
+                                generated_tileId: objectTileId,
+                                gameContext: gameContext,
+                                modulePath: modulePath
                             };
                             $object.find("properties > property").each(function () {
                                 objectProperties[$(this).attr("name").toLowerCase()] = $(this).attr("value") ? $(this).attr("value") : $(this).text();
@@ -995,6 +1001,11 @@ var VillageModule = ArcBaseObject();
 
         this.backgroundMusic = sound;
         this.gameContext.audio.playSound(this.backgroundMusic, fade);
+    };
+    VillageModule.prototype.stopBackgroundMusic = function(fade){
+        if(this.backgroundMusic){
+            this.gameContext.audio.stopSound(this.backgroundMusic, fade);
+        }
     };
     VillageModule.prototype.loadSpritesheets = function (path) {
         var _this = this;
