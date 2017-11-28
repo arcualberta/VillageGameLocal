@@ -1315,12 +1315,28 @@
   <object id="40" name="FromSouth1" type="PlayerStart" x="621" y="833" width="14" height="16"/>
   <object id="42" name="Guard1" type="NPC" gid="647" x="774.333" y="275" width="30" height="50">
    <properties>
+    <property name="oncooling">this.CoolDown(time);
+this.WalkRandom(time, 100, 0.03);
+
+if(this.stats.coolDown &lt;= 0){
+this.state = &quot;onfollowpath&quot;;
+}</property>
     <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;</property>
+this.fov.color[1] = 1.0;
+
+// Return to position
+if(this.state == &quot;onfollowing&quot;){
+this.state = &quot;oncooling&quot;;
+this.stats.coolDown = 10000;
+}
+</property>
     <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;</property>
+this.fov.color[1] = 0.0;
+
+this.FollowPlayer(player);
+this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.InitializePath(&quot;Path1&quot;);
-this.fov.enabled = false;
+this.fov.enabled = true;
 
 this.fov.color[0] = 0.0;
 this.fov.color[1] = 1.0;
