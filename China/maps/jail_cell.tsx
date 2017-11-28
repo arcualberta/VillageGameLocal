@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset name="Jail" tilewidth="20" tileheight="20" tilecount="216" columns="18">
- <image source="../tiles/jail_cell.png" width="360" height="240"/>
+<tileset name="Jail" tilewidth="20" tileheight="20" tilecount="252" columns="18">
+ <image source="../tiles/jail_cell.png" width="360" height="280"/>
  <tile id="0">
   <properties>
    <property name="walkable" type="bool" value="false"/>
@@ -378,16 +378,19 @@
  </tile>
  <tile id="173">
   <properties>
+   <property name="onopen" value="caller.setTile(227);"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="174">
   <properties>
+   <property name="onopen" value="caller.setTile(228);"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="175">
   <properties>
+   <property name="onopen" value="caller.setTile(229);"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
@@ -468,16 +471,19 @@
  </tile>
  <tile id="191">
   <properties>
+   <property name="onopen" value="caller.setTile(245);"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="192">
   <properties>
+   <property name="onopen" value="caller.setTile(246);"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="193">
   <properties>
+   <property name="onopen" value="caller.setTile(247);"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
@@ -499,6 +505,36 @@
  <tile id="197">
   <properties>
    <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="227">
+  <properties>
+   <property name="walkable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="228">
+  <properties>
+   <property name="walkable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="229">
+  <properties>
+   <property name="walkable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="245">
+  <properties>
+   <property name="walkable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="246">
+  <properties>
+   <property name="walkable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="247">
+  <properties>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
 </tileset>

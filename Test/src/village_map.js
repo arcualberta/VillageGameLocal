@@ -257,88 +257,128 @@ ChangeMapTrigger.prototype.init = function (name, type, position, size, rotation
     this.module = properties["module"];
     this.mapName = properties["map"];
     this.start = properties["start"];
+
+    for(var key in properties){
+        var test = key.substring(0, 2);
+        var state = 0;
+        if(test === "on"){
+            this[key] = Function("time", "player", "world", "worldAdapter", "modulePath", properties[key]);
+        }
+    }
+
+    if(this.onstart){
+        this.onstart(0, null, null, null, properties["modulePath"]);
+    }
 };
 ChangeMapTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
     this.module.load(this.mapName, this.start);
 };
 
-var ClickReadTrigger = ArcBaseObject();
-ClickReadTrigger.prototype = Object.create(ArcTrigger.prototype);
-Object.defineProperty(ClickReadTrigger, 'isVillageTrigger', {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: true
-});
-ClickReadTrigger.prototype.init = function (name, type, position, size, rotation, properties) {
-    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
-    this.message = properties["message"];
-    this.connectedObject = properties["object"];
-    this.activated = false;
-    this.clickEnabled = true;
-};
-ClickReadTrigger.prototype.click = function (x, y, player, world) {
-    player.showWaypoint = false;
-    player.waypointLoc[0] = this.centre[0];
-    player.waypointLoc[1] = this.centre[1];
+var ClickInteractTrigger = ArcBaseObject();
+{
+    ClickInteractTrigger.prototype = Object.create(ArcTrigger.prototype);
+    Object.defineProperty(ClickInteractTrigger, 'isVillageTrigger', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: true
+    });
+    ClickInteractTrigger.prototype.init = function(name, type, position, size, rotation, properties) {
+        ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
+        this.activated = false;
+        this.clickEnabled = true;
 
-    player.activeObject = this;
-};
-ClickReadTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
-    if(player.activeObject != this){
-        return;
+        for(var key in properties){
+            var test = key.substring(0, 2);
+            var state = 0;
+            if(test === "on"){
+                this[key] = Function("time", "player", "world", "worldAdapter", "modulePath", properties[key]);
+            }
+        }
     };
+    ClickInteractTrigger.prototype.click = function (x, y, player, world) {
+        player.showWaypoint = false;
+        player.waypointLoc[0] = this.centre[0];
+        player.waypointLoc[1] = this.centre[1];
 
-    var _this = this;
-    if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
-        this.activated = true;
+        player.activeObject = this;
+    };
+    ClickInteractTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
+        if(player.activeObject != this){
+            return;
+        };
 
+        var _this = this;
+        if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
+            this.activated = true;
+
+            this.doInteract(left, top, right, bottom, player, world, worldAdapter);
+        }
+    };
+    ClickInteractTrigger.prototype.interactionComplete = function(player, world, worldAdapter){
+        this.activated = false;
+        player.activeObject = null;
+
+        if(this.oninteractcomplete){
+            this.oninteractcomplete(0, player, world, worldAdapter);
+        }
+    };
+    ClickInteractTrigger.prototype.doInteract = function(left, top, right, bottom, player, world, worldAdapter){
+        if(this.oninteract){
+            this.oninteract(0, player, world, worldAdapter)
+        }
+
+        this.interactionComplete(player, world, worldAdapter);
+    };
+}
+
+var ClickReadTrigger = ArcBaseObject();
+{
+    ClickReadTrigger.prototype = Object.create(ClickInteractTrigger.prototype);
+    Object.defineProperty(ClickReadTrigger, 'isVillageTrigger', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: true
+    });
+    ClickReadTrigger.prototype.init = function (name, type, position, size, rotation, properties) {
+        ClickInteractTrigger.prototype.init.call(this, name, type, position, size, rotation, properties);
+        this.message = properties["message"];
+        this.connectedObject = properties["object"];
+    };
+    ClickReadTrigger.prototype.doInteract = function (left, top, right, bottom, player, world, worldAdapter) {
+        var _this = this;
         player.stop();
 
          worldAdapter.showMessage(this.message, false, player, this, function () {
-            _this.activated = false;
-            player.activeObject = null;
+            _this.interactionComplete(player, world, worldAdapter);
         });
-    }
-};
+    };
+}
 
 var ClickTaskTrigger = ArcBaseObject();
-ClickTaskTrigger.prototype = Object.create(ArcTrigger.prototype);
-Object.defineProperty(ClickTaskTrigger, 'isVillageTrigger', {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: true
-});
-ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation, properties){
-    ArcTrigger.prototype.init.call(this, name, type, position, size, rotation);
-    this.task = properties["task"];
-    this.title = properties["title"];
-    this.activated = false;
-    this.clickEnabled = true;
-}
-ClickTaskTrigger.prototype.click = function (x, y, player, world) {
-    player.showWaypoint = false;
-    player.waypointLoc[0] = this.centre[0];
-    player.waypointLoc[1] = this.centre[1];
-
-    player.activeObject = this;
-};
-ClickTaskTrigger.prototype.interact = function (left, top, right, bottom, player, world, worldAdapter) {
-    if(player.activeObject != this){
-        return;
-    };
-
-    var _this = this;
-    if (!this.activated && player.waypointLoc[0] === this.centre[0] && player.waypointLoc[1] === this.centre[1]) {
-        this.activated = true;
+{
+    ClickTaskTrigger.prototype = Object.create(ClickInteractTrigger.prototype);
+    Object.defineProperty(ClickTaskTrigger, 'isVillageTrigger', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: true
+    });
+    ClickTaskTrigger.prototype.init = function(name, type, position, size, rotation, properties){
+        ClickInteractTrigger.prototype.init.call(this, name, type, position, size, rotation, properties);
+        this.task = properties["task"];
+        this.title = properties["title"];
+    }
+    ClickTaskTrigger.prototype.doInteract = function (left, top, right, bottom, player, world, worldAdapter) {
+        var _this = this;
+        player.stop();
 
         worldAdapter.loadTask(this.task, worldAdapter.getTaskScript(this.task), function (model) {
-            _this.activated = false;
-            player.activeObject = null;
+            _this.interactionComplete(player, world, worldAdapter);
         });
-    }
-};
+    };
+}
 
 /**
 * Updates the sound based on the distance.

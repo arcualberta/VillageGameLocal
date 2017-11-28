@@ -190,7 +190,8 @@ var Character = ArcBaseObject();
     Character.directions = ["down", "left", "up", "right"];
     Character.actions = ["stand", "walk"];
     Character.prototype.stop = function(){
-
+        this.waypoint[0] = this.location[4];
+        this.waypoint[1] = this.location[5];
     };
     Character.startBuffer = new Float32Array(2);
     Character.endBuffer = new Float32Array(2);

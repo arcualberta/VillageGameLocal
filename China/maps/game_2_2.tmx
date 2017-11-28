@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="86">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="87">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2296,7 +2296,7 @@ this.stats.caught = false;</property>
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="13" name="marketSwitch" type="ArcBackgroundMusicTrigger" x="377.576" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>

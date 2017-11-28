@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="58">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="59">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -1333,17 +1333,17 @@ this.fov.color[3] = 0.8;
   <object id="43" name="Path1" type="Path" x="816.666" y="271.333">
    <polyline points="0,0 150.667,0 150.667,-192"/>
   </object>
-  <object id="44" name="MainStart" type="PlayerStart" x="727.667" y="82.6667" width="14" height="16"/>
-  <object id="45" name="Path2" type="Path" x="644" y="158">
+  <object id="44" name="FromPrison1" type="PlayerStart" x="741" y="79.3334" width="14" height="16"/>
+  <object id="45" name="Path2" type="Path" x="638" y="158">
    <polyline points="0,0 0.666667,278 145.333,280.667"/>
   </object>
-  <object id="46" name="Path3" type="Path" x="825.333" y="448">
+  <object id="46" name="Path3" type="Path" x="825.333" y="442">
    <polyline points="0,0 144.667,-1.33333 146.667,180"/>
   </object>
   <object id="47" name="Path4" type="Path" x="970" y="638.667">
    <polyline points="0,0 -154,1.33333 -154.667,-177.333"/>
   </object>
-  <object id="48" name="Path5" type="Path" x="612" y="652">
+  <object id="48" name="Path5" type="Path" x="619" y="652">
    <polyline points="0,0 2,-494.667"/>
   </object>
   <object id="49" name="Path6" type="Path" x="454.667" y="629.333">
@@ -1454,6 +1454,7 @@ this.fov.color[3] = 0.8;
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
+  <object id="58" name="FromPrison2" type="PlayerStart" x="495" y="78" width="14" height="16"/>
  </objectgroup>
  <objectgroup name="triggers" visible="0">
   <object id="33" name="palaceSwitch" type="ArcBackgroundMusicTrigger" x="132.06" y="16.8485" width="1038.91" height="911.758">
