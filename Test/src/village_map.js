@@ -967,6 +967,10 @@ var VillageMap = ArcBaseObject();
 */
 var VillageModule = ArcBaseObject();
 {
+    var defaultOnLoad = function(map){
+
+    };
+    
     VillageModule.prototype.init = function (path, initialMap, gameContext, onLoaded, onMapChange) {
         this.path = path;
         this.maps = {};
@@ -1060,11 +1064,11 @@ var VillageModule = ArcBaseObject();
     VillageModule.prototype.getSpriteSheet = function(name){
         return this.spriteSheets[name];
     }
-    VillageModule.prototype.load = function (mapName, startName, isCurrent = true) {
+    VillageModule.prototype.load = function (mapName, startName = "MainStart", isCurrent = true, loadMap = false, afterLoad = defaultOnLoad) {
         var _this = this;
         var map = this.maps[mapName];
         if (map && map !== null) {
-
+            afterLoad(map);
         } else {
             map = new VillageMap(this, mapName);
             this.maps[mapName] = map;
@@ -1079,6 +1083,8 @@ var VillageModule = ArcBaseObject();
         // Load the map
         if(isCurrent){
             map.load(function (loadedMap, startLocation) {
+                afterLoad(loadedMap);
+
                 var module = loadedMap.parent;
 
                 function unloadMap(mapName) {
@@ -1091,6 +1097,10 @@ var VillageModule = ArcBaseObject();
                 if (module.onMapChange) {
                     module.onMapChange(module.currentMap, startLocation);
                 }
+            }, startName, _this.gameContext);
+        }else if(loadMap){
+            map.load(function (loadedMap, startLocation) {
+                afterLoad(loadedMap);
             }, startName, _this.gameContext);
         }
     };
