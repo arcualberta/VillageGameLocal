@@ -2496,7 +2496,7 @@ if(!this.properties[&quot;taskRequested&quot;]){
 		}
 	};
 	
-	this.TriggerDialog('MARKET_2', worldAdapter, player, afterTalk);
+	this.TriggerDialog('MARKET_3', worldAdapter, player, afterTalk);
 }</property>
     <property name="spritesheet" value="market_npc_1"/>
    </properties>
