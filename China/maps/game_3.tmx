@@ -2108,14 +2108,10 @@ if(performance &amp;&amp; performance.now){
   <object id="42" name="FromNorth1" type="PlayerStart" x="622.333" y="50.6667" width="14" height="16"/>
  </objectgroup>
  <objectgroup name="triggers">
-  <object id="13" name="marketSwitch" type="ArcBackgroundMusicTrigger" x="-1422.42" y="66" width="2087.39" height="1266">
-   <properties>
-    <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
-   </properties>
-  </object>
   <object id="31" name="CloudTrigger" type="ScriptTrigger" x="700" y="1278" width="451" height="184">
    <properties>
     <property name="oninteract">// TODO: Stop Character
+this.interactEnabled = false;
 worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
 if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
 	world.triggers.removeChild(&quot;CloudTrigger&quot;);
