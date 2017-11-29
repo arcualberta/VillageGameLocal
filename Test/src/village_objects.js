@@ -556,6 +556,7 @@ Player.prototype.init = function (user) {
     this.activeObject = null;
     this.stats = {
     };
+    this.hasControl = true;
 };
 Player.prototype.stop = function(){
     this.user.stop();

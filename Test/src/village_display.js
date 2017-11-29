@@ -109,7 +109,7 @@ var VillageDisplay = ArcBaseObject();
         for (var i = 0; i < actions.length; ++i) {
             action = actions[i];
 
-            if (player !== null && player.user) {
+            if (player !== null && player.user && player.hasControl) {
                 switch (action.id) {
                     case CONTROL_KEY_DOWN:
                         handleKeyDown.call(this, action.data.key);

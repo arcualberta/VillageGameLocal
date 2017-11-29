@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="59">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="30" tilewidth="30" tileheight="30" nextobjectid="60">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -502,6 +502,21 @@
     <property name="walkable" value="false"/>
    </properties>
   </tile>
+  <tile id="130">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="131">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="132">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
   <tile id="138">
    <properties>
     <property name="minimap" value="#d0c4af"/>
@@ -526,9 +541,39 @@
     <property name="walkable" value="false"/>
    </properties>
   </tile>
+  <tile id="149">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="150">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="151">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
   <tile id="164">
    <properties>
     <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="168">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="169">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="170">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
    </properties>
   </tile>
   <tile id="171">
@@ -561,6 +606,21 @@
     <property name="walkable" value="false"/>
    </properties>
   </tile>
+  <tile id="187">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="188">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="189">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
   <tile id="190">
    <properties>
     <property name="minimap" value="#bf8358"/>
@@ -583,6 +643,21 @@
    <properties>
     <property name="minimap" value="#bf8358"/>
     <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="206">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="207">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="208">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
    </properties>
   </tile>
   <tile id="214">
@@ -613,6 +688,41 @@
   <tile id="219">
    <properties>
     <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="221">
+   <properties>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="222">
+   <properties>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="223">
+   <properties>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="224">
+   <properties>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="225">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="226">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="227">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
    </properties>
   </tile>
   <tile id="231">
@@ -669,6 +779,30 @@
    <properties>
     <property name="minimap" value="#bf8358"/>
     <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="240">
+   <properties>
+    <property name="minimap" value="#7d7875"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="241">
+   <properties>
+    <property name="minimap" value="#7d7875"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="242">
+   <properties>
+    <property name="minimap" value="#7d7875"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="243">
+   <properties>
+    <property name="minimap" value="#7d7875"/>
+    <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="250">
@@ -809,11 +943,13 @@
   </tile>
   <tile id="283">
    <properties>
+    <property name="minimap" value="#603913"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="284">
    <properties>
+    <property name="minimap" value="#603913"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
@@ -983,11 +1119,13 @@
   </tile>
   <tile id="321">
    <properties>
+    <property name="minimap" value="#603913"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="322">
    <properties>
+    <property name="minimap" value="#603913"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
@@ -1116,6 +1254,86 @@
     <property name="walkable" value="false"/>
    </properties>
   </tile>
+  <tile id="395">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="396">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="397">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="398">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="414">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="415">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="416">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="417">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="433">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="434">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="435">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="436">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="452">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="453">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="454">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
+  <tile id="455">
+   <properties>
+    <property name="minimap" value="#9ca6ae"/>
+   </properties>
+  </tile>
   <tile id="491">
    <properties>
     <property name="walkable" type="bool" value="false"/>
@@ -1128,11 +1346,13 @@
   </tile>
   <tile id="510">
    <properties>
+    <property name="minimap" value="#7d7875"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="511">
    <properties>
+    <property name="minimap" value="#7d7875"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
@@ -1148,11 +1368,13 @@
   </tile>
   <tile id="548">
    <properties>
+    <property name="minimap" value="#7d7875"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="549">
    <properties>
+    <property name="minimap" value="#7d7875"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
@@ -1203,31 +1425,37 @@
   </tile>
   <tile id="623">
    <properties>
+    <property name="minimap" value="#d0c4af"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="624">
    <properties>
+    <property name="minimap" value="#d0c4af"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="625">
    <properties>
+    <property name="minimap" value="#d0c4af"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="642">
    <properties>
+    <property name="minimap" value="#d0c4af"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="643">
    <properties>
+    <property name="minimap" value="#d0c4af"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="644">
    <properties>
+    <property name="minimap" value="#d0c4af"/>
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
@@ -1471,6 +1699,7 @@ this.fov.color[3] = 0.8;
    </properties>
   </object>
   <object id="58" name="FromPrison2" type="PlayerStart" x="495" y="78" width="14" height="16"/>
+  <object id="59" name="MainStart" type="PlayerStart" x="474.333" y="78.6667" width="14" height="16"/>
  </objectgroup>
  <objectgroup name="triggers" visible="0">
   <object id="33" name="palaceSwitch" type="ArcBackgroundMusicTrigger" x="132.06" y="16.8485" width="1038.91" height="911.758">

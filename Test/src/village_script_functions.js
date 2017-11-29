@@ -77,12 +77,12 @@ var CharacterScripts = new ArcBaseObject();
 
 			this.state = "onfollowpath";
 
-			this.onfollowpath = function(timeSinceLast, worldAdapter, village, player){
-				this.UpdatePath(village);
+			this.onfollowpath = function(timeSinceLast, player, village, worldAdapter){
+				this.UpdatePath(timeSinceLast, player, village, worldAdapter);
 			}
 		}
 	}
-	CharacterScripts.prototype.UpdatePath = function(village){
+	CharacterScripts.prototype.UpdatePath = function(timeSinceLast, player, village, worldAdapter){
 		var localPath = this.path;
 		var path = village.objects.getChild(localPath.name);
 
@@ -110,6 +110,10 @@ var CharacterScripts = new ArcBaseObject();
 						++localPath.point;
 					}
 				}
+			}
+
+			if(this.onafterpathupdate){
+				this.onafterpathupdate(timeSinceLast, player, village, worldAdapter);
 			}
 		}
 	}

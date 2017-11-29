@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="87">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="95">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -1646,6 +1646,18 @@
     <property name="walkable" value="false"/>
    </properties>
   </tile>
+  <tile id="510">
+   <properties>
+    <property name="minimap" value="#ae997c"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="511">
+   <properties>
+    <property name="minimap" value="#ae997c"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
   <tile id="514">
    <properties>
     <property name="walkable" value="fals"/>
@@ -1784,6 +1796,18 @@
   <tile id="546">
    <properties>
     <property name="walkable" value="false"/>
+   </properties>
+  </tile>
+  <tile id="548">
+   <properties>
+    <property name="minimap" value="#ae997c"/>
+    <property name="walkable" type="bool" value="false"/>
+   </properties>
+  </tile>
+  <tile id="549">
+   <properties>
+    <property name="minimap" value="#ae997c"/>
+    <property name="walkable" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="552">
@@ -2176,11 +2200,11 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,521,522,523,524,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,
 0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,464,465,466,467,0,0,0,0,0,0,525,526,527,528,540,541,542,543,0,0,0,0,525,526,527,528,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,105,106,107,108,109,0,0,0,0,0,0,0,0,483,484,485,486,0,0,0,0,0,0,544,545,546,547,0,0,363,364,0,0,0,0,544,545,546,547,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,105,106,107,108,109,0,0,0,0,0,0,0,511,512,
 89,90,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,426,427,428,429,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 108,109,0,86,87,88,89,90,0,0,0,0,0,0,0,616,617,618,0,0,0,0,0,0,0,582,583,584,585,445,446,447,448,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,105,106,107,108,109,0,0,0,0,0,0,0,540,541,542,543,0,0,0,0,0,0,544,545,546,547,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,549,550,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,582,583,584,585,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 87,88,89,90,0,0,0,0,0,0,0,0,0,0,0,365,366,367,368,0,0,0,0,0,365,366,367,368,0,365,366,367,368,0,0,0,0,544,545,546,547,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 106,107,108,109,0,0,0,0,0,0,0,0,0,0,0,593,594,595,596,0,0,0,0,0,384,385,386,387,0,422,423,424,425,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -2207,21 +2231,21 @@
     <property name="spritesheet" value="market_npc_2"/>
    </properties>
   </object>
-  <object id="7" name="villager_2" type="NPC" gid="647" x="606.333" y="930.67" width="30" height="50">
+  <object id="7" name="villager_2" type="NPC" gid="647" x="654.333" y="1180" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(1016, 1316, 2268, 2580);"/>
     <property name="ontalk" value=" this.TriggerDialog('NPC_2', worldAdapter, player);"/>
     <property name="spritesheet" value="market_npc_1"/>
    </properties>
   </object>
-  <object id="8" name="villager_4" type="NPC" gid="647" x="1028.7" y="930.67" width="30" height="50">
+  <object id="8" name="villager_4" type="NPC" gid="647" x="1047.37" y="761.337" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(1016, 1316, 2268, 2580);"/>
     <property name="ontalk" value=" this.TriggerDialog('NPC_3', worldAdapter, player);"/>
     <property name="spritesheet" value="market_npc_1"/>
    </properties>
   </object>
-  <object id="9" name="villager_3" type="NPC" gid="647" x="967.97" y="932.67" width="30" height="50">
+  <object id="9" name="villager_3" type="NPC" gid="647" x="913.303" y="1250" width="30" height="50">
    <properties>
     <property name="onidle" value="this.WalkArea(1016, 1316, 2268, 2580);"/>
     <property name="ontalk" value=" this.TriggerDialog('NPC_4', worldAdapter, player);"/>
@@ -2246,7 +2270,7 @@
   <object id="80" name="SpiceBag1_3" type="VillageObject" gid="401" x="1162.99" y="1216.96" width="30" height="30"/>
   <object id="81" name="SpiceBag1_4" type="VillageObject" gid="402" x="1192.97" y="1216.95" width="30" height="30"/>
   <object id="83" name="MainStart" type="PlayerStart" x="802.333" y="322" width="14" height="16"/>
-  <object id="84" name="Guard1" type="NPC" gid="647" x="495.667" y="30.3333" width="30" height="50">
+  <object id="84" name="Guard1" type="NPC" gid="647" x="494.334" y="133" width="30" height="50">
    <properties>
     <property name="oncooling">this.CoolDown(time);
 this.WalkRandom(time, 100, 0.01);
@@ -2274,7 +2298,9 @@ this.fov.color[1] = 0.0;
 this.FollowPlayer(player);
 this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
-this.stats.caught = false;</property>
+this.stats.caught = false;
+
+this.updateLocation(-10, -10);</property>
     <property name="onwait" value="this.SetDirection(0);"/>
     <property name="spritesheet" value="guard"/>
    </properties>
@@ -2289,10 +2315,35 @@ audio.loadSound(sound, false, function(error){
         console.log(&quot;Error loading sound: &quot; + url);
 });
 
+var playerActionState = 0;
+
+this.playerHelped = function(caller, player, world, worldAdapter){
+	++playerActionState;
+	
+	switch(playerActionState){
+		case 1:
+			var guard = world.getObject(&quot;Guard1&quot;);
+			guard.updateLocation(guard.stats.initialLocation[0], guard.stats.initialLocation[1]);
+			guard = world.getObject(&quot;Guard2&quot;);
+			guard.updateLocation(guard.stats.initialLocation[0], guard.stats.initialLocation[1]);
+			guard = world.getObject(&quot;Guard3&quot;);
+			guard.updateLocation(guard.stats.initialLocation[0], guard.stats.initialLocation[1]);
+			break;
+			
+		case 2:
+			var person = world.getObject(&quot;MarketPerson3&quot;);
+			person.updateLocation(person.stats.initialLocation[0], person.stats.initialLocation[1]);
+			break;
+	}
+	console.log(&quot;Trigger state: &quot; + playerActionState);
+};
+
+
 this.playerCaught = function(npc, player, worldAdapter){
 	var parent = this.parameters.generated_map.parent;
 
 	var afterDialog = function(){
+		player.hasControl = true;
 		game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
 	};
 	var afterBump = function(camera){
@@ -2303,11 +2354,158 @@ this.playerCaught = function(npc, player, worldAdapter){
 	worldAdapter.module.stopBackgroundMusic(0);
 	audio.playSound(sound, 0);
 	game.display.camera.addAction(new ArcCameraMosaic(1000, afterBump, 1.0, 0.001));
-}</property>
+};</property>
    </properties>
   </object>
+  <object id="87" name="MarketPerson1" type="NPC" gid="647" x="470.333" y="1137.67" width="30" height="50">
+   <properties>
+    <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
+this.properties[&quot;taskComplete&quot;] = false;</property>
+    <property name="ontalk">var _this = this;
+if(!this.properties[&quot;taskComplete&quot;]){
+	var taskCompleted = function(){
+		_this.properties[&quot;taskComplete&quot;] = true;
+		
+		world.getObject(&quot;CatchPlayerEvent&quot;).playerHelped(_this, player, world, worldAdapter);
+	};
+	
+	var openTask = function(){
+		if(_this.properties[&quot;taskRequested&quot;]){
+			var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+			t.setBackground( worldAdapter.module.path + &quot;/tasks/coin_string_dotted.png&quot;);
+			t.setTitle(&quot;Coins&quot;);
+		}
+	};
+	
+	this.TriggerDialog('MARKET_1', worldAdapter, player, openTask);
+}</property>
+    <property name="spritesheet" value="market_npc_1"/>
+   </properties>
+  </object>
+  <object id="89" name="MarketPerson2" type="NPC" gid="647" x="683.667" y="744.333" width="30" height="50">
+   <properties>
+    <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
+this.properties[&quot;taskComplete&quot;] = false;</property>
+    <property name="ontalk">var _this = this;
+if(!this.properties[&quot;taskComplete&quot;]){
+	var taskCompleted = function(){
+		_this.properties[&quot;taskComplete&quot;] = true;
+		
+		world.getObject(&quot;CatchPlayerEvent&quot;).playerHelped(_this, player, world, worldAdapter);
+	};
+	
+	var openTask = function(){
+		if(_this.properties[&quot;taskRequested&quot;]){
+			var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+			t.setBackground( worldAdapter.module.path + &quot;/tasks/perch_outline_dash.png&quot;);
+			t.setTitle(&quot;Fish&quot;);
+		}
+	};
+	
+	this.TriggerDialog('MARKET_2', worldAdapter, player, openTask);
+}</property>
+    <property name="spritesheet" value="market_npc_2"/>
+   </properties>
+  </object>
+  <object id="90" name="Guard2" type="NPC" gid="647" x="1185" y="72.3333" width="30" height="50">
+   <properties>
+    <property name="oncooling">this.CoolDown(time);
+this.WalkRandom(time, 100, 0.01);
+
+if(this.stats.coolDown &lt;= 0){
+this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
+this.state = &quot;onwait&quot;;
+}</property>
+    <property name="oninteract">if(!this.stats.caught){
+this.stats.caught = true;
+world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
+}</property>
+    <property name="onnosee">this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;
+
+// Return to position
+if(this.state == &quot;onfollowing&quot;){
+this.state = &quot;oncooling&quot;;
+this.stats.coolDown = 10000;
+}
+</property>
+    <property name="onsee">this.fov.color[0] = 1.0;
+this.fov.color[1] = 0.0;
+
+this.FollowPlayer(player);
+this.state = &quot;onfollowing&quot;</property>
+    <property name="onstart">this.SetupFOVCharacter();
+this.stats.caught = false;
+
+this.updateLocation(-10, -10);</property>
+    <property name="onwait" value="this.SetDirection(0);"/>
+    <property name="spritesheet" value="guard"/>
+   </properties>
+  </object>
+  <object id="91" name="Guard3" type="NPC" gid="647" x="1769" y="928.333" width="30" height="50">
+   <properties>
+    <property name="oncooling">this.CoolDown(time);
+this.WalkRandom(time, 100, 0.01);
+
+if(this.stats.coolDown &lt;= 0){
+this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
+this.state = &quot;onwait&quot;;
+}</property>
+    <property name="oninteract">if(!this.stats.caught){
+this.stats.caught = true;
+world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
+}</property>
+    <property name="onnosee">this.fov.color[0] = 0.0;
+this.fov.color[1] = 1.0;
+
+// Return to position
+if(this.state == &quot;onfollowing&quot;){
+this.state = &quot;oncooling&quot;;
+this.stats.coolDown = 10000;
+}
+</property>
+    <property name="onsee">this.fov.color[0] = 1.0;
+this.fov.color[1] = 0.0;
+
+this.FollowPlayer(player);
+this.state = &quot;onfollowing&quot;</property>
+    <property name="onstart">this.SetupFOVCharacter();
+this.stats.caught = false;
+
+this.updateLocation(-10, -10);</property>
+    <property name="onwait" value="this.SetDirection(1);"/>
+    <property name="spritesheet" value="guard"/>
+   </properties>
+  </object>
+  <object id="92" name="MarketPerson3" type="NPC" gid="647" x="929" y="613.667" width="30" height="50">
+   <properties>
+    <property name="onafterpathupdate">player.waypointLoc[0] = this.location[4];
+player.waypointLoc[1] = this.location[5];</property>
+    <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
+this.speed = 0.2;
+
+this.stats.initialLocation = new Float32Array([this.location[0], this.location[1]]);
+this.updateLocation(-10, -10);</property>
+    <property name="ontalk">var _this = this;
+if(!this.properties[&quot;taskRequested&quot;]){
+	var afterTalk = function(){
+		if(_this.properties[&quot;taskRequested&quot;]){
+			console.log(&quot;TODO: Follow&quot;);
+			player.hasControl = false;
+			_this.InitializePath(&quot;PathFollow&quot;);
+		}
+	};
+	
+	this.TriggerDialog('MARKET_2', worldAdapter, player, afterTalk);
+}</property>
+    <property name="spritesheet" value="market_npc_1"/>
+   </properties>
+  </object>
+  <object id="94" name="PathFollow" type="Path" x="966.667" y="576">
+   <polyline points="0,0 50.6667,-68 176,-117.333 340,-138.667 426.667,-106.667 553.333,-17.3333 629.333,48 601.333,109.333 518.667,130.667 558.667,237.333 646.667,336 794.667,338.667"/>
+  </object>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="13" name="marketSwitch" type="ArcBackgroundMusicTrigger" x="377.576" y="66" width="2087.39" height="1266">
    <properties>
     <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
@@ -2441,11 +2639,11 @@ this.playerCaught = function(npc, player, worldAdapter){
 0,47,48,49,50,51,52,0,0,0,0,0,0,0,0,388,389,390,391,0,0,0,0,0,178,392,393,394,395,502,503,504,505,0,0,0,0,392,393,394,395,0,0,0,0,0,29,30,31,32,33,0,0,0,0,0,0,0,0,0,
 13,66,67,68,69,70,71,0,0,0,0,0,0,0,0,407,408,409,410,0,0,0,0,0,0,506,507,508,509,0,0,202,0,0,0,0,0,506,507,508,509,0,0,0,0,47,48,49,50,51,52,0,0,0,0,0,0,0,0,0,
 32,33,0,0,11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,369,370,344,345,0,0,0,0,0,0,0,0,0,0,0,0,66,67,68,69,70,71,0,0,0,0,0,0,0,0,0,
-51,52,0,29,30,31,32,33,0,0,0,0,0,0,0,369,370,0,0,0,0,0,0,0,0,0,0,375,376,388,389,390,391,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+51,52,0,29,30,31,32,33,0,0,0,0,0,0,0,369,370,0,0,0,0,0,0,0,0,0,0,375,376,388,389,390,391,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,492,493,
 70,71,47,48,49,50,51,52,0,0,0,0,0,0,0,388,389,390,391,0,0,0,0,0,0,392,393,394,395,407,408,409,410,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,66,67,68,69,70,71,0,0,0,0,0,0,0,597,598,599,600,0,0,0,0,0,0,563,564,565,566,0,0,0,0,0,0,0,0,0,0,178,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,202,0,0,0,0,0,0,0,0,0,0,0,0,0,202,0,0,0,0,0,0,0,375,376,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-30,31,32,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,392,393,394,395,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+30,31,32,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,392,393,394,395,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,530,531,
 49,50,51,52,0,11,12,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,563,564,565,566,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 68,69,70,71,29,30,31,32,33,0,0,0,0,0,0,346,347,348,349,0,0,0,0,0,346,347,348,349,0,346,347,348,349,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,12,13,0,0,0,
 11,12,13,47,48,49,50,51,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,29,30,31,32,33,0,0,
