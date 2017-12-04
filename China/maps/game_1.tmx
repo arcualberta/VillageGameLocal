@@ -1290,6 +1290,8 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 			world.triggers.getChild('SouthChange1').mapName = &quot;game_2_2&quot;;
 			world.triggers.getChild('SouthChange2').mapName = &quot;game_2_2&quot;;
 
+			world.parent.unload(&quot;game_2&quot;);
+
 			world.parent.load(&quot;game_3&quot;, &quot;FromNorth1&quot;, false, true, function(map){
 				map.triggers.getChild(&quot;EastChange1&quot;).mapName = &quot;game_2_2&quot;;
 			});

@@ -492,10 +492,12 @@ ArcRenderableObject.prototype.removeChild = function(name){
 * @override
 */
 ArcRenderableObject.prototype.unload = function(){
-    for (var i = 0 ; i < this.children.length; ++i){
-        let child = this.children[i];
-        if(child.drawEnabled){
-            child.unload();
+    if(this.children){
+        for (var i = 0 ; i < this.children.length; ++i){
+            let child = this.children[i];
+            if(child.drawEnabled){
+                child.unload();
+            }
         }
     }
 };

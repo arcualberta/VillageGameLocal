@@ -46,12 +46,86 @@ VillageSettings.prototype.load = function(game){
 
 /**
 * @class
+* @inherits {ArcCamera}
+*/
+var VillagePlayerCamera = ArcBaseObject();
+{
+    VillagePlayerCamera.prototype = Object.create(ArcCamera.prototype);
+    VillagePlayerCamera.prototype.init = function(width, height, controlWidth, controlHeight){
+        ArcCamera.prototype.init.call(this);
+
+        this.player = null;
+        this.controlDim = new Uint16Array([controlWidth, controlHeight, controlWidth >> 1, controlHeight >> 1]);
+        this.dimension = new Uint16Array(4);
+        this.maxOffset = new Uint16Array(2);
+        // TODO: move this all into a single data array buffer.
+
+        this.setDimension(width, height);
+    };
+
+    VillagePlayerCamera.prototype.update = function(timeSinceLast) {
+
+        if(this.player != null){
+            var location = this.player.location;
+            var dimension = this.dimension;
+            var control = this.controlDim;
+
+            var x1 = this.offset[0] + dimension[2] - control[2];//location[4] - dimension[2];
+            var y1 = this.offset[1] + dimension[3] - control[3];//location[5] - dimension[3];
+            var x2 = x1 + control[0];
+            var y2 = y1 + control[1];
+
+            // Check if the player is in the needed area
+            if(location[0] < x1){
+                x1 = location[0];
+            }else if(location[2] > x2){
+                x1 = location[2] - control[0];
+            }
+
+            if(location[1] < y1){
+                y1 = location[1];
+            }else if(location[3] > y2){
+                y1 = location[3] - control[1];
+            }
+
+            x1 += (control[2] - dimension[2]);
+            y1 += (control[3] - dimension[3]);
+
+            // Check if we reached the map limits
+            if(x1 < 0){
+                x1 = 0;
+            }else if(x1 > (x2 = this.maxOffset[0] - dimension[0])){
+                x1 = x2;
+            }
+
+            if(y1 < 0){
+                y1 = 0;
+            }else if(y1 > (y2 = this.maxOffset[1] - dimension[1])){
+                y1 = y2;
+            }
+
+            this.setOffset(x1, y1);
+        }
+
+        ArcCamera.prototype.update.call(this, timeSinceLast);
+    }
+
+    VillagePlayerCamera.prototype.setDimension = function(width, height){
+        this.dimension[0] = width;
+        this.dimension[1] = height;
+        this.dimension[2] = width >> 1;
+        this.dimension[3] = height >> 1;
+    }
+}
+
+/**
+* @class
 * @inherits {ArcGame}
 */
 var VillageGame = ArcBaseObject();
 VillageGame.prototype = Object.create(ArcGame.prototype);
 VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
-    ArcGame.prototype.init.call(this, canvas, null, null, null, 30, true);
+    ArcGame.prototype.init.call(this, canvas, arcGetDisplayAdapter(canvas, true, new VillagePlayerCamera(2, 2, 200, 200)), null, null, 30, true);
     var __this = this;
 
     __this.timestamp = -1;
@@ -177,7 +251,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
     var setDrawScene = function (playerLoc, offsetX, offsetY, renderable) {
         var displayAdapter = __this.display;
-        displayAdapter.camera.setOffset(offsetX, offsetY);
+        //displayAdapter.camera.setOffset(offsetX, offsetY);
 
         var index = 0;
         var drawObject = null;
@@ -186,7 +260,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         displayAdapter.clear();
 
         if(renderable != null){
-            let size = displayAdapter.size;
+            let size = displayAdapter.camera.dimension;
             renderable.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
 
             if(playerLoc[4]){
@@ -392,7 +466,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         worldAdapter.loadTask = __this.loadTask;
         createHud(worldAdapter);
 
-        __this.villageDisplay = new VillageDisplay(__this, worldAdapter, javascriptPath + "/village_worker.js", setDrawScene);
+        __this.villageDisplay = new VillageDisplay(__this, worldAdapter, javascriptPath + "/village_worker.js", setDrawScene, __this.display.camera);
         __this.villageDisplay.resize(canvas.width, canvas.height);
 
         // Load any needed config properties.

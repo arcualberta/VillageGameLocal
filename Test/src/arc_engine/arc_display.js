@@ -148,7 +148,7 @@ ArcCamera.prototype.clearActions = function () {
 
 // Graphics Adapters
 var ArcGraphicsAdapter = ArcBaseObject();
-ArcGraphicsAdapter.prototype.init = function () {
+ArcGraphicsAdapter.prototype.init = function (camera = null) {
     this.tileSheets = {};
     this.spriteSheets = {};
     this.size = [2, 2];
@@ -157,7 +157,13 @@ ArcGraphicsAdapter.prototype.init = function () {
         fillStyle: "black",
         textAlign: "center"
     };
-    this.camera = new ArcCamera();
+
+    if(camera == null){
+        this.camera = new ArcCamera();
+    }else{
+        this.camera = camera;
+    }
+
     this.tiles = [];
 };
 ArcGraphicsAdapter.prototype.clear = function () {
@@ -344,8 +350,8 @@ ArcGraphicsAdapter.prototype.resize = function(width, height){
 var ArcCanvasAdapter = ArcBaseObject();
 {
     ArcCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
-    ArcCanvasAdapter.prototype.init = function (canvas) {
-        ArcGraphicsAdapter.prototype.init.call(this);
+    ArcCanvasAdapter.prototype.init = function (canvas, camera = null) {
+        ArcGraphicsAdapter.prototype.init.call(this, camera);
 
         var backgroundCanvas = document.createElement('canvas');
         backgroundCanvas.width = canvas.width;
@@ -565,8 +571,8 @@ var ArcGLCanvasAdapter = ArcBaseObject();
 
     // Public Functions
     ArcGLCanvasAdapter.prototype = Object.create(ArcGraphicsAdapter.prototype);
-    ArcGLCanvasAdapter.prototype.init = function (canvas) {
-        ArcGraphicsAdapter.prototype.init.call(this);
+    ArcGLCanvasAdapter.prototype.init = function (canvas, camera = null) {
+        ArcGraphicsAdapter.prototype.init.call(this, camera);
         var textCanvas = document.createElement('canvas');
         $(textCanvas).css("background-color", "rgba(255, 0, 255, 0)");
         textCanvas.width = canvas.width;
@@ -1324,8 +1330,8 @@ var ArcGLCanvasAdapter = ArcBaseObject();
 
 var ArcGL2CanvasAdapter = ArcBaseObject();
 ArcGL2CanvasAdapter.prototype = Object.create(ArcGLCanvasAdapter.prototype);
-ArcGL2CanvasAdapter.prototype.init = function(canvas) {
-    ArcGraphicsAdapter.prototype.init.call(this);
+ArcGL2CanvasAdapter.prototype.init = function(canvas, camera = null) {
+    ArcGraphicsAdapter.prototype.init.call(this, camera);
     var textCanvas = document.createElement('canvas');
     $(textCanvas).css("background-color", "rgba(255, 0, 255, 0)");
     textCanvas.width = canvas.width;
@@ -1383,7 +1389,7 @@ ArcMobileCanvasAdapter.prototype.requestFullscreen = function () {
 };
 
 
-function arcGetDisplayAdapter(canvas, useGL) {
+function arcGetDisplayAdapter(canvas, useGL, camera = null) {
     var adapter;
 
     var adapters = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 
@@ -1395,14 +1401,14 @@ function arcGetDisplayAdapter(canvas, useGL) {
 
         for(var i = 0; i < adapters.length; ++i){
             try{
-                adapter = new adapters[i](canvas);
+                adapter = new adapters[i](canvas, camera);
                 break;
             }catch(e){
                 console.log(e);
             }
         }
     } else {
-        adapter = new ArcCanvasAdapter(canvas);
+        adapter = new ArcCanvasAdapter(canvas, camera);
     }
 
     return adapter;

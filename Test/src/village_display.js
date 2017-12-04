@@ -48,17 +48,14 @@ var VillageDisplay = ArcBaseObject();
         }
     };
 
-    VillageDisplay.prototype.init = function (game, worldAdapter, workerPath, drawWorldFunction) {
+    VillageDisplay.prototype.init = function (game, worldAdapter, workerPath, drawWorldFunction, camera) {
         var _this = this;
 
         this.playerStart = [0, 0];
         this.player = null;
         this.world = null;
         this.timestamp = null;
-        this.offset = [0, 0];
-        this.halfDim = [0, 0];
         this.maxOffset = [0, 0];
-        this.dimension = [0, 0];
         this.worldAdapter = worldAdapter;
         this.drawWorldFunction = drawWorldFunction;
         this.display = game.display;
@@ -66,6 +63,7 @@ var VillageDisplay = ArcBaseObject();
         this.drawLow = [];
         this.drawHigh = [];
         this.drawObjects = [];
+        this.camera = camera;
 
         this.playerKeys = {
             up: false,
@@ -89,7 +87,7 @@ var VillageDisplay = ArcBaseObject();
         return layers;
     };
     VillageDisplay.prototype.triggerDraw = function () {
-        var offset = this.offset;
+        var offset = this.camera.offset;
 
         if (this.world !== null && offset) {
             if(this.player && this.player.user){
@@ -102,7 +100,7 @@ var VillageDisplay = ArcBaseObject();
     };
     VillageDisplay.prototype.handleActions = function (actions) {
         var player = this.player;
-        var offset = this.offset;
+        var offset = this.camera.offset;
         var action = null;
 
         // Handle Action List
@@ -151,7 +149,11 @@ var VillageDisplay = ArcBaseObject();
     };
     VillageDisplay.prototype.tick = function(time, cameraOffset){
         var p = null;
-        var offset = this.offset;
+
+        if (this.player && this.player.user) {
+            p = this.player.user;
+        }
+        /*var offset = this.camera.offset;
         var dimension = null;
 
         if (this.player && this.player.user) {
@@ -179,7 +181,7 @@ var VillageDisplay = ArcBaseObject();
             offset[1] = 0;
         } else if (offset[1] > this.maxOffset[1] - dimension[1]) {
             offset[1] = this.maxOffset[1] - dimension[1];
-        }
+        }*/
 
         // Update player
         if (p !== null) {
@@ -194,16 +196,15 @@ var VillageDisplay = ArcBaseObject();
         this.world.tick(time, this.worldAdapter, this.world, this.player);
     };
     VillageDisplay.prototype.resize = function (width, height) {
-        this.dimension[0] = width;
-        this.dimension[1] = height;
-
-        this.halfDim[0] = width / 2;
-        this.halfDim[1] = height / 2;
+        this.camera.setDimension(width, height);
     };
     VillageDisplay.prototype.setPlayer = function (id, name, location, spriteSheetId, palette, animations) {
         var user = this.addUser(id, name, location, spriteSheetId, palette, animations);
 
         this.player = id;
+        this.camera.player = user;
+
+        return user;
     };
     VillageDisplay.prototype.readWorldState = function (result) {
         // Check if the player is logged in
@@ -251,8 +252,8 @@ var VillageDisplay = ArcBaseObject();
         this.playerStart[0] = playerStart[0];
         this.playerStart[1] = playerStart[1];
 
-        this.maxOffset[0] = (world.width * world.tileWidth) - 1;
-        this.maxOffset[1] = (world.height * world.tileHeight) - 1;
+        this.camera.maxOffset[0] = (world.width * world.tileWidth) - 1;
+        this.camera.maxOffset[1] = (world.height * world.tileHeight) - 1;
 
         // Players should already be added
         let players = world.players;

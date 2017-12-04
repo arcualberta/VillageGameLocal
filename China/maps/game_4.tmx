@@ -2909,6 +2909,8 @@ this.fov.color[3] = 0.8;
 		map.triggers.getChild('SouthChange1').mapName = &quot;game_2_3&quot;;
 		map.triggers.getChild('SouthChange2').mapName = &quot;game_2_3&quot;;
 	});
+
+	world.parent.unload(&quot;game_2_2&quot;);
 }</property>
     <property name="onstart">this.isTriggered = false;
 this.interactEnabled = true;</property>
