@@ -58,6 +58,7 @@ var VillagePlayerCamera = ArcBaseObject();
         this.controlDim = new Uint16Array([controlWidth, controlHeight, controlWidth >> 1, controlHeight >> 1]);
         this.dimension = new Uint16Array(4);
         this.maxOffset = new Uint16Array(2);
+        this.speed = 0.08;
         // TODO: move this all into a single data array buffer.
 
         this.setDimension(width, height);
@@ -70,22 +71,33 @@ var VillagePlayerCamera = ArcBaseObject();
             var dimension = this.dimension;
             var control = this.controlDim;
 
+            var movement;
             var x1 = this.offset[0] + dimension[2] - control[2];//location[4] - dimension[2];
             var y1 = this.offset[1] + dimension[3] - control[3];//location[5] - dimension[3];
             var x2 = x1 + control[0];
             var y2 = y1 + control[1];
+
+
 
             // Check if the player is in the needed area
             if(location[0] < x1){
                 x1 = location[0];
             }else if(location[2] > x2){
                 x1 = location[2] - control[0];
+            }else{
+                movement = (location[4] - control[2]) - x1;
+
+                x1 += (movement * this.speed);
             }
 
             if(location[1] < y1){
                 y1 = location[1];
             }else if(location[3] > y2){
                 y1 = location[3] - control[1];
+            }else{
+                movement = (location[5] - control[3]) - y1;
+
+                y1 += (movement * this.speed);
             }
 
             x1 += (control[2] - dimension[2]);
@@ -125,7 +137,7 @@ var VillagePlayerCamera = ArcBaseObject();
 var VillageGame = ArcBaseObject();
 VillageGame.prototype = Object.create(ArcGame.prototype);
 VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
-    ArcGame.prototype.init.call(this, canvas, arcGetDisplayAdapter(canvas, true, new VillagePlayerCamera(2, 2, 200, 200)), null, null, 30, true);
+    ArcGame.prototype.init.call(this, canvas, arcGetDisplayAdapter(canvas, true, new VillagePlayerCamera(2, 2, 250, 250)), null, null, 30, true);
     var __this = this;
 
     __this.timestamp = -1;
