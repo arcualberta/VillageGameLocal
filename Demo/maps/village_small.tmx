@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0.0" orientation="orthogonal" renderorder="left-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="22">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="22">
  <tileset firstgid="1" name="VillageSheet" tilewidth="16" tileheight="16" tilecount="256" columns="16">
   <image source="../tiles/tileset.png" width="256" height="256"/>
   <tile id="5">
@@ -681,24 +681,19 @@
 </data>
  </layer>
  <objectgroup name="objects">
-  <object id="1" name="MayorSign" type="Object" gid="148" x="352" y="112" width="16" height="16">
+  <object id="1" name="MayorSign" type="VillageObject" gid="148" x="352" y="112" width="16" height="16">
    <properties>
     <property name="oninteract" value="this.TriggerDialog('MAYOR_SIGN', worldAdapter, player);"/>
    </properties>
   </object>
-  <object id="2" name="StudentHouses" type="StudentHouse" x="222" y="257" width="511" height="463">
-   <properties>
-    <property name="Maps" value="house_one"/>
-   </properties>
-  </object>
-  <object id="3" name="CabinSign" type="ClickMessage" gid="148" x="475.904" y="98.4841" width="16" height="16" rotation="-1.09024">
+  <object id="3" name="CabinSign" type="VillageObject" gid="148" x="475.904" y="98.4841" width="16" height="16" rotation="-1.09024">
    <properties>
     <property name="message" value="Shed"/>
    </properties>
   </object>
   <object id="4" name="MainStart" type="PlayerStart" x="97" y="462" width="14" height="16"/>
   <object id="5" name="MayorStart" type="PlayerStart" x="336.25" y="112" width="14" height="16"/>
-  <object id="10" name="TaskSign" type="Object" gid="164" x="127.5" y="577.5" width="16" height="16">
+  <object id="10" name="TaskSign" type="VillageObject" gid="164" x="127.5" y="577.5" width="16" height="16">
    <properties>
     <property name="oninteract" value="this.TriggerTask('EggTask', worldAdapter);"/>
    </properties>
@@ -775,12 +770,12 @@
   </object>
  </objectgroup>
  <objectgroup name="triggers">
-  <object id="6" name="MayorDoor" type="ChangeMap" x="336.682" y="65.5909" width="14.5" height="32.25">
+  <object id="6" name="MayorDoor" type="ChangeMapTrigger" x="336.682" y="65.5909" width="14.5" height="32.25">
    <properties>
     <property name="Map" value="mayor_house"/>
    </properties>
   </object>
-  <object id="8" name="Example1" type="SceneTrigger" x="60" y="823" width="95" height="51">
+  <object id="8" name="Example1" type="ScriptTrigger" x="60" y="823" width="95" height="51">
    <properties>
     <property name="onWalk" value="village_small_example1"/>
    </properties>

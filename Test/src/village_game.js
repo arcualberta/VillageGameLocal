@@ -51,14 +51,14 @@ VillageSettings.prototype.load = function(game){
 var VillagePlayerCamera = ArcBaseObject();
 {
     VillagePlayerCamera.prototype = Object.create(ArcCamera.prototype);
-    VillagePlayerCamera.prototype.init = function(width, height, controlWidth, controlHeight){
+    VillagePlayerCamera.prototype.init = function(width, height){
         ArcCamera.prototype.init.call(this);
 
         this.player = null;
-        this.controlDim = new Uint16Array([controlWidth, controlHeight, controlWidth >> 1, controlHeight >> 1]);
+        this.controlDim = new Uint16Array(4);
         this.dimension = new Uint16Array(4);
         this.maxOffset = new Uint16Array(2);
-        this.speed = 0.08;
+        this.speed = 0.07;
         // TODO: move this all into a single data array buffer.
 
         this.setDimension(width, height);
@@ -87,7 +87,7 @@ var VillagePlayerCamera = ArcBaseObject();
             }else{
                 movement = (location[4] - control[2]) - x1;
 
-                x1 += (movement * this.speed);
+                x1 += Math.floor(movement * this.speed);
             }
 
             if(location[1] < y1){
@@ -97,7 +97,7 @@ var VillagePlayerCamera = ArcBaseObject();
             }else{
                 movement = (location[5] - control[3]) - y1;
 
-                y1 += (movement * this.speed);
+                y1 += Math.floor(movement * this.speed);
             }
 
             x1 += (control[2] - dimension[2]);
@@ -127,6 +127,11 @@ var VillagePlayerCamera = ArcBaseObject();
         this.dimension[1] = height;
         this.dimension[2] = width >> 1;
         this.dimension[3] = height >> 1;
+
+        this.controlDim[0] = Math.floor(width * 0.8);
+        this.controlDim[1] = Math.floor(height * 0.8);
+        this.controlDim[2] = this.controlDim[0] >> 1;
+        this.controlDim[3] = this.controlDim[1] >> 1;
     }
 }
 
