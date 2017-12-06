@@ -543,6 +543,10 @@ function DialogMenu(dialog, name, lineNumber, player, speaker) {
             }
             dialogSection.empty();
 
+            if(result["CHARACTER"] == "[CLOSE]"){
+                menu.close();
+            }
+
             var message = $("<h3></h3>");
             message.text(eval('`' + result["MESSAGE"] + '`'));
             dialogSection.append(message);

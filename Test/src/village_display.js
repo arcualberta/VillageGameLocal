@@ -203,6 +203,7 @@ var VillageDisplay = ArcBaseObject();
 
         this.player = id;
         this.camera.player = user;
+        this.camera.centerOffset(user.location[4], user.location[5]);
 
         return user;
     };

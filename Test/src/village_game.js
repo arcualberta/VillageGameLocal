@@ -50,6 +50,7 @@ VillageSettings.prototype.load = function(game){
 */
 var VillagePlayerCamera = ArcBaseObject();
 {
+
     VillagePlayerCamera.prototype = Object.create(ArcCamera.prototype);
     VillagePlayerCamera.prototype.init = function(width, height){
         ArcCamera.prototype.init.call(this);
@@ -58,8 +59,9 @@ var VillagePlayerCamera = ArcBaseObject();
         this.controlDim = new Uint16Array(4);
         this.dimension = new Uint16Array(4);
         this.maxOffset = new Uint16Array(2);
-        this.speed = 0.07;
+        this.speed = 0.08;
         // TODO: move this all into a single data array buffer.
+        // TODO: Find a way to smooth camera final movement.
 
         this.setDimension(width, height);
     };
@@ -103,6 +105,7 @@ var VillagePlayerCamera = ArcBaseObject();
             x1 += (control[2] - dimension[2]);
             y1 += (control[3] - dimension[3]);
 
+
             // Check if we reached the map limits
             if(x1 < 0){
                 x1 = 0;
@@ -132,6 +135,26 @@ var VillagePlayerCamera = ArcBaseObject();
         this.controlDim[1] = Math.floor(height * 0.8);
         this.controlDim[2] = this.controlDim[0] >> 1;
         this.controlDim[3] = this.controlDim[1] >> 1;
+    }
+
+    VillagePlayerCamera.prototype.centerOffset = function(x, y){
+        var dimension = this.dimension;
+        x -= dimension[2];
+        y -= dimension[3];
+
+        if(x < 0){
+            x = 0;
+        }else if(x > (this.maxOffset[0] - dimension[0])){
+            x = this.maxOffset[0] - dimension[0];
+        }
+
+        if(y < 0){
+            y = 0;
+        }else if(y > (this.maxOffset[1] - dimension[1])){
+            y = this.maxOffset[1] - dimension[1];
+        }
+
+        this.setOffset(x, y);
     }
 }
 
