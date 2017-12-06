@@ -560,6 +560,9 @@ Player.prototype.init = function (user) {
 };
 Player.prototype.stop = function(){
     this.user.stop();
+
+    this.waypointLoc[0] = this.user.waypoint[0];
+    this.waypointLoc[1] = this.user.waypoint[1];
 };
 Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
     var user = this.user;

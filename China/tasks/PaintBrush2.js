@@ -1,7 +1,7 @@
 (function(task, resourcePath){
 	var fontInfo = {
         font: "bold 20px sans-serif",
-        fillStyle: "yellow",
+        fillStyle: "darkgrey",
         textAlign: "left"
     };
 

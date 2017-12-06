@@ -1311,7 +1311,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="27" name="MainMusic" type="ArcBackgroundMusicTrigger" x="131.758" y="161.515" width="1541.33" height="801.333">
    <properties>
     <property name="file" value="sound/3VariationsOfPlumBlossoms.mp3"/>

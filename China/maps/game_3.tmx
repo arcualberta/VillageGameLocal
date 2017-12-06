@@ -2107,7 +2107,7 @@ if(performance &amp;&amp; performance.now){
   <object id="40" name="FromEast1" type="PlayerStart" x="47" y="906" width="14" height="16"/>
   <object id="42" name="FromNorth1" type="PlayerStart" x="622.333" y="50.6667" width="14" height="16"/>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup name="triggers" visible="0">
   <object id="31" name="CloudTrigger" type="ScriptTrigger" x="700" y="1278" width="451" height="184">
    <properties>
     <property name="oninteract">// TODO: Stop Character
