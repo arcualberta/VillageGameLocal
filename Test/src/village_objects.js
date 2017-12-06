@@ -157,7 +157,7 @@ var Character = ArcBaseObject();
     }
 
     Character.VisionCone = new Image();
-
+    Character.defaultMinimapColor = "#A80";
     Character.prototype.init = function (id, name) {
         ArcCharacter.prototype.init.call(this);
         this.id = id;
@@ -183,7 +183,8 @@ var Character = ArcBaseObject();
             angle: (35 * Math.PI) / 180.0,
             coneArray: null,
             color: new Float32Array(4)
-        }
+        };
+        this.minimapColor = Character.defaultMinimapColor;
 
         this.updateSize(16, 16);
     };
@@ -557,6 +558,8 @@ Player.prototype.init = function (user) {
     this.stats = {
     };
     this.hasControl = true;
+
+    user.minimapColor = "#0CF";
 };
 Player.prototype.stop = function(){
     this.user.stop();

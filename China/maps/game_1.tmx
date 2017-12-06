@@ -1199,7 +1199,7 @@ this.properties[&quot;taskComplete&quot;] = false;
 this.properties[&quot;farming&quot;] = [0, 0, 1];
 this.state = &quot;onwait&quot;;
 this.direction = 0;
-</property>
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
@@ -1237,7 +1237,8 @@ this.waypoint[1] = this.location[5];</property>
    <properties>
     <property name="onidle" value="//TODO: Fish"/>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false; 
-this.properties[&quot;taskComplete&quot;] = false;</property>
+this.properties[&quot;taskComplete&quot;] = false;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){

@@ -2148,7 +2148,7 @@ this.audio = audio;</property>
    <properties>
     <property name="Map" value="game_4"/>
     <property name="Start" value="FromPrison"/>
-    <property name="onstart" value="this.start += (Math.floor(Math.random() * 721) % 2) + 1"/>
+    <property name="onstart" value="this.start += Math.floor(Math.random() * 2) + 1"/>
    </properties>
   </object>
  </objectgroup>

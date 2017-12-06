@@ -2666,8 +2666,10 @@ this.fov.color[3] = 0.8;
 		game.display.camera.addAction(new ArcCameraFadeIn(1000, function(camera){}, 0.0, 0.0, 0.0));	
 	};
 	var afterBump = function(camera){
+		var door = Math.floor(Math.random() * 2) + 1;
 		//parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
 		 //npc.TriggerDialog('GUARD_2', worldAdapter, player,  afterDialog);
+		parent.load(&quot;game_4&quot;, &quot;FromPrison&quot; + door);
 		game.display.camera.addAction(new ArcCameraFadeIn(200, function(camera){}, 1.0, 1.0, 1.0));		
 	};
 

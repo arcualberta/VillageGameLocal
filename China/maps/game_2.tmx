@@ -2231,7 +2231,8 @@
   <object id="10" name="AhYu" type="NPC" gid="647" x="870" y="180" width="30" height="50">
    <properties>
     <property name="onidle" value="// NOTHING"/>
-    <property name="onstart" value="this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;"/>
+    <property name="onstart">this.properties[&quot;taskRequested&quot;] = false; this.properties[&quot;taskComplete&quot;] = false;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){

@@ -2353,10 +2353,12 @@ this.playerCaught = function(npc, player, worldAdapter){
 	var parent = this.parameters.generated_map.parent;
 
 	var afterDialog = function(){
-		npc.TriggerDialog('CAUGHT_1', worldAdapter, player);
+		npc.TriggerDialog('CAUGHT_1', worldAdapter, player, function(){
+			parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
+			game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
+		});
 		//player.hasControl = true;
-		//game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
-		game.display.camera.addAction(new ArcCameraFadeOut(5000, function(camera){}, 0.0, 0.0, 0.0));
+		//game.display.camera.addAction(new ArcCameraFadeOut(5000, function(camera){}, 0.0, 0.0, 0.0));
 	};
 	var afterBump = function(camera){
 		//parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
@@ -2408,7 +2410,8 @@ this.updateLocation(-10, -10);</property>
   <object id="95" name="MarketPerson1" type="NPC" gid="647" x="1167.67" y="861.667" width="30" height="50">
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+this.properties[&quot;taskComplete&quot;] = false;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2436,7 +2439,8 @@ if(!this.properties[&quot;taskComplete&quot;]){
   <object id="96" name="MarketPerson2" type="NPC" gid="647" x="902.333" y="1129.67" width="30" height="50">
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+this.properties[&quot;taskComplete&quot;] = false;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2464,7 +2468,8 @@ if(!this.properties[&quot;taskComplete&quot;]){
   <object id="97" name="MarketPerson3" type="NPC" gid="647" x="870.333" y="631" width="30" height="50">
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+this.properties[&quot;taskComplete&quot;] = false;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2727,7 +2732,8 @@ if(this.stopCount &gt; 1){
 	world.objects.removeChild(this.name);
 }</property>
     <property name="onstart">this.blockable = false;
-this.stopCount = 0;</property>
+this.stopCount = 0;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="spritesheet" value="cloud"/>
    </properties>
   </object>

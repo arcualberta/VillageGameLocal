@@ -2084,7 +2084,8 @@ if(this.stopCount &gt; 1){
     <property name="onstart">this.animation = &quot;hidden_down&quot;; 
 this.state = &quot;onwait&quot;;
 this.blockable = false;
-this.stopCount = 0;</property>
+this.stopCount = 0;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="onwait" value="if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3) { this.animation = &quot;stand_down&quot;; this.state = &quot;onidle&quot; }"/>
     <property name="spritesheet" value="cloud"/>
    </properties>

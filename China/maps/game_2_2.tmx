@@ -2344,6 +2344,7 @@ this.playerCaught = function(npc, player, worldAdapter){
 
 	var afterDialog = function(){
 		player.hasControl = true;
+		parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
 		game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
 	};
 	var afterBump = function(camera){
@@ -2360,7 +2361,8 @@ this.playerCaught = function(npc, player, worldAdapter){
   <object id="87" name="MarketPerson1" type="NPC" gid="647" x="470.333" y="1137.67" width="30" height="50">
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+this.properties[&quot;taskComplete&quot;] = false;
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2388,7 +2390,9 @@ if(!this.properties[&quot;taskComplete&quot;]){
   <object id="89" name="MarketPerson2" type="NPC" gid="647" x="683.667" y="744.333" width="30" height="50">
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
-this.properties[&quot;taskComplete&quot;] = false;</property>
+this.properties[&quot;taskComplete&quot;] = false;
+
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2491,7 +2495,9 @@ player.waypointLoc[1] = this.location[5];</property>
 this.speed = 0.2;
 
 this.stats.initialLocation = new Float32Array([this.location[0], this.location[1]]);
-this.updateLocation(-10, -10);</property>
+this.updateLocation(-10, -10);
+
+this.minimapColor = &quot;#FF0&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskRequested&quot;]){
 	var afterTalk = function(){

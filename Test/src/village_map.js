@@ -1364,7 +1364,7 @@ MiniMap.prototype.endDraw = function(){
                 }
             }
 
-            minimap.fillRect('#FF0', xs, ys, cb[2] * scale, this.size[3] * scale);
+            minimap.fillRect(this.minimapColor, xs, ys, cb[2] * scale, this.size[3] * scale);
         }
     }
 
@@ -1374,6 +1374,6 @@ MiniMap.prototype.endDraw = function(){
         let xs = Math.round((cb[0] - x) * scale) + drawX;
         let ys = Math.round((cb[1] - y) * scale) + drawY;
 
-        minimap.fillRect("#0CF", xs, ys, cb[2] * scale, this.size[3] * scale);
+        minimap.fillRect(this.minimapColor, xs, ys, cb[2] * scale, this.size[3] * scale);
     }
 }
