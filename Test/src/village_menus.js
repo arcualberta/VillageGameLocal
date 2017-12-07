@@ -505,7 +505,7 @@ function SettingsWindow(game){
 
 // Window for dialogs
 function DialogMenu(dialog, name, lineNumber, player, speaker) {
-    var menu = new GameMenu("", 500, 200);
+    var menu = new GameMenu("", 500, 310);
     var currentLine = null;
     var optionLabels = ["A) ", "B) ", "C) "];
     
