@@ -460,10 +460,10 @@
  <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="165.333" y="994.667" width="40" height="33.3333"/>
   <object id="2" name="ForrestStart" type="PlayerStart" x="4356" y="2326.67" width="40" height="33.3333"/>
-  <object id="3" name="Door1" type="ClickMessage" gid="5" x="625.318" y="977.886" width="46" height="46"/>
+  <object id="3" name="Door1" type="VillageObject" gid="5" x="625.318" y="977.886" width="46" height="46"/>
   <object id="4" name="HouseStart" type="PlayerStart" x="642.492" y="972.099" width="40" height="33.3333"/>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="5" name="EnterForrest" type="ChangeMapTrigger" x="4478" y="2272" width="132" height="150">
    <properties>
     <property name="Map" value="Demo"/>
@@ -476,7 +476,7 @@
     <property name="Start" value="ForrestStart"/>
    </properties>
   </object>
-  <object id="7" name="Enterhouse" type="ChangeMapTrigger" x="656.5" y="927" width="15.5" height="40.75">
+  <object id="7" name="Enterhouse" type="ChangeMapTrigger" x="656.5" y="927" width="17.75" height="41.75">
    <properties>
     <property name="Map" value="VillageHouseInterior"/>
     <property name="Start" value="MainStart"/>
