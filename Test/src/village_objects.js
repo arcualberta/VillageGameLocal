@@ -185,6 +185,7 @@ var Character = ArcBaseObject();
             color: new Float32Array(4)
         };
         this.minimapColor = Character.defaultMinimapColor;
+        this.displayMessage = null;
 
         this.updateSize(16, 16);
     };
@@ -201,6 +202,70 @@ var Character = ArcBaseObject();
         var end = village.getClosestTileCoord(goal[0], goal[1], Character.endBuffer);
 
         return Math.abs(start[0] - end[0]) < 1 && Math.abs(start[1] - end[1]) < 1;
+    };
+    Character.prototype.calculateNextStep_test = function(village, speed, time, goal, output){
+        // Check if we are moving
+        if(this.isOnGoal(village, goal)){
+            output[0] = this.location[4];
+            output[1] = this.location[5];
+            output[2] = false;
+
+            return output;
+        }
+
+        // Find the movement vector
+        var blockable = this.blockable;
+        var xDif = goal[0] - this.location[4];
+        var yDif = goal[1] - this.location[5];
+        var dist = 1 / Math.sqrt((xDif * xDif) + (yDif * yDif));
+        var x = Math.round(xDif * dist);
+        var y = Math.round(yDif * dist);
+        var tileBox = this.collisionBox();
+        dist = speed * time;
+        /*var child = village.getFirstBlockableOnRay(this.location[4], this.location[5], x, y, dist, dist, tileBox[2], tileBox[3]);
+
+        if(child){
+            console.log(child);
+        }*/
+
+        // Set the new values
+        dist = speed * time;
+        x *= Math.round(dist);
+        y *= Math.round(dist)
+        var isChanged = true;
+
+        // Set to find where we intersect in the x direction.
+        if(blockable){
+            if(x < 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                    x = 0; //TODO: go to the edge of the blocking object;
+                }
+            }else if(x > 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                    x = 0;
+                }
+            }
+
+            if(y < 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                    y = 0;
+                }
+            }else if(y > 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                    y = 0;
+                }
+            }
+        }
+
+        if(x != 0 || y != 0){
+            this.setMovementVector(x, y);
+        }
+
+        output[0] = this.location[4] + x;
+        output[1] = this.location[5] + y;
+        output[2] = isChanged;
+
+        return output;
     };
     Character.prototype.calculateNextStep = function(village, speed, time, goal, output) {
         // Check if we are moving
@@ -225,23 +290,25 @@ var Character = ArcBaseObject();
         var tileBox = this.collisionBox();
 
         // Set to find where we intersect in the x direction.
-        if(x < 0){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
-                x = 0; //TODO: go to the edge of the blocking object;
+        if(blockable){
+            if(x < 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                    x = 0; //TODO: go to the edge of the blocking object;
+                }
+            }else if(x > 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
+                    x = 0;
+                }
             }
-        }else if(x > 0){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1], tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3], tileBox[2], tileBox[3])){
-                x = 0;
-            }
-        }
 
-        if(y < 0){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
-                y = 0;
-            }
-        }else if(y > 0){
-            if(blockable && village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
-                y = 0;
+            if(y < 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                    y = 0;
+                }
+            }else if(y > 0){
+                if(village.isBlocked(tileBox[0] + x, tileBox[1] + y, tileBox[0] + x + tileBox[2], tileBox[1] + tileBox[3] + y, tileBox[2], tileBox[3])){
+                    y = 0;
+                }
             }
         }
 
@@ -299,6 +366,8 @@ var Character = ArcBaseObject();
             
             var frameCenter = this.location[4] - xOffset;
             var frameTop = this.location[5] - frame.hHalf - yOffset;
+
+            //displayContext.drawText()
             
             displayContext.drawImage(spriteSheet.image,
                     frame.x, frame.y, frame.width, frame.height,

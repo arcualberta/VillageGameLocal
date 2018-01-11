@@ -870,6 +870,25 @@ var VillageMap = ArcBaseObject();
     VillageMap.prototype.getClosestTileCoord = function (pixelX, pixelY) {
         return [Math.round(pixelX / this.tileWidth), Math.round(pixelY / this.tileHeight)];
     };
+    VillageMap.prototype.getFirstBlockableOnRay = function(xStart, yStart, nx, ny, distance, step, collisionWidth, collisionHeight){
+        var wh = collisionWidth >> 1;
+        var hh = collisionHeight >> 1;
+        var x = xStart;
+        var y = yStart;
+        var steps = Math.floor(distance / step);
+        var child;
+
+        for(var i = 0; i < steps; ++i){
+            x += step;
+            y += step;
+
+            if((child = this.isBlocked(x - wh, y - hh, x + wh, y + hh, collisionWidth, collisionHeight))){
+                return child;
+            }
+        }
+
+        return false;
+    }
     // Checks if a rectangular area is blocked.
     VillageMap.prototype.isBlocked = function (x1, y1, x2, y2, width, height) {
         let checkVal = null;

@@ -2376,6 +2376,7 @@ this.playerCaught = function(npc, player, worldAdapter){
    <properties>
     <property name="oncooling">this.CoolDown(time);
 this.WalkRandom(time, 100, 0.01);
+this.displayText = &quot;TODO: cool down message&quot;;
 
 if(this.stats.coolDown &lt;= 0){
 this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
@@ -2397,6 +2398,8 @@ this.stats.coolDown = 10000;
     <property name="onsee">this.fov.color[0] = 1.0;
 this.fov.color[1] = 0.0;
 
+this.displayText = &quot;TODO: See Messagee&quot;;
+
 this.FollowPlayer(player);
 this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
@@ -2411,7 +2414,9 @@ this.updateLocation(-10, -10);</property>
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
 this.properties[&quot;taskComplete&quot;] = false;
-this.minimapColor = &quot;#FF0&quot;;</property>
+this.minimapColor = &quot;#FF0&quot;;
+
+this.displayText = &quot;!&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2440,7 +2445,9 @@ if(!this.properties[&quot;taskComplete&quot;]){
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
 this.properties[&quot;taskComplete&quot;] = false;
-this.minimapColor = &quot;#FF0&quot;;</property>
+this.minimapColor = &quot;#FF0&quot;;
+
+this.displayText = &quot;!&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
@@ -2469,7 +2476,9 @@ if(!this.properties[&quot;taskComplete&quot;]){
    <properties>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
 this.properties[&quot;taskComplete&quot;] = false;
-this.minimapColor = &quot;#FF0&quot;;</property>
+this.minimapColor = &quot;#FF0&quot;;
+
+this.displayText = &quot;!&quot;;</property>
     <property name="ontalk">var _this = this;
 if(!this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
