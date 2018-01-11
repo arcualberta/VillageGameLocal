@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="150" height="150" tilewidth="46" tileheight="46">
- <tileset firstgid="1" name="Wood Floor Tileset" tilewidth="46" tileheight="46">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="150" height="150" tilewidth="46" tileheight="46" nextobjectid="3">
+ <tileset firstgid="1" name="Wood Floor Tileset" tilewidth="46" tileheight="46" tilecount="273" columns="21">
   <image source="../tiles/Small House Interior Tileset.png" trans="ffffff" width="969" height="624"/>
  </tileset>
- <tileset firstgid="274" name="Furniture" tilewidth="46" tileheight="46">
+ <tileset firstgid="274" name="Furniture" tilewidth="46" tileheight="46" tilecount="273" columns="21">
   <image source="../tiles/Small House Interior Furniture Tileset.png" trans="ffffff" width="969" height="624"/>
   <tile id="0">
    <properties>
@@ -420,10 +420,10 @@
 </data>
  </layer>
  <objectgroup name="objects">
-  <object name="MainStart" type="PlayerStart" x="613.667" y="477.333" width="16.6667" height="21.6667"/>
+  <object id="1" name="MainStart" type="PlayerStart" x="613.667" y="477.333" width="16.6667" height="21.6667"/>
  </objectgroup>
  <objectgroup name="triggers">
-  <object name="Exithouse" type="ChangeMap" x="600" y="521.333" width="51.6667" height="55.3333">
+  <object id="2" name="Exithouse" type="ChangeMapTrigger" x="600" y="521.333" width="51.6667" height="55.3333">
    <properties>
     <property name="Map" value="Demo"/>
     <property name="Start" value="HouseStart"/>
