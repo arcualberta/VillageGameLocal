@@ -428,6 +428,19 @@ function SettingsWindow(game){
         addMenuItem(parent, name, radioGroup);
     }
 
+    var addDropdownGroup = function(parent, name, value, options, onchange){
+        var inputName = name.replace(/\s/g, '');
+        var dropdown = $("<select></select>");
+
+        slider.attr("value", value);
+
+        for(var i = 0; i < options.length; ++i){
+            
+        }
+
+        addMenuItem(parent, name, dropdown);
+    }
+
     var addMenuChange = function(parent, name, menu){
         var li = $("<li></li>").text(name);
         li.click(function(){
@@ -482,6 +495,7 @@ function SettingsWindow(game){
                 break;
             case 3:
                 result.titleBar.text("Video Settings");
+                add
                 addMenuButtons(dialogSection, ["Back"], [function(){ setMenu(0); }]);
                 break;
             default:
