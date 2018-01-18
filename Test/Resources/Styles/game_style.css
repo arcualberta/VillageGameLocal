@@ -150,6 +150,7 @@ body {
     list-style-type: none;
     color: #2e2c27;
     font-weight: bold;
+    padding-left:0;
 }
 
 .dialog_menu > ul > li {

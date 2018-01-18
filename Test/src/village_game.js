@@ -172,6 +172,8 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
     var worldAdapter = null;
     var menu = false;
+    var prevMenu = false;
+    var isSettingsOpen = false;
     var userId = null;
     var userName = null;
     var isLoaded = false;
@@ -405,14 +407,18 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         var optionsIcon = new Image();
         optionsIcon.src = resourcesPath + '/Icons/options.gif';
         $(optionsIcon).click(function(){
-            if(!(menu)){
+            if(!(isSettingsOpen)){
+                isSettingsOpen = true;
+                prevMenu = menu;
                 menu = SettingsWindow(game);
 
                 recordEvent("Settings", "Open");
 
                 menu.closeComplete = function(){
                     recordEvent("Settings", "Close");
-                    menu = null;
+                    menu = prevMenu;
+                    prevMenu = false;
+                    isSettingsOpen = false;
                 };
                 menu.show(canvas);
             }
@@ -443,28 +449,27 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         tileHeight: 32,
     };
 
-    var addSlideAction = function (camera) {
-        if (__this.userId != null) {
-            return;
-        }
+    var addSlideAction = function(camera){
+        var slideLastAction = false;
 
-        var width = __this.worldMetaData.width * __this.worldMetaData.tileWidth * 0.5;
-        var height = __this.worldMetaData.height * __this.worldMetaData.tileHeight * 0.70;
+        var addSlideActionSub = function (c) {
+            if (__this.userId != null) {
+                return;
+            }
 
-        var check = Math.random();
-        var w1 = Math.random() * width;
-        var w2 = 800;
-        var h = Math.random() * height;
+            var width = (__this.worldMetaData.width * __this.worldMetaData.tileWidth) - __this.display.size[0];
+            var height = __this.worldMetaData.height * __this.worldMetaData.tileHeight * 0.70;
 
-        if (check > 0.5) {
-            w2 += w1;
-        } else {
-            w1 += width;
-            w2 = w1 - w2;
-        }
+            var w1 = slideLastAction ? 0 : width;
+            var w2 = width * 0.5;
+            var h = Math.random() * height;
+            slideLastAction = !slideLastAction;
 
-        camera.addAction(new ArcCameraPanAction(10000, addSlideAction, w1, h, w2, h));
-    };
+            c.addAction(new ArcCameraPanAction(10000, addSlideActionSub, w1, h, w2, h));
+        };
+
+        addSlideActionSub(camera);
+    }
 
     this.start = function () {
         // Create Icons
