@@ -236,12 +236,17 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     });
 
     this.updateListeners.push(function (game, time) {
+        var pauseGame = false;
+
         if (menu) {
             menu.animate(time);
+            pauseGame = menu.pauseGame;
         }
 
+        if(!pauseGame){
+            __this.villageDisplay.tick(time, __this.display.camera.offset);
+        }
         
-        __this.villageDisplay.tick(time, __this.display.camera.offset);
         __this.hud.tick(time, worldAdapter, worldAdapter.module.currentMap);
         //drawScene();
     });

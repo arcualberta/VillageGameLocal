@@ -1,6 +1,7 @@
 // TODO: Change to ARC Base Object
 function GameMenu(title, width, height, backgroundImageUrl, classes) {
     var _this = this;
+    this.pauseGame = true;
 
     // Create the title bar
     var popup = $("<div></div>");
@@ -110,6 +111,8 @@ function LoginMenu(loginFunction) {
         submit.text("Login");
         submit[0].disabled = false;
     }, 1000)
+
+    menu.pauseGame = false;
 
     return menu;
 }

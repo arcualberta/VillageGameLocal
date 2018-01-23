@@ -118,8 +118,8 @@ var CharacterScripts = new ArcBaseObject();
 		}
 	}
 	CharacterScripts.prototype.FollowPlayer = function(player){
-		this.waypoint[0] = player.location[0];
-		this.waypoint[1] = player.location[1];
+		this.waypoint[0] = player.location[4];
+		this.waypoint[1] = player.location[5];
 	}
 	CharacterScripts.prototype.SetupFOVCharacter = function(state = "onwait", angle = 35, distance = 300){
 		this.fov.enabled = true;
