@@ -164,6 +164,8 @@ function CharacterSelectMenu(spriteSheets) {
     var animationTypes = ['down', 'up', 'left', 'right'];
     var direction = 0;
 
+    menu.pauseGame = false;
+
     // Functions for updating the pallette
     function updatePallette(r, g, b, light, med, dark) {
         setPaletteColor(light, r * 2.0, g * 2.0, b * 1.8);

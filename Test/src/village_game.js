@@ -8,7 +8,7 @@ VillageSettings.prototype = Object.create(ArcSettings.prototype);
 VillageSettings.prototype.init = function(name){
     ArcSettings.prototype.init.call(this, name);
     this.audio = {
-        volume: 1.0
+        volume: 0.5
     };
     this.video = {
         resolution: [800, 600],
@@ -21,8 +21,9 @@ VillageSettings.prototype.init = function(name){
             left: [37, 65], //Left and A
             right: [39, 68], //Right and D
             select: [13], //Enter
+            mute: [77] // M
         }
-    }
+    };
 };
 /**
 * @override
@@ -40,7 +41,7 @@ VillageSettings.prototype.save = function(game){
 VillageSettings.prototype.load = function(game){
     ArcSettings.prototype.load.call(this, game);
 
-    game.audio.setVolume(this.audio.volume);
+    game.setVolume(this.audio.volume);
     game.setFrameCap(this.video.fps);
 }
 
@@ -171,8 +172,6 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     __this.timestamp = -1;
 
     var worldAdapter = null;
-    var menu = false;
-    var prevMenu = false;
     var isSettingsOpen = false;
     var userId = null;
     var userName = null;
@@ -202,23 +201,10 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         __this.hud.addChild(minimap, "Mini Map");
     }
 
-    //TODO: Temp code for sounds. Fix for full version
-    var sounds = [
-        //new ArcSound("birds1", 3000, true, [0, 0], resourcesPath + '/Sounds/36090__genghis-attenborough__thrush-nightingale.wav'),
-        //new ArcSound("birds1", 3000, true, [3200, 3200], resourcesPath + '/Sounds/36090__genghis-attenborough__thrush-nightingale.wav'),
-        //new ArcSound("cans1", 1000, true, [1600, 300], resourcesPath + '/Sounds/139008__felix-blume__cans-in-the-wind-in-a-garden-in-ukraine-to-move-away-the-mole.wav'),
-    ];
-
-    for (var sound in sounds) {
-        this.audio.updateSound(sounds[sound], [-10000, -10000]);
-        this.audio.loadSound(sounds[sound], true, function (error) {
-            alert("Could not load sound due to: " + error);
-        });
-    }
-
     // Add the main Loop functionality
     var handleControls = function () {
         var actionList = __this.control.pullActionList();
+        var menu = __this.getMenu();
 
         // Check if we have a menu
         if (menu) {
@@ -236,14 +222,13 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     });
 
     this.updateListeners.push(function (game, time) {
-        var pauseGame = false;
+        var menu = __this.getMenu();
 
         if (menu) {
             menu.animate(time);
-            pauseGame = menu.pauseGame;
         }
 
-        if(!pauseGame){
+        if(!__this.isPaused()){
             __this.villageDisplay.tick(time, __this.display.camera.offset);
         }
         
@@ -255,11 +240,12 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         __this.villageDisplay.triggerDraw();
     });
 
-    var updateSounds = function (location) {
+    // TODO: Create location specific sound updates
+    /*var updateSounds = function (location) {
         for (var sound in sounds) {
             __this.audio.updateSound(sounds[sound], location);
         }
-    };
+    };*/
 
 //    var drawScene = function () {
 //        var displayAdapter = __this.display;
@@ -302,7 +288,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         var index = 0;
         var drawObject = null;
-        updateSounds(playerLoc);
+        //updateSounds(playerLoc);
 
         displayAdapter.clear();
 
@@ -333,7 +319,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     // Create the task functions
     this.currentTask = null;
     this.loadTask = function (title, url, onclose) {
-        menu = new TaskMenu(title, canvas.width - 100, canvas.height - 50);
+        var menu = new TaskMenu(title, canvas.width - 100, canvas.height - 50);
 
         __this.currentTask = new TaskScript(menu.canvas, title, url, worldAdapter.module.path, __this.taskWorker);
         menu.task = __this.currentTask;
@@ -361,14 +347,12 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         menu.show(canvas);
 
+        __this.setMenu(menu, false);
+
         return __this.currentTask;
     };
 
     // Useful functions    
-    this.setVolume = function (value) {
-        this.audio.setVolume(value);
-    };
-
     var setPlayer = function (spriteSheet) {
         __this.display.camera.clearActions();
 
@@ -400,7 +384,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
         // Add the player to the game
         __this.villageDisplay.setPlayer(userId, userName, location, spriteSheet.id, spriteSheet.palette, spriteSheet.getSimpleAnimations());
-        menu = false;
+        __this.setMenu(false, false);
 
         //__this.fullscreen();
     };
@@ -408,24 +392,24 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     // Add icons used by the user
     var createIcons = function (panel) {
 
-        // Create the sound icon
+        // Create the settings icon
         var optionsIcon = new Image();
         optionsIcon.src = resourcesPath + '/Icons/options.gif';
         $(optionsIcon).click(function(){
             if(!(isSettingsOpen)){
                 isSettingsOpen = true;
-                prevMenu = menu;
-                menu = SettingsWindow(game);
+                var menu = SettingsWindow(game);
 
                 recordEvent("Settings", "Open");
 
                 menu.closeComplete = function(){
                     recordEvent("Settings", "Close");
-                    menu = prevMenu;
                     prevMenu = false;
                     isSettingsOpen = false;
+                    __this.setMenu(false, false);
                 };
                 menu.show(canvas);
+                __this.setMenu(menu, true);
             }
         });
         panel.append(optionsIcon);
@@ -497,19 +481,21 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             // __this.villageWorker.postMessage([WORKER_SET_WORLD, result], [result.world]);
             __this.villageDisplay.readWorldState(result);
         }, function (dialog, name, lineNumber, player, speaker, onClose) {
-            menu = new DialogMenu(dialog, name, lineNumber ? lineNumber : 1, player, speaker);
+            var menu = new DialogMenu(dialog, name, lineNumber ? lineNumber : 1, player, speaker);
 
             recordEvent("Dialog", "Open", name);
 
             menu.closeComplete = function(){
                 recordEvent("Dialog", "Close", name);
 
-                menu = null;
+                __this.setMenu(false, false);
                 if(onClose){
                     onClose();
                 }
             };
             menu.show(canvas);
+
+            __this.setMenu(menu, false);
 
             return menu;
         }, __this);
@@ -526,16 +512,18 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         }
 
         // Show the login window
-        menu = new LoginMenu(worldAdapter.login, resourcesPath);
+        var menu = new LoginMenu(worldAdapter.login, resourcesPath);
 
         menu.closeComplete = function () {
-            userId = menu.userId;
-            userName = menu.userName;
+            userId = this.userId;
+            userName = this.userName;
             worldAdapter.requestWorldState(userId);
 
-            menu = new CharacterSelectMenu(worldAdapter.getSpriteSheetList());
-            menu.characterSelected = setPlayer;
-            menu.show(canvas);
+            var characterMenu = new CharacterSelectMenu(worldAdapter.getSpriteSheetList());
+            characterMenu.characterSelected = setPlayer;
+            characterMenu.show(canvas);
+
+            __this.setMenu(characterMenu, false);
         };
 
         worldAdapter.requestWorldState(null);
@@ -546,7 +534,70 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
             menu.show(canvas);
         });
+
+        __this.setMenu(menu, false);
     };
+
+    // Sounds Functions
+    {
+
+    }
+
+    // Pause Functions
+    {
+        var gamePaused = false;
+
+        this.pauseGame = function(){
+            gamePaused = true;
+            this.villageDisplay.onPause();
+        }
+
+        this.resumeGame = function(){
+            gamePaused = false;
+            this.villageDisplay.onResume();
+        }
+
+        this.isPaused = function(){
+            return gamePaused;
+        }
+    }
+
+    // Menu Functions
+    {
+        var menu = false;
+        var prevMenu = false;
+
+        this.setMenu = function(menuItem, holdPrevious){
+            if(menuItem){
+                if(holdPrevious){
+                    prevMenu = menu;
+                }else{
+                    prevMenu = false;
+                }
+
+                menu = menuItem;
+
+                if(menu.pauseGame){
+                    this.pauseGame();
+                }else if(__this.isPaused()){
+                    this.resumeGame();
+                }
+            }else{
+                if(prevMenu){
+                    var newMenu = prevMenu;
+                    prevMenu = false;
+                    this.setMenu(newMenu, false);
+                }else{
+                    menu = false;
+                    __this.resumeGame();
+                }
+            }
+        }
+
+        this.getMenu = function(){
+            return menu;
+        }
+    }
 
     $(window).resize(function (event) {
         __this.villageDisplay.resize(canvas.width, canvas.height);
@@ -565,4 +616,16 @@ VillageGame.prototype.resize = function(width, height) {
 VillageGame.prototype.fullscreen = function () {
     this.display.requestFullscreen();
     //this.villageWorker.postMessage([WORKER_RESIZE, canvas.width, canvas.height]);
+};
+
+// Sounds functions
+VillageGame.prototype.setVolume = function (value) {
+    this.audio.setVolume(value);
+};
+VillageGame.prototype.toggleMute = function() {
+    if(this.audio.getVolume() > 0.0){
+        this.setVolume(0.0);
+    }else{
+        this.setVolume(ArcSettings.Current.audio.volume);
+    }
 };

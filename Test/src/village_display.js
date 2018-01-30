@@ -4,23 +4,28 @@ var VillageDisplay = ArcBaseObject();
         var controls = ArcSettings.Current.gameplay.controls;
 
         // handle up
-        if(key == controls.up[0] || controls.up[1]){
-            this.playerKeys.up = true;
+        if(key == controls.up[0] || key == controls.up[1]){
+            this.playerMove.up = true;
         }
 
         // handle down
-        if(key == controls.down[0] || controls.down[1]){
-            this.playerKeys.down = true;
+        if(key == controls.down[0] || key == controls.down[1]){
+            this.playerMove.down = true;
         }
 
         // handle left
-        if(key == controls.left[0] || controls.left[1]){
-            this.playerKeys.left = true;
+        if(key == controls.left[0] || key == controls.left[1]){
+            this.playerMove.left = true;
         }
 
         // handle right
-        if(key == controls.right[0] || controls.right[1]){
-            this.playerKeys.right = true;
+        if(key == controls.right[0] || key == controls.right[1]){
+            this.playerMove.right = true;
+        }
+
+        // handle mute
+        if(key == controls.mute[0]){
+            this.game.toggleMute();
         }
     };
 
@@ -28,23 +33,23 @@ var VillageDisplay = ArcBaseObject();
         var controls = ArcSettings.Current.gameplay.controls;
 
         // handle up
-        if(key == controls.up[0] || controls.up[1]){
-            this.playerKeys.up = false;
+        if(key == controls.up[0] || key == controls.up[1]){
+            this.playerMove.up = false;
         }
 
         // handle down
-        if(key == controls.down[0] || controls.down[1]){
-            this.playerKeys.down = false;
+        if(key == controls.down[0] || key == controls.down[1]){
+            this.playerMove.down = false;
         }
 
         // handle left
-        if(key == controls.left[0] || controls.left[1]){
-            this.playerKeys.left = false;
+        if(key == controls.left[0] || key == controls.left[1]){
+            this.playerMove.left = false;
         }
 
         // handle right
-        if(key == controls.right[0] || controls.right[1]){
-            this.playerKeys.right = false;
+        if(key == controls.right[0] || key == controls.right[1]){
+            this.playerMove.right = false;
         }
     };
 
@@ -65,7 +70,7 @@ var VillageDisplay = ArcBaseObject();
         this.drawObjects = [];
         this.camera = camera;
 
-        this.playerKeys = {
+        this.playerMove = {
             up: false,
             down: false,
             left: false,
@@ -142,6 +147,39 @@ var VillageDisplay = ArcBaseObject();
                         break;
                 }
             }
+        }
+
+        // Deal with key states
+        var x = 0;
+        var y = 0;
+
+        if(this.playerMove.up){
+            --y;
+        }
+
+        if(this.playerMove.down){
+            ++y;
+        }
+
+        if(this.playerMove.left){
+            --x;
+        }
+
+        if(this.playerMove.right){
+            ++x;
+        }
+
+
+        if(x != 0 || y != 0){
+            var user = player.user;
+            var d = Math.sqrt((x * x) + (y * y));
+            var r = 80 / d;
+
+
+            player.waypointLoc[0] = user.location[4] + (x * r);
+            player.waypointLoc[1] = user.location[5] + (y * r); // Radiates from the bottom of thier feet.
+            //player.waypointLoc[1] = user.location[3] + (y * r); // Radiates from the bottom of thier feet.
+            //player.showWaypoint = true;
         }
     };
     VillageDisplay.prototype.updateWorld = function (time, actionList, cameraOffset) {
@@ -346,5 +384,16 @@ var VillageDisplay = ArcBaseObject();
         this.world.addPlayer(user);
 
         return user;
+    };
+    VillageDisplay.prototype.onPause = function(){
+        this.playerMove = {
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        }
+    };
+    VillageDisplay.prototype.onResume = function(){
+
     };
 }

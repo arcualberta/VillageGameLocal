@@ -115,7 +115,7 @@ ArcControlAdapter.prototype.init = function(canvas){
         }
     });
 
-    jcanvas.keydown(function(e){
+    $(document).keydown(function(e){
         var key = e.keyCode;
         __this.setKey(key, true);
         __this.addAction(CONTROL_KEY_DOWN, {
@@ -123,7 +123,7 @@ ArcControlAdapter.prototype.init = function(canvas){
         });
     });
     
-    jcanvas.keyup(function(e){
+    $(document).keyup(function(e){
         var key = e.keyCode;
         __this.setKey(key, false);
         __this.addAction(CONTROL_KEY_UP, {
