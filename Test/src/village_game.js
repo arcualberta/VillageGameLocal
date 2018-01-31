@@ -20,8 +20,8 @@ VillageSettings.prototype.init = function(name){
             down: [40, 83], //Down and S
             left: [37, 65], //Left and A
             right: [39, 68], //Right and D
-            select: [13], //Enter
-            mute: [77] // M
+            select: [13, -1], //Enter
+            mute: [77, -1] // M
         }
     };
 };

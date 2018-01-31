@@ -27,34 +27,49 @@ function arcGetParameter(paramName) {
 * @inherits {ArcBaseObject}
 */
 var ArcSettings = ArcBaseObject();
-ArcSettings.Current = null;
-ArcSettings.prototype.init = function(name){
-    this.name = name;
+{
+    ArcSettings.Current = null;
+    ArcSettings.prototype.init = function(name){
+        this.name = name;
 
-    this.general = {
-        memory: LEVEL_MED,
+        this.general = {
+            memory: LEVEL_MED,
+        };
     };
-};
-/**
-* Saves the settings into local storage.
-*/
-ArcSettings.prototype.save = function(){
-    localStorage.setItem(this.name, JSON.stringify(this));
-};
-/**
-* Loads settings from local storage.
-*/
-ArcSettings.prototype.load = function(game){
-    let data = null;
-    data = JSON.parse(localStorage.getItem(this.name));
+    /**
+    * Saves the settings into local storage.
+    */
+    ArcSettings.prototype.save = function(){
+        localStorage.setItem(this.name, JSON.stringify(this));
+    };
+    /**
+    * Loads settings from local storage.
+    */
+    ArcSettings.prototype.load = function(game){
+        let data = null;
+        data = JSON.parse(localStorage.getItem(this.name));
 
-    if(data){
-        for(var key in data){
-            this[key] = data[key];
-        }
+        mergeObject(this, data);
+
+        game.setMemoryLevel(this.general.memory);
     }
 
-    game.setMemoryLevel(this.general.memory);
+    function mergeObject(mainObject, inputObject){
+        if(inputObject){
+            var checkValue;
+
+            if(mainObject){
+                for(var key in mainObject){
+                    checkValue = typeof(mainObject[key]);
+                    if(checkValue == "object"){
+                        mergeObject(mainObject[key], inputObject[key]);
+                    }else{
+                        mainObject[key] = inputObject[key];
+                    }
+                }
+            }
+        }
+    }
 }
 
 var ArcConfig = ArcBaseObject();

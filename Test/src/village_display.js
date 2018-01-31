@@ -24,9 +24,11 @@ var VillageDisplay = ArcBaseObject();
         }
 
         // handle mute
-        if(key == controls.mute[0]){
+        if(key == controls.mute[0] || key == controls.mute[1]){
             this.game.toggleMute();
         }
+
+        
     };
 
     function handleKeyUp(key){

@@ -1,7 +1,7 @@
 (function(task, resourcePath){
 	var fontInfo = {
         font: "bold 20px sans-serif",
-        fillStyle: "darkgrey",
+        fillStyle: "black",
         textAlign: "left"
     };
 
@@ -67,6 +67,12 @@
 		}
 
 		score = connected / total;
+
+		if(score >= minScore){
+			fontInfo.fillStyle = "darkgreen";
+		}if(score >= maxScore){
+			fontInfo.fillStyle = "darkred";
+		}
 	}
 	
 	var drawBrush = function(display, model){
