@@ -1135,168 +1135,176 @@ var VillageModule = ArcBaseObject();
 
 // Minimap code
 var MiniMap = ArcBaseObject();
-MiniMap.prototype = Object.create(ArcRenderableObject.prototype)
-MiniMap.prototype.init = function(width, height, outWidth, outHeight, mask, image){
-    this.tickEnabled = true;
-    this.drawEnabled = true;
-	this.canvas = document.createElement('canvas');
-    this.mapCanvas = document.createElement('canvas');
-    this.scale = 1;
-    this.name = null;
-    this.location = new Float32Array(6);
-    this.size = new Uint16Array(4);
-    this.offset = new Float32Array(2);
-    this.map = null;
-    this.mask = mask;
-    this.image = image;
-    this.opacity = 1.0;
-    this.quadrant = 0;
-    this.quadrantWidth = 0;
-    this.quadrantHeight = 0;
+{
+    MiniMap.prototype = Object.create(ArcRenderableObject.prototype)
+    MiniMap.prototype.init = function(width, height, outWidth, outHeight, mask, image){
+        this.tickEnabled = true;
+        this.drawEnabled = true;
+    	this.canvas = document.createElement('canvas');
+        this.mapCanvas = document.createElement('canvas');
+        this.scale = 1;
+        this.name = null;
+        this.location = new Float32Array(6);
+        this.size = new Uint16Array(4);
+        this.offset = new Float32Array(2);
+        this.map = null;
+        this.mask = mask;
+        this.image = image;
+        this.opacity = 1.0;
+        this.quadrant = 0;
+        this.quadrantWidth = 0;
+        this.quadrantHeight = 0;
 
-    this.resize(width, height, outWidth, outHeight);
-    this.updateSize(width, height);
-};
-MiniMap.prototype.resize = function(width, height, outWidth, outHeight){
-    this.canvas.width = outWidth;
-    this.canvas.height = outHeight;
-	
-	this.mapCanvas.width = width;
-	this.mapCanvas.height = height
+        this.resize(width, height, outWidth, outHeight);
+        this.updateSize(width, height);
+    };
+    MiniMap.prototype.resize = function(width, height, outWidth, outHeight){
+        this.canvas.width = outWidth;
+        this.canvas.height = outHeight;
+    	
+    	this.mapCanvas.width = width;
+    	this.mapCanvas.height = height
 
-    this.context = this.canvas.getContext("2d");
-	this.mapContext = this.mapCanvas.getContext("2d");
-    this.mapContext.globalCompositeOperation = "destination-over";
+        this.context = this.canvas.getContext("2d");
+    	this.mapContext = this.mapCanvas.getContext("2d");
+        this.mapContext.globalCompositeOperation = "destination-over";
 
-    this.quadrantWidth = width >> 1;
-    this.quadrantHeight = height >> 1;
+        this.quadrantWidth = width >> 1;
+        this.quadrantHeight = height >> 1;
 
-    let context = this.context;
-    context.mozImageSmoothingEnabled = false;
-    context.webkitImageSmoothingEnabled = false;
-    context.msImageSmoothingEnabled = false;
-    context.imageSmoothingEnabled = false;
-};
-MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    let canvas = this.canvas;
-    canvas.complete = false;
+        let context = this.context;
+        context.mozImageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;
+    };
+    MiniMap.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        let canvas = this.canvas;
+        canvas.complete = false;
 
-    let map = this.map;
-    let context = this.context;
-    let scale = 1 / map.tileWidth;
-    let w = this.mapCanvas.width * map.tileWidth;
-    let h = this.mapCanvas.height * map.tileHeight;
-    let hw = w >> 1;
-    let hh = h >> 1;
-    let location = this.location;
-    let size = this.size;
+        let map = this.map;
+        let context = this.context;
+        let scale = 1 / map.tileWidth;
+        let w = this.mapCanvas.width * map.tileWidth;
+        let h = this.mapCanvas.height * map.tileHeight;
+        let hw = w >> 1;
+        let hh = h >> 1;
+        let x = this.offset[0];
+        let y = this.offset[1];
+        let qx = 0;
+        let qy = 0;
+        let location = this.location;
+        let size = this.size;
 
-    context.globalAlpha = this.opacity;
+        context.globalAlpha = this.opacity;
 
-    this.beginDraw();
-    switch(this.quadrant){
-        case 0:
-            this.mapContext.clearRect(0, 0, this.quadrantWidth, this.quadrantHeight);
-            map.drawMinimap(this, this.offset[0], this.offset[1], hw, hh, 0, 0, scale);
-            break;
+        this.beginDraw();
+        switch(this.quadrant){
+            case 0:
+                break;
 
-        case 1:
-            this.mapContext.clearRect(this.quadrantWidth, 0, this.quadrantWidth, this.quadrantHeight);
-            map.drawMinimap(this, this.offset[0] + hw, this.offset[1], hw, hh, this.quadrantWidth, 0, scale);
-            break;
+            case 1:
+                x += hw;
+                qx = this.quadrantWidth;
+                break;
 
-        case 2:
-            this.mapContext.clearRect(this.quadrantWidth, this.quadrantHeight, this.quadrantWidth, this.quadrantHeight);
-            map.drawMinimap(this, this.offset[0] + hw, this.offset[1] + hh, hw, hh, this.quadrantWidth, this.quadrantHeight, scale);
-            break;
+            case 2:
+                x += hw;
+                y += hh;
+                qx = this.quadrantWidth;
+                qy = this.quadrantHeight;
+                break;
 
-        case 3:
-            this.mapContext.clearRect(0, this.quadrantHeight, this.quadrantWidth, this.quadrantHeight);
-            map.drawMinimap(this, this.offset[0], this.offset[1] + hh, hw, hh, 0, this.quadrantHeight, scale);
-            break;
-    }
-	
-    this.endDraw();
-	
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Place Our Mask
-    context.drawImage(this.mask, 0, 0, canvas.width, canvas.height);
-    context.globalCompositeOperation = "source-atop";
-
-    context.drawImage(this.mapCanvas, 0, 0, canvas.width, canvas.height);
-
-    // Go back to the default drawing
-    context.globalCompositeOperation = "source-over"
-
-    // Draw the map image
-    context.drawImage(this.image, 0, 0, canvas.width, canvas.height);
-    
-    canvas.complete = true;
-
-    displayContext.updateImage(canvas);
-    displayContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, location[0], location[1], size[0], size[1]);
-};
-MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
-    this.map = map;  
-
-    if(worldAdapter.user){
-        let canvas = this.mapCanvas;
-        let user = map.players[worldAdapter.user.id]
-        let location = user.location;
-        let w = canvas.width * map.tileWidth;
-        let h = canvas.height * map.tileHeight;
-
-        this.offset[0] = location[4] - (w >> 1);
-        this.offset[1] = location[5] - (h >> 1);
-
-        if(map.waypoint.isVisible){
-            this.opacity = Math.max(0.6, this.opacity - 0.05);
-        }else{
-            this.opacity = Math.min(1.0, this.opacity + 0.05);
+            case 3:
+                y += hh;
+                qy = this.quadrantHeight;
+                break;
         }
-    }
+        this.mapContext.clearRect(qx, qy, this.quadrantWidth, this.quadrantHeight);
+        map.drawMinimap(this, x, y, hw, hh, qx, qy, scale);
+    	
+        this.endDraw();
+    	
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
-    this.quadrant = (this.quadrant + 1) % 4;
-};
-MiniMap.prototype.beginDraw = function(){
-    this.mapContext.beginPath();
-};
-MiniMap.prototype.fillRect = function(style, x, y, width, height){
-    let context = this.mapContext;
+        // Place Our Mask
+        context.drawImage(this.mask, 0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = "source-atop";
 
-    if(context.fillStyle != style){
-        context.fill();
-        context.closePath();
+        context.drawImage(this.mapCanvas, 0, 0, canvas.width, canvas.height);
 
-        context.fillStyle = style;
+        // Go back to the default drawing
+        context.globalCompositeOperation = "source-over"
 
-        context.beginPath();
-    }
+        // Draw the map image
+        context.drawImage(this.image, 0, 0, canvas.width, canvas.height);
+        
+        canvas.complete = true;
 
-    context.rect(x, y, width, height);
-};
-MiniMap.prototype.fillTriangle = function(style, x1, y1, x2, y2, x3, y3){
-    let context = this.mapContext;
+        displayContext.updateImage(canvas);
+        displayContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, location[0], location[1], size[0], size[1]);
+    };
+    MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){
+        this.map = map;  
 
-    if(context.fillStyle != style){
-        context.fill();
-        context.closePath();
+        if(worldAdapter.user){
+            let canvas = this.mapCanvas;
+            let user = map.players[worldAdapter.user.id]
+            let location = user.location;
+            let w = canvas.width * map.tileWidth;
+            let h = canvas.height * map.tileHeight;
 
-        context.fillStyle = style;
+            this.offset[0] = location[4] - (w >> 1);
+            this.offset[1] = location[5] - (h >> 1);
 
-        context.beginPath();
-    }
+            if(map.waypoint.isVisible){
+                this.opacity = Math.max(0.6, this.opacity - 0.05);
+            }else{
+                this.opacity = Math.min(1.0, this.opacity + 0.05);
+            }
+        }
 
-    context.moveTo(x1, y1);
-    context.lineTo(x2, y2);
-    context.lineTo(x3, y3);
-    context.lineTo(x1, y1);
-};
-MiniMap.prototype.endDraw = function(){
-    this.mapContext.fill();
-    this.mapContext.closePath();
-};
+        this.quadrant = (this.quadrant + 1) % 4;
+    };
+    MiniMap.prototype.beginDraw = function(){
+        this.mapContext.beginPath();
+    };
+    MiniMap.prototype.fillRect = function(style, x, y, width, height){
+        let context = this.mapContext;
+
+        if(context.fillStyle != style){
+            context.fill();
+            context.closePath();
+
+            context.fillStyle = style;
+
+            context.beginPath();
+        }
+
+        context.rect(x, y, width, height);
+    };
+    MiniMap.prototype.fillTriangle = function(style, x1, y1, x2, y2, x3, y3){
+        let context = this.mapContext;
+
+        if(context.fillStyle != style){
+            context.fill();
+            context.closePath();
+
+            context.fillStyle = style;
+
+            context.beginPath();
+        }
+
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.lineTo(x3, y3);
+        context.lineTo(x1, y1);
+    };
+    MiniMap.prototype.endDraw = function(){
+        this.mapContext.fill();
+        this.mapContext.closePath();
+    };
+}
 
 // Add minimap functions
 {

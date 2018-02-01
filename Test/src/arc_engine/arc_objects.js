@@ -194,7 +194,7 @@ var ArcArrayBuffer = new ArcBaseObject();
         array[j] = temp;
     };
 
-    var partition = function(func, array, left, right){
+    var lomutoPartition = function(func, array, left, right){
         var pivotValue = array[right];
         var partitionIndex = left;
 
@@ -208,9 +208,31 @@ var ArcArrayBuffer = new ArcBaseObject();
         return partitionIndex;
     };
 
+    var hoarePartition = function(func, array, left, right){
+        var pivotValue = array[left];
+        --left;
+        ++right;
+
+        while(true){
+            for(++left; func(array[left], pivotValue) < 0; ++left){
+                // used to find the location of i
+            }
+
+            for(--right; func(array[right], pivotValue) > 0; --right){
+                // used to find the location of j
+            }
+
+            if(left >= right){
+                return right;
+            }
+
+            swap(array, left, right);
+        }
+    }
+
     var quickSort = function(func, array, left, right){
         if(left < right){
-            var partitionIndex = partition(func, array, left, right);
+            var partitionIndex = hoarePartition(func, array, left, right);
 
             quickSort(func, array, left, partitionIndex - 1);
             quickSort(func, array, partitionIndex + 1, right);
