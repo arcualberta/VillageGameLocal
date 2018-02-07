@@ -4,45 +4,47 @@
 * @inherits {ArcSettings}
 */
 var VillageSettings = ArcBaseObject();
-VillageSettings.prototype = Object.create(ArcSettings.prototype);
-VillageSettings.prototype.init = function(name){
-    ArcSettings.prototype.init.call(this, name);
-    this.audio = {
-        volume: 0.5
+{
+    VillageSettings.prototype = Object.create(ArcSettings.prototype);
+    VillageSettings.prototype.init = function(name){
+        ArcSettings.prototype.init.call(this, name);
+        this.audio = {
+            volume: 0.5
+        };
+        this.video = {
+            resolution: [800, 600],
+            fps: 30
+        };
+        this.gameplay = {
+            controls: {
+                up: [38, 87], //Up and W
+                down: [40, 83], //Down and S
+                left: [37, 65], //Left and A
+                right: [39, 68], //Right and D
+                select: [13, -1], //Enter
+                mute: [77, -1] // M
+            }
+        };
     };
-    this.video = {
-        resolution: [800, 600],
-        fps: 30
-    };
-    this.gameplay = {
-        controls: {
-            up: [38, 87], //Up and W
-            down: [40, 83], //Down and S
-            left: [37, 65], //Left and A
-            right: [39, 68], //Right and D
-            select: [13, -1], //Enter
-            mute: [77, -1] // M
-        }
-    };
-};
-/**
-* @override
-* @param {VillageGame} The game to save the settings into.
-*/
-VillageSettings.prototype.save = function(game){
-    this.audio.volume = game.audio.getVolume();
+    /**
+    * @override
+    * @param {VillageGame} The game to save the settings into.
+    */
+    VillageSettings.prototype.save = function(game){
+        this.audio.volume = game.audio.getVolume();
 
-    ArcSettings.prototype.save.call(this);
+        ArcSettings.prototype.save.call(this);
+    }
+    /**
+    * @override
+    * @param {VillageGame} The game to load the settings into.
+    */
+    VillageSettings.prototype.load = function(game){
+        ArcSettings.prototype.load.call(this, game);
+
+        game.setVolume(this.audio.volume);
+        game.setFrameCap(this.video.fps);
 }
-/**
-* @override
-* @param {VillageGame} The game to load the settings into.
-*/
-VillageSettings.prototype.load = function(game){
-    ArcSettings.prototype.load.call(this, game);
-
-    game.setVolume(this.audio.volume);
-    game.setFrameCap(this.video.fps);
 }
 
 /**

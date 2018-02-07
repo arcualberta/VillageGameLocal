@@ -61,10 +61,12 @@ var ArcSettings = ArcBaseObject();
             if(mainObject){
                 for(var key in mainObject){
                     checkValue = typeof(mainObject[key]);
-                    if(checkValue == "object"){
-                        mergeObject(mainObject[key], inputObject[key]);
-                    }else{
-                        mainObject[key] = inputObject[key];
+                    if(checkValue != "function"){
+                        if(checkValue == "object"){
+                            mergeObject(mainObject[key], inputObject[key]);
+                        }else{
+                            mainObject[key] = inputObject[key];
+                        }
                     }
                 }
             }
