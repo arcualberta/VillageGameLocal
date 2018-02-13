@@ -365,14 +365,14 @@ var Character = ArcBaseObject();
             var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
             
             var frameCenter = this.location[4] - xOffset;
-            var frameTop = this.location[5] - frame.hHalf - yOffset;
+            var frameTop = this.location[5] - this.size[3] - yOffset;
 
             //displayContext.drawText()
             
             displayContext.drawImage(spriteSheet.image,
                     frame.x, frame.y, frame.width, frame.height,
                     frameCenter - frame.wHalf, frameTop,
-                    frame.drawWidth, frame.drawHeight);
+                    this.size[0], this.size[1]);
             
             // Debug features    
             if(window.debugMode){    

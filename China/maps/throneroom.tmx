@@ -217,6 +217,9 @@ this.removeThrone = function(caller, player, world, worldAdapter){
 if(this.stopCount &gt; 1){
 	this.drawable = false;
 	game.display.camera.target = player.user;
+}else{
+	this.scale = Math.min(1.0, 0.03 +  Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2)) / this.maxDist);
+	this.scale = Math.sqrt(this.scale)
 }</property>
     <property name="onidle" value=""/>
     <property name="onleave">this.stopCount = 0;
@@ -226,7 +229,17 @@ this.state = &quot;ongoodbye&quot;;</property>
     <property name="onstart">this.state = &quot;onwait&quot;;
 this.blockable = false;
 this.stopCount = 0;
-this.minimapColor = &quot;#FF0&quot;;</property>
+this.minimapColor = &quot;#FF0&quot;;
+this.maxDist = Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2));
+
+this.scale = 1;
+
+this.updateSize = function(width, height){
+	var w = Math.floor(width * this.scale);
+	var h = Math.floor(height * this.scale);
+	
+	ArcActor.prototype.updateSize.call(this, w, h);
+};</property>
     <property name="onwait" value=""/>
     <property name="spritesheet" value="villager_1"/>
    </properties>

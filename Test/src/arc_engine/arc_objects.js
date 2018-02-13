@@ -787,6 +787,11 @@ ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, 
     var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
     
     
+    /*displayContext.drawImage(spriteSheet.image,
+            frame.x, frame.y, frame.width, frame.height,
+            this.location[0], this.location[1],
+            frame.drawWidth, frame.drawHeight);*/
+
     displayContext.drawImage(spriteSheet.image,
             frame.x, frame.y, frame.width, frame.height,
             this.location[0], this.location[1],
