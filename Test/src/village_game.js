@@ -51,14 +51,14 @@ var VillageSettings = ArcBaseObject();
 * @class
 * @inherits {ArcCamera}
 */
-var VillagePlayerCamera = ArcBaseObject();
+var VillageObjectCamera = ArcBaseObject();
 {
 
-    VillagePlayerCamera.prototype = Object.create(ArcCamera.prototype);
-    VillagePlayerCamera.prototype.init = function(width, height){
+    VillageObjectCamera.prototype = Object.create(ArcCamera.prototype);
+    VillageObjectCamera.prototype.init = function(width, height){
         ArcCamera.prototype.init.call(this);
 
-        this.player = null;
+        this.target = null;
         this.controlDim = new Uint16Array(4);
         this.dimension = new Uint16Array(4);
         this.maxOffset = new Uint16Array(2);
@@ -69,10 +69,10 @@ var VillagePlayerCamera = ArcBaseObject();
         this.setDimension(width, height);
     };
 
-    VillagePlayerCamera.prototype.update = function(timeSinceLast) {
+    VillageObjectCamera.prototype.update = function(timeSinceLast) {
 
-        if(this.player != null){
-            var location = this.player.location;
+        if(this.target != null){
+            var location = this.target.location;
             var dimension = this.dimension;
             var control = this.controlDim;
 
@@ -128,7 +128,7 @@ var VillagePlayerCamera = ArcBaseObject();
         ArcCamera.prototype.update.call(this, timeSinceLast);
     }
 
-    VillagePlayerCamera.prototype.setDimension = function(width, height){
+    VillageObjectCamera.prototype.setDimension = function(width, height){
         this.dimension[0] = width;
         this.dimension[1] = height;
         this.dimension[2] = width >> 1;
@@ -140,7 +140,7 @@ var VillagePlayerCamera = ArcBaseObject();
         this.controlDim[3] = this.controlDim[1] >> 1;
     }
 
-    VillagePlayerCamera.prototype.centerOffset = function(x, y){
+    VillageObjectCamera.prototype.centerOffset = function(x, y){
         var dimension = this.dimension;
         x -= dimension[2];
         y -= dimension[3];
@@ -168,7 +168,7 @@ var VillagePlayerCamera = ArcBaseObject();
 var VillageGame = ArcBaseObject();
 VillageGame.prototype = Object.create(ArcGame.prototype);
 VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
-    ArcGame.prototype.init.call(this, canvas, arcGetDisplayAdapter(canvas, true, new VillagePlayerCamera(2, 2, 250, 250)), null, null, 30, true);
+    ArcGame.prototype.init.call(this, canvas, arcGetDisplayAdapter(canvas, true, new VillageObjectCamera(2, 2, 250, 250)), null, null, 30, true);
     var __this = this;
 
     __this.timestamp = -1;

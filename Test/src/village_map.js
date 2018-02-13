@@ -782,7 +782,7 @@ var VillageMap = ArcBaseObject();
                                 objectTileId = parseInt(objectTileId);
                                 var tileSheet = _this.getTileSheetForTile(objectTileId);
                                 if (tileSheet !== null) {
-                                    var tile = addTile(tileSheet, objectTileId, tileSheet.imageWidth, tileSheet.tileWidth * scale, tileSheet.tileHeight * scale).drawable();
+                                    var tile = addTile(tileSheet, objectTileId, tileSheet.imageWidth, tileSheet.tileWidth, tileSheet.tileHeight).drawable();
                                     objectWidth = Math.round(objectWidth == 0 ? tile.width * scale : objectWidth);
                                     objectHeight = Math.round(objectHeight == 0 ? tile.height * scale : objectHeight);
 

@@ -242,7 +242,7 @@ var VillageDisplay = ArcBaseObject();
         var user = this.addUser(id, name, location, spriteSheetId, palette, animations);
 
         this.player = id;
-        this.camera.player = user;
+        this.camera.target = user;
         this.camera.centerOffset(user.location[4], user.location[5]);
 
         return user;
