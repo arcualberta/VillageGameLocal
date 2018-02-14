@@ -1241,7 +1241,11 @@ var MiniMap = ArcBaseObject();
         
         canvas.complete = true;
 
+        if(this.quadrant == 3){
         displayContext.updateImage(canvas);
+        
+        }
+
         displayContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, location[0], location[1], size[0], size[1]);
     };
     MiniMap.prototype.tick = function(timeSinceLast, worldAdapter, map){

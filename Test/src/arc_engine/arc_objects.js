@@ -1466,7 +1466,7 @@ var ArcTileQuadTree = ArcBaseObject();
         this.insert(arcTile);
         return arcTile;
     };
-    ArcTileQuadTree.prototype.insert = function (value) {
+    /*ArcTileQuadTree.prototype.insert = function (value) {
         var nodes = this.nodes;
         if (nodes[0] !== null) {
             var index = this.getIndex(value.location[0], value.location[1], value.size[0], value.size[1]);
@@ -1477,7 +1477,7 @@ var ArcTileQuadTree = ArcBaseObject();
         }
 
         this.children.push(value);
-    };
+    };*/
     ArcTileQuadTree.prototype.calculateDrawSplit = function (x, y, width, height, offset, split) {
         // TODO: this needs to be calculated for repeating
         /*split.isSplit = false;
@@ -1613,8 +1613,8 @@ var ArcTileQuadTree = ArcBaseObject();
         this.getObjects(xOffset, yOffset, width, height, false, tileDraw);
         
         // Optimize drawing calls for the objects.
-        //sortOutputTiles(buffer);
-        buffer.sort(arcSortOutputTiles);
+        // Should we even bother sorting? These should be non overlapping elements.
+        //buffer.sort(arcSortOutputTiles);
         
         displayContext.drawTileLayer(buffer);
 

@@ -215,6 +215,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="43">
   <properties>
@@ -260,6 +265,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="52">
   <properties>
@@ -415,6 +425,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="83">
   <properties>
@@ -475,11 +490,21 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="95">
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="96">
   <properties>
@@ -520,6 +545,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="104">
   <properties>
@@ -610,6 +640,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="142">
   <properties>
@@ -620,6 +655,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="146">
   <properties>
@@ -720,6 +760,11 @@
   <properties>
    <property name="walkable" type="bool" value="true"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#ecd79c"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="181">
   <properties>
@@ -730,6 +775,13 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+ </tile>
+ <tile id="185">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="198">
   <properties>
@@ -766,6 +818,9 @@
    <property name="walkable" type="bool" value="false"/>
   </properties>
   <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
    <object id="1" x="11" y="0" width="9" height="30"/>
   </objectgroup>
  </tile>
@@ -908,6 +963,11 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="338">
   <properties>
@@ -943,10 +1003,27 @@
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
+ </tile>
+ <tile id="431">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="84694f"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="432">
   <properties>
    <property name="walkable" type="bool" value="false"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#680c00"/>
+   </properties>
+  </objectgroup>
  </tile>
 </tileset>

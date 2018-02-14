@@ -171,6 +171,11 @@
   <properties>
    <property name="minimap" value="#85c529"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#28aeee"/>
+   </properties>
+  </objectgroup>
   <animation>
    <frame tileid="39" duration="500"/>
    <frame tileid="229" duration="500"/>
@@ -344,6 +349,11 @@
   <properties>
    <property name="minimap" value="#ae997c"/>
   </properties>
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#ae997c"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="97">
   <properties>
@@ -789,10 +799,22 @@
   </properties>
  </tile>
  <tile id="456">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#28aeee"/>
+   </properties>
+  </objectgroup>
   <animation>
    <frame tileid="456" duration="500"/>
    <frame tileid="457" duration="500"/>
   </animation>
+ </tile>
+ <tile id="476">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="minimap" value="#ae997c"/>
+   </properties>
+  </objectgroup>
  </tile>
  <tile id="510">
   <properties>
