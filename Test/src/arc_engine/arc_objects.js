@@ -993,7 +993,13 @@ var QuadTree = ArcBaseObject();
     treeInteract.right = 0;
     treeInteract.bottom = 0;
 
-    var quadSort = function(a, b){ return a.location[3] - b.location[3]; };
+    var quadSort = function(a, b){ 
+        if(a.location[3] == b.location[3]){
+            return a.location[0] - b.location[0];
+        }
+
+        return a.location[3] - b.location[3]; 
+    };
 
     // Public functions
     QuadTree.prototype = Object.create(ArcRenderableObject.prototype);

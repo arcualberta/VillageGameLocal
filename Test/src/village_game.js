@@ -336,7 +336,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             recordEvent("Task", "Close", title);
 
             menu.close();
-            menu = false;
+            //menu = false;
         }
 
         menu.closeComplete = function(){
@@ -344,7 +344,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
                 onclose(menu);
             }
 
-            menu = null;
+            __this.setMenu(null, false);
         }
 
         menu.show(canvas);

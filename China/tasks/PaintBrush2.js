@@ -12,11 +12,18 @@
 	var score = 0.0;
 	var minScore = 0.75;
 	var maxScore = 1.1; // Over 1 to prevent any errors
+	var minSize = 0.10; // TODO: scale brush image based on the current users position and velocity
+	var medSize = 0.15;
+	var maxSize = 0.25;
 
 	// Private Functions
 	var distance = function(start, end){
 		return Math.sqrt(Math.pow(start[0] - end[0], 2.0) + Math.pow(start[1] - end[1], 2.0));
 	};
+
+	var length = function(vector){
+		return Math.sqrt(vector[0] * vector[0] + vector[1] * vector[1]);
+	}
 
 	var setDrawProperties = function(img){
 		let w = task.displayAdapter.size[0];
@@ -74,10 +81,19 @@
 			fontInfo.fillStyle = "darkred";
 		}
 	}
-	
+
 	var drawBrush = function(display, model){
 		var line = model.line;
 		if(line && line.time > 0){
+			// Claculate the velocity
+			line.endVelocity[0] = (line.end[0] - line.start[0]) / (line.time * display.size[0]);
+			line.endVelocity[1] = (line.end[1] - line.start[1]) / (line.time * display.size[1]);
+			
+			var acc = (length(line.endVelocity) - length(line.startVelocity)) / line.time;
+			var scale = 1.0 - Math.max(0.0, Math.min(1.0, acc * 10000)); // Negative acceleration will produce the largest scale.
+			var lastScale = model.brushImage.lastScale;
+			scale = (maxSize - minSize) * scale + minSize;
+
 			//DRAW the line
 			var dotCount = Math.max(1, Math.ceil(distance(line.start, line.end) / model.brushSpacing));
 			var dotStep = 1 / dotCount;
@@ -91,6 +107,8 @@
 				y = (line.start[1] * locDif) + (line.end[1] * loc);
 				loc += dotStep;
 				locDif -= dotStep;
+
+				model.brushImage.scale((scale - lastScale) * loc + lastScale);
 
 				drawContext.drawImage(model.brushImage, 0, 0, model.brushImage.width, model.brushImage.height, 
 					x - model.brushImage.halfWidth, y - model.brushImage.halfHeight, model.brushImage.scaleWidth, model.brushImage.scaleHeight);
@@ -107,7 +125,9 @@
 			isDrawing: false,
 			start: [0, 0],
 			end: [0, 0],
-			time: 0
+			time: 0,
+			startVelocity: [0, 0],
+			endVelocity: [0, 0]
 		};
 		model.brushSpacing = 2;
 		model.state = 0;
@@ -118,14 +138,17 @@
 		
 		// Load the brush
 		var brushImage = new Image();
+		brushImage.lastScale = 0.0;
 		brushImage.scale = function(amount){
+			brushImage.lastScale = amount;
+			console.log(amount);
 			brushImage.scaleWidth = Math.ceil(brushImage.width * amount);
 			brushImage.scaleHeight = Math.ceil(brushImage.height * amount);
 			brushImage.halfWidth = brushImage.scaleWidth >> 1;
 			brushImage.halfHeight = brushImage.scaleHeight >> 1;
 		};
 		brushImage.onload = function(){
-			brushImage.scale(0.15);
+			brushImage.scale(medSize);
 		};
 		brushImage.src = model.brushUrl;
 		model.brushImage = brushImage;
@@ -153,6 +176,8 @@
 		line.start[0] = line.end[0];
 		line.start[1] = line.end[1];
 		line.time = 0;
+		line.startVelocity[0] = line.endVelocity[0];
+		line.endVelocity[1] = line.endVelocity[1];
 
 		// Update the task
 		for(var i in actions){
@@ -162,6 +187,9 @@
 				switch(action.id){
 					case CONTROL_MOUSE1_UP:
 						line.isDrawing = false;
+						line.endVelocity[0] = 0;
+						line.endVelocity[1] = 0;
+						model.brushImage.scale(medSize);
 					case CONTROL_MOUSE1_DRAG:
 						line.end[0] = action.data.x;
 						line.end[1] = Math.min(action.data.y, model.bottom);

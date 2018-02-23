@@ -143,20 +143,27 @@
  <objectgroup name="objects">
   <object id="3" name="InteractTest" type="VillageObject" gid="443" x="80" y="476" width="20" height="20.6667">
    <properties>
-    <property name="oninteract" value="world.getObject(&quot;ThroneEvent&quot;).removeThrone(this, player, world, worldAdapter);"/>
+    <property name="oninteract" value="world.getObject(&quot;ThroneEvent&quot;).triggerIsland(this, player, world, worldAdapter);"/>
     <property name="onstart" value="this.interactEnabled = true;"/>
    </properties>
   </object>
   <object id="4" name="ThroneEvent" type="VillageObject" gid="569" x="270" y="59" width="30" height="30" visible="0">
    <properties>
-    <property name="onstart">
-this.removeThrone = function(caller, player, world, worldAdapter){
+    <property name="onstart">this.triggerIsland = function(caller, player, world, worldAdapter){
 	this.removeThrone = function(caller, player, world, worldAdapter){};
 	world.getChild(&quot;throne_layer&quot;).drawEnabled = false;
 	world.getChild(&quot;throne_lower&quot;).drawEnabled = false;
 	world.objects.removeChild(&quot;Throne&quot;);
 	game.display.camera.target = world.getObject(&quot;Emporer&quot;);
 	world.getObject(&quot;Emporer&quot;).state = &quot;onleave&quot;;
+}
+
+this.triggerMoney = function(caller, player, world, worldAdaper){
+	console.log(&quot;Whoo money!&quot;);
+}
+
+this.triggerPower = function(caller, player, world, worldAdapter){
+	console.log(&quot;Whoo power!&quot;);
 }</property>
    </properties>
   </object>
@@ -218,11 +225,11 @@ if(this.stopCount &gt; 1){
 	this.drawable = false;
 	game.display.camera.target = player.user;
 }else{
-	this.scale =  Math.max(0.03, Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2)) / this.maxDist);
+	this.scale =  Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2)) / this.maxDist;
+	this.scale = 0.97 * this.scale + 0.03;
 	this.speed = 0.08 * this.scale + 0.02;
-	this.scale = Math.sqrt(this.scale);
+	//this.scale = Math.sqrt(this.scale);
 }</property>
-    <property name="onidle" value=""/>
     <property name="onleave">this.stopCount = 0;
 this.waypoint[0] = 564;
 this.waypoint[1] = 182;
@@ -232,6 +239,7 @@ this.blockable = false;
 this.stopCount = 0;
 this.minimapColor = &quot;#FF0&quot;;
 this.maxDist = Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2));
+this.properties[&quot;currentTask&quot;] = 1;
 
 this.scale = 1;
 
@@ -240,8 +248,50 @@ this.updateSize = function(width, height){
 	var h = Math.floor(height * this.scale);
 	
 	ArcActor.prototype.updateSize.call(this, w, h);
-};</property>
-    <property name="onwait" value=""/>
+};
+
+this.triggerStoryDialog = function(player, world, worldAdapter){
+	var _this = this;
+	
+	var taskCompleted = function(){
+		switch(_this.properties[&quot;currentTask&quot;]){
+			case 1:
+				world.getObject(&quot;ThroneEvent&quot;).triggerMoney(this, player, world, worldAdapter);	
+				break;
+			case 2:
+				world.getObject(&quot;ThroneEvent&quot;).triggerPower(this, player, world, worldAdapter);	
+				break;
+			case 3:
+				world.getObject(&quot;ThroneEvent&quot;).triggerIsland(this, player, world, worldAdapter);	
+				break;
+		}
+
+		_this.properties[&quot;currentTask&quot;]++;
+	};
+	
+	var openTask = function(){
+		switch(_this.properties[&quot;currentTask&quot;]){
+			case 1:
+				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+				t.setBackground( worldAdapter.module.path + &quot;/tasks/wealth.png&quot;);
+				t.setTitle(&quot;Wealth&quot;);	
+				break;
+			case 2:
+				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+				t.setBackground( worldAdapter.module.path + &quot;/tasks/strength.png&quot;);
+				t.setTitle(&quot;Strength&quot;);
+				break;
+			case 3:
+				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+				t.setBackground( worldAdapter.module.path + &quot;/tasks/island.png&quot;);
+				t.setTitle(&quot;Island&quot;);
+				break;
+		}
+	};
+	
+	this.TriggerDialog('EMPORER_' + this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
+}</property>
+    <property name="ontalk" value="this.triggerStoryDialog(player, world, worldAdapter);"/>
     <property name="spritesheet" value="villager_1"/>
    </properties>
   </object>
