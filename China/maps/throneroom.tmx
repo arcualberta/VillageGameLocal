@@ -154,6 +154,10 @@
 	world.getChild(&quot;throne_layer&quot;).drawEnabled = false;
 	world.getChild(&quot;throne_lower&quot;).drawEnabled = false;
 	world.objects.removeChild(&quot;Throne&quot;);
+	world.objects.removeChild(&quot;Lion_Top_Left&quot;);
+	world.objects.removeChild(&quot;Lion_Bottom_Left&quot;);
+	world.objects.removeChild(&quot;Lion_Top_Right&quot;);
+	world.objects.removeChild(&quot;Lion_Bottom_Right&quot;);
 	game.display.camera.target = world.getObject(&quot;Emporer&quot;);
 	world.getObject(&quot;Emporer&quot;).state = &quot;onleave&quot;;
 }
@@ -274,12 +278,14 @@ this.triggerStoryDialog = function(player, world, worldAdapter){
 			case 1:
 				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
 				t.setBackground( worldAdapter.module.path + &quot;/tasks/wealth.png&quot;);
-				t.setTitle(&quot;Wealth&quot;);	
+				t.setTitle(&quot;Wealth&quot;);
+				t.setBrushSize(0.08, 0.35);	
 				break;
 			case 2:
 				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
 				t.setBackground( worldAdapter.module.path + &quot;/tasks/strength.png&quot;);
 				t.setTitle(&quot;Strength&quot;);
+				t.setBrushSize(0.08, 0.35);
 				break;
 			case 3:
 				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
@@ -292,7 +298,7 @@ this.triggerStoryDialog = function(player, world, worldAdapter){
 	this.TriggerDialog('EMPORER_' + this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
 }</property>
     <property name="ontalk" value="this.triggerStoryDialog(player, world, worldAdapter);"/>
-    <property name="spritesheet" value="villager_1"/>
+    <property name="spritesheet" value="emperor"/>
    </properties>
   </object>
  </objectgroup>

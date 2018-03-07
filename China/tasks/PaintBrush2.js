@@ -312,6 +312,11 @@
 		
 		this.model.cmpImage = img;
 	};
+
+	task.setBrushSize = function(newMinSize, newMaxSize){
+		minSize = newMinSize;
+		maxSize = newMaxSize;
+	}
 	
 	
 	init();

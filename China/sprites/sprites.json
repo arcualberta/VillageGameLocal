@@ -506,6 +506,10 @@
         "imperial_guard": {
             "image": "imperial%20guard.png",
             "animation": "animation_30x50"
+        },
+        "emperor": {
+            "image": "emperor.png",
+            "animation": "animation_30x50"
         }
     }
 }

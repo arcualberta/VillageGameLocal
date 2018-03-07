@@ -2354,7 +2354,7 @@ this.playerCaught = function(npc, player, worldAdapter){
 
 	var afterDialog = function(){
 		npc.TriggerDialog('CAUGHT_1', worldAdapter, player, function(){
-			parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
+			parent.load(&quot;throneroom&quot;, &quot;MainStart&quot;);
 			game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
 		});
 		//player.hasControl = true;
