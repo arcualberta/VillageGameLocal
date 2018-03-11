@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="108">
+<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" infinite="0" nextobjectid="108">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2356,6 +2356,7 @@ this.playerCaught = function(npc, player, worldAdapter){
 		npc.TriggerDialog('CAUGHT_1', worldAdapter, player, function(){
 			parent.load(&quot;throneroom&quot;, &quot;MainStart&quot;);
 			game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
+			game.display.camera.addAction(new ArcCameraFadeOut(5000, function(camera){}, 0.0, 0.0, 0.0));
 		});
 		//player.hasControl = true;
 		//game.display.camera.addAction(new ArcCameraFadeOut(5000, function(camera){}, 0.0, 0.0, 0.0));

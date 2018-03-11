@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="30" height="23" tilewidth="20" tileheight="20" nextobjectid="6">
+<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="left-down" width="30" height="23" tilewidth="20" tileheight="20" infinite="0" nextobjectid="8">
  <tileset firstgid="1" source="jail_cell.tsx"/>
  <tileset firstgid="253" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>

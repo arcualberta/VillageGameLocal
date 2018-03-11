@@ -340,11 +340,11 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         }
 
         menu.closeComplete = function(){
+            __this.setMenu(null, false);
+            
             if(onclose){
                 onclose(menu);
             }
-
-            __this.setMenu(null, false);
         }
 
         menu.show(canvas);

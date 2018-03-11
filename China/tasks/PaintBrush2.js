@@ -141,7 +141,7 @@
 		brushImage.lastScale = 0.0;
 		brushImage.scale = function(amount){
 			brushImage.lastScale = amount;
-			console.log(amount);
+			
 			brushImage.scaleWidth = Math.ceil(brushImage.width * amount);
 			brushImage.scaleHeight = Math.ceil(brushImage.height * amount);
 			brushImage.halfWidth = brushImage.scaleWidth >> 1;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" nextobjectid="24">
+<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" infinite="0" nextobjectid="42">
  <tileset firstgid="1" source="throneroom.tsx"/>
  <tileset firstgid="443" source="throneobjects.tsx"/>
  <tileset firstgid="452" source="village_tiles.tsx"/>
@@ -12,17 +12,21 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="1111" source="gold4.tsx"/>
+ <tileset firstgid="1112" source="gold1.tsx"/>
+ <tileset firstgid="1113" source="gold2.tsx"/>
+ <tileset firstgid="1114" source="gold3.tsx"/>
  <layer name="lower" width="19" height="28">
   <data encoding="csv">
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
+491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,1111,491,
+1112,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
+1113,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
+491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,443,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
-491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
-491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
-491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
-491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
-491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
+1114,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
@@ -78,15 +82,15 @@
  </layer>
  <layer name="middle" width="19" height="28">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,254,255,256,257,258,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,280,281,282,283,284,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,306,307,308,309,310,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,491,491,
+491,491,491,491,0,0,0,254,255,256,257,258,0,0,0,0,0,491,491,
+491,491,491,491,0,0,0,280,281,282,283,284,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,306,307,308,309,310,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,0,
@@ -110,15 +114,15 @@
  </layer>
  <layer name="throne_layer" width="19" height="28" opacity="0.44">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,253,
+253,253,253,253,0,0,0,253,253,253,253,253,0,0,0,0,0,253,253,
+253,253,253,253,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
+253,253,253,253,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -141,12 +145,10 @@
 </data>
  </layer>
  <objectgroup name="objects">
-  <object id="3" name="InteractTest" type="VillageObject" gid="443" x="80" y="476" width="20" height="20.6667">
-   <properties>
-    <property name="oninteract" value="world.getObject(&quot;ThroneEvent&quot;).triggerIsland(this, player, world, worldAdapter);"/>
-    <property name="onstart" value="this.interactEnabled = true;"/>
-   </properties>
-  </object>
+  <object id="33" name="Gold1" type="VillageObject" gid="1111" x="217.5" y="592.5" width="60" height="60" visible="0"/>
+  <object id="34" name="Gold2" type="VillageObject" gid="1113" x="82.5" y="577.5" width="100" height="90" visible="0"/>
+  <object id="35" name="Gold3" type="VillageObject" gid="1114" x="225" y="517.5" width="100" height="90" visible="0"/>
+  <object id="36" name="Gold4" type="VillageObject" gid="1112" x="292.5" y="675" width="100" height="90" visible="0"/>
   <object id="4" name="ThroneEvent" type="VillageObject" gid="569" x="270" y="59" width="30" height="30" visible="0">
    <properties>
     <property name="onstart">this.triggerIsland = function(caller, player, world, worldAdapter){
@@ -158,15 +160,18 @@
 	world.objects.removeChild(&quot;Lion_Bottom_Left&quot;);
 	world.objects.removeChild(&quot;Lion_Top_Right&quot;);
 	world.objects.removeChild(&quot;Lion_Bottom_Right&quot;);
-	game.display.camera.target = world.getObject(&quot;Emporer&quot;);
-	world.getObject(&quot;Emporer&quot;).state = &quot;onleave&quot;;
+	game.display.camera.target = world.getObject(&quot;Emperor&quot;);
+	world.getObject(&quot;Emperor&quot;).state = &quot;onleave&quot;;
 }
 
 this.triggerMoney = function(caller, player, world, worldAdaper){
+	for(var i = 1; i &lt;= 4; ++i){
+		world.getObject(&quot;Gold&quot; + i).parameters.visible = true;
+	}
 	console.log(&quot;Whoo money!&quot;);
 }
 
-this.triggerPower = function(caller, player, world, worldAdapter){
+this.triggerBanners = function(caller, player, world, worldAdapter){
 	console.log(&quot;Whoo power!&quot;);
 }</property>
    </properties>
@@ -181,45 +186,15 @@ this.triggerPower = function(caller, player, world, worldAdapter){
     <property name="walkable" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="8" name="Right_Bottom_Left" type="VillageObject" gid="447" x="70" y="418" width="40" height="40"/>
+  <object id="8" name="Light_Bottom_Left" type="VillageObject" gid="447" x="70" y="418" width="40" height="40"/>
   <object id="10" name="Light_Top_Left" type="VillageObject" gid="444" x="70" y="378" width="40" height="40"/>
-  <object id="11" name="Right_Bottom_Left" type="VillageObject" gid="447" x="460" y="418" width="40" height="40"/>
-  <object id="12" name="Right_Bottom_Left" type="VillageObject" gid="444" x="460" y="378" width="40" height="40"/>
+  <object id="11" name="Light_Bottom_Right" type="VillageObject" gid="447" x="460" y="418" width="40" height="40"/>
+  <object id="12" name="Light_Top_Right" type="VillageObject" gid="444" x="460" y="378" width="40" height="40"/>
   <object id="13" name="Throne" type="VillageObject" gid="1098" x="217" y="499" width="138" height="93"/>
   <object id="14" name="Lion_Top_Right" type="VillageObject" gid="676" x="346" y="491" width="30" height="30"/>
   <object id="15" name="Lion_Top_Left" type="VillageObject" gid="673" x="194" y="491" width="30" height="30"/>
-  <object id="2" name="MainStart" type="PlayerStart" x="274" y="809.5" width="20" height="19"/>
-  <object id="19" name="Chair2" type="VillageObject" gid="443" x="154" y="760" width="40" height="40">
-   <properties>
-    <property name="walkable" value="false"/>
-   </properties>
-  </object>
-  <object id="21" name="Chair3" type="VillageObject" gid="443" x="154" y="856" width="40" height="40">
-   <properties>
-    <property name="walkable" value="false"/>
-   </properties>
-  </object>
-  <object id="16" name="Chair1" type="VillageObject" gid="443" x="154" y="680" width="40" height="40">
-   <properties>
-    <property name="walkable" value="false"/>
-   </properties>
-  </object>
-  <object id="20" name="Chair5" type="VillageObject" gid="443" x="375" y="760" width="40" height="40">
-   <properties>
-    <property name="walkable" value="false"/>
-   </properties>
-  </object>
-  <object id="22" name="Chair6" type="VillageObject" gid="443" x="375" y="856" width="40" height="40">
-   <properties>
-    <property name="walkable" value="false"/>
-   </properties>
-  </object>
-  <object id="18" name="Chair4" type="VillageObject" gid="443" x="375" y="680" width="40" height="40">
-   <properties>
-    <property name="walkable" value="false"/>
-   </properties>
-  </object>
-  <object id="23" name="Emporer" type="NPC" gid="1099" x="270" y="540" width="30" height="50">
+  <object id="2" name="MainStart" type="PlayerStart" x="270" y="810" width="30" height="30"/>
+  <object id="23" name="Emperor" type="NPC" gid="1099" x="270" y="540" width="30" height="50">
    <properties>
     <property name="ongoodbye">if(!this.lastStep[2]){
 	this.stopCount++;
@@ -256,36 +231,45 @@ this.updateSize = function(width, height){
 
 this.triggerStoryDialog = function(player, world, worldAdapter){
 	var _this = this;
-	
+
 	var taskCompleted = function(){
 		switch(_this.properties[&quot;currentTask&quot;]){
 			case 1:
-				world.getObject(&quot;ThroneEvent&quot;).triggerMoney(this, player, world, worldAdapter);	
+				world.getObject(&quot;ThroneEvent&quot;).triggerBanners(this, player, world, worldAdapter);	
 				break;
 			case 2:
-				world.getObject(&quot;ThroneEvent&quot;).triggerPower(this, player, world, worldAdapter);	
+				world.getObject(&quot;ThroneEvent&quot;).triggerMoney(this, player, world, worldAdapter);	
 				break;
 			case 3:
 				world.getObject(&quot;ThroneEvent&quot;).triggerIsland(this, player, world, worldAdapter);	
+				return;
 				break;
 		}
 
 		_this.properties[&quot;currentTask&quot;]++;
+		_this.TriggerDialog('EMPEROR_' + _this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
+		
 	};
 	
 	var openTask = function(){
 		switch(_this.properties[&quot;currentTask&quot;]){
 			case 1:
-				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+				var sPath = worldAdapter.module.path + &quot;/tasks/strength.png&quot;;
+console.log(sPath);
+				var t = _this.TriggerTask('PaintBrush2', worldAdapter, function(){
+					var t2 = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+					t2.setBackground(sPath);
+					t2.setTitle(&quot;Strength&quot;);
+					t2.setBrushSize(0.08, 0.35);
+				});
 				t.setBackground( worldAdapter.module.path + &quot;/tasks/wealth.png&quot;);
 				t.setTitle(&quot;Wealth&quot;);
 				t.setBrushSize(0.08, 0.35);	
 				break;
 			case 2:
 				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
-				t.setBackground( worldAdapter.module.path + &quot;/tasks/strength.png&quot;);
-				t.setTitle(&quot;Strength&quot;);
-				t.setBrushSize(0.08, 0.35);
+				t.setBackground( worldAdapter.module.path + &quot;/tasks/gold_outline.png&quot;);
+				t.setTitle(&quot;Gold&quot;);
 				break;
 			case 3:
 				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
@@ -295,14 +279,98 @@ this.triggerStoryDialog = function(player, world, worldAdapter){
 		}
 	};
 	
-	this.TriggerDialog('EMPORER_' + this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
+	this.TriggerDialog('EMPEROR_' + this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
+}
+
+this.triggerGuards = function(world, worldAdapter, player){
+	game.display.camera.target = player.user;
+
+	this.TriggerDialog('ACT_3_BEGIN_2', worldAdapter, player, function(){
+		var guard = world.getObject(&quot;Guard 1&quot;);
+		guard.properties[&quot;playerSpeed&quot;] = player.speed;
+		player.speed = guard.speed;
+		guard.InitializePath(&quot;PATH_GUARD_1&quot;);
+
+		guard = world.getObject(&quot;Guard 2&quot;);
+		guard.InitializePath(&quot;PATH_GUARD_2&quot;);
+		
+		player.waypointLoc[0] = 570;
+		player.waypointLoc[1] = 1200;
+	});
 }</property>
     <property name="ontalk" value="this.triggerStoryDialog(player, world, worldAdapter);"/>
     <property name="spritesheet" value="emperor"/>
    </properties>
   </object>
+  <object id="26" name="Main Guard" type="NPC" gid="1099" x="300" y="570" width="30" height="50">
+   <properties>
+    <property name="spritesheet" value="imperial_guard"/>
+   </properties>
+  </object>
+  <object id="27" name="PATH_GUARD_1" type="Path" x="307.5" y="780">
+   <polyline points="0,0 0,-180 37.5,-180"/>
+  </object>
+  <object id="29" name="Guard 1" type="NPC" gid="1099" x="292.5" y="810" width="30" height="50">
+   <properties>
+    <property name="onafterpathupdate">var localPath = this.path;
+var path = world.getObject(localPath.name);
+
+if(localPath.point &gt;= path.pointCount){
+	this.waypoint[0] = this.location[4];
+	this.waypoint[1] = this.location[5];
+	this.direction = 1;
+	this.updateAnimation();
+
+	this.state = &quot;onwait&quot;;
+
+	player.speed = this.properties[&quot;playerSpeed&quot;];	
+
+	var emperor = world.getObject(&quot;Emperor&quot;);
+	emperor.triggerStoryDialog(player, world, worldAdapter);
+}</property>
+    <property name="spritesheet" value="imperial_guard"/>
+   </properties>
+  </object>
+  <object id="30" name="Guard 2" type="NPC" gid="1099" x="247.5" y="810" width="30" height="50">
+   <properties>
+    <property name="onafterpathupdate">var localPath = this.path;
+var path = world.getObject(localPath.name);
+
+if(localPath.point &gt;= path.pointCount){
+	this.waypoint[0] = this.location[4];
+	this.waypoint[1] = this.location[5];
+	this.direction = 3;
+	this.updateAnimation();
+	this.state = &quot;onwait&quot;;	
+}</property>
+    <property name="spritesheet" value="imperial_guard"/>
+   </properties>
+  </object>
+  <object id="32" name="PATH_GUARD_2" type="Path" x="262.5" y="780">
+   <polyline points="0,0 0,-180 -45,-180"/>
+  </object>
  </objectgroup>
- <objectgroup name="triggers"/>
+ <objectgroup name="triggers">
+  <object id="24" name="StoryTrigger" type="ScriptTrigger" x="240" y="795" width="90" height="45">
+   <properties>
+    <property name="oninteract">var _this = this;
+player.hasControl = false;
+player.stats.jailTalkback++;
+
+var emperor = world.getObject(&quot;Emperor&quot;);
+game.display.camera.target = emperor;
+
+game.display.camera.addAction(new ArcCameraFadeIn(3000, function(camera){
+	world.triggers.removeChild(_this.name);
+	world.getObject(&quot;Main Guard&quot;).TriggerDialog(&quot;ACT_3_BEGIN_1&quot;, worldAdapter, player, function(){
+		emperor.triggerGuards(world, worldAdapter, player);
+});;
+}, 0.0, 0.0, 0.0));</property>
+    <property name="onstart">this.interactEnabled = true;
+game.display.camera.addAction(new ArcCameraFadeOut(1, function(camera){}, 0.0, 0.0, 0.0));</property>
+   </properties>
+  </object>
+ </objectgroup>
  <layer name="high" width="19" height="28" opacity="0.47">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

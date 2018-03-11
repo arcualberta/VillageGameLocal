@@ -1234,10 +1234,12 @@ var QuadTree = ArcBaseObject();
                     ++i;
                 }
             }
+        }else if(this.children.length > QuadTree.MAX_OBJECTS || this.level >= QuadTree.MAX_LEVELS){
+            console.log("Invalid QuadTree State for " + value.name + " at index "  + (this.children.length - 1) + " level " + this.level);
         }
     };
     QuadTree.prototype.getObjects = function (x, y, width, height, returnObjects, executeFunction) {
-        if(this.inLocation(x, y, x + width, y + width)){
+        if(this.inLocation(x, y, x + width, y + height)){
             for (var i = 0; i < this.children.length; ++i) {
                 if(returnObjects) returnObjects.push(this.children[i]);
 
@@ -1377,6 +1379,29 @@ var QuadTree = ArcBaseObject();
                 QuadTree.MAX_OBJECTS = 10;
                 QuadTree.MAX_LEVELS = 15;
                 break;   
+        }
+    }
+
+    QuadTree.prototype.Write = function(name){
+        if(!(name)){
+            name = this.name;
+        }
+
+        console.log(name + " : " + this.location.toString() );
+
+        for(var i = 0; i < this.children.length; ++i){
+            if(this.children[i]){
+                console.log(this.children[i].name);
+            }
+        }
+
+        if(this.nodes){
+            for(var i = 0; i < this.nodes.length; ++i){
+                if(this.nodes[i] !== null){
+                    console.log("");
+                    this.nodes[i].Write(name + "-" + i);
+                }
+            }
         }
     }
 }
