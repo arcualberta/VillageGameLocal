@@ -16,7 +16,8 @@
   "dependencies": {
     "express": "^4.16.2",
     "fs-extra": "^4.0.2",
-    "uglify-es": "file:..\\..\\..\\AppData\\Local\\Temp\\npm-6660-20c9f0c9\\git-cache-a7627c2e8101\\68645b28d32b426564929fb8f3903e91d31a8bc6",
-    "uglify-js": "git+https://github.com/mishoo/UglifyJS2.git#harmony"
+    "uglify-es": "git://github.com/mishoo/UglifyJS2.git#harmony",
+    "uglify-js": "git+https://github.com/mishoo/UglifyJS2.git#harmony",
+    "uglifyjs": "^2.4.11"
   }
 }
