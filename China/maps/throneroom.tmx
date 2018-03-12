@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" infinite="0" nextobjectid="42">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" nextobjectid="48">
  <tileset firstgid="1" source="throneroom.tsx"/>
  <tileset firstgid="443" source="throneobjects.tsx"/>
  <tileset firstgid="452" source="village_tiles.tsx"/>
@@ -349,6 +349,12 @@ if(localPath.point &gt;= path.pointCount){
   <object id="32" name="PATH_GUARD_2" type="Path" x="262.5" y="780">
    <polyline points="0,0 0,-180 -45,-180"/>
   </object>
+  <object id="42" name="Chair 1" type="VillageObject" gid="443" x="360" y="860.5" width="40" height="40"/>
+  <object id="43" name="Chair 2" type="VillageObject" gid="443" x="360" y="770.5" width="40" height="40"/>
+  <object id="44" name="Chair 3" type="VillageObject" gid="443" x="360" y="680.5" width="40" height="40"/>
+  <object id="45" name="Chair 6" type="VillageObject" gid="443" x="170" y="681" width="40" height="40"/>
+  <object id="46" name="Chair 5" type="VillageObject" gid="443" x="170" y="771" width="40" height="40"/>
+  <object id="47" name="Chair 4" type="VillageObject" gid="443" x="170" y="861" width="40" height="40"/>
  </objectgroup>
  <objectgroup name="triggers">
   <object id="24" name="StoryTrigger" type="ScriptTrigger" x="240" y="795" width="90" height="45">

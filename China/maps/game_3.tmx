@@ -2108,7 +2108,7 @@ if(performance &amp;&amp; performance.now){
   <object id="40" name="FromEast1" type="PlayerStart" x="47" y="906" width="14" height="16"/>
   <object id="42" name="FromNorth1" type="PlayerStart" x="622.333" y="50.6667" width="14" height="16"/>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
+ <objectgroup name="triggers">
   <object id="31" name="CloudTrigger" type="ScriptTrigger" x="700" y="1278" width="451" height="184">
    <properties>
     <property name="oninteract">// TODO: Stop Character
@@ -2117,7 +2117,7 @@ worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
 if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
 	world.triggers.removeChild(&quot;CloudTrigger&quot;);
 	worldAdapter.showMessage(&quot;CLOUD_1&quot;, false, player, this, function(){
-		let cloud = world.objects.getChild(&quot;Cloud&quot;);
+		let cloud = world.getObject(&quot;Cloud&quot;);
 		let waypoint = cloud.waypoint;
 		waypoint[0] = 1502;
 		waypoint[1] = 2618;
