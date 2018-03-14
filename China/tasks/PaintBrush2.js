@@ -12,9 +12,9 @@
 	var score = 0.0;
 	var minScore = 0.75;
 	var maxScore = 1.1; // Over 1 to prevent any errors
-	var minSize = 0.10; // TODO: scale brush image based on the current users position and velocity
-	var medSize = 0.15;
-	var maxSize = 0.25;
+	var minSize = 0.08; // TODO: scale brush image based on the current users position and velocity
+	var medSize = 0.10;
+	var maxSize = 0.20;
 
 	// Private Functions
 	var distance = function(start, end){
@@ -90,6 +90,7 @@
 			line.endVelocity[1] = (line.end[1] - line.start[1]) / (line.time * display.size[1]);
 			
 			var acc = (length(line.endVelocity) - length(line.startVelocity)) / line.time;
+			console.log(acc);
 			var scale = 1.0 - Math.max(0.0, Math.min(1.0, acc * 10000)); // Negative acceleration will produce the largest scale.
 			var lastScale = model.brushImage.lastScale;
 			scale = (maxSize - minSize) * scale + minSize;
