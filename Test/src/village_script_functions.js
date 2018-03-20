@@ -13,6 +13,8 @@ var CharacterScripts = new ArcBaseObject();
 		this.AttachFunction("SetupFOVCharacter");
 		this.AttachFunction("CoolDown");
 		this.AttachFunction("SetDirection");
+		this.AttachFunction("ShowPopup");
+		this.AttachFunction("HidePopup");
 	};
 	CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 		let waypoint = this.waypoint;
@@ -140,6 +142,44 @@ var CharacterScripts = new ArcBaseObject();
 
 		if(this.stats.coolDown < 0){
 			this.stats.coolDown == 0;
+		}
+	};
+
+	CharacterScripts.prototype.ShowPopup = function(worldAdapter, name, scale){
+		if(!(worldAdapter.popupSprites)){
+			worldAdapter.popupSprites = {};
+		}
+
+		var spriteVal = worldAdapter.popupSprites[name];
+		var _this = this;
+
+		var setPopup = function(){
+			_this.setPopup(spriteVal.image, spriteVal.image.width * scale, spriteVal.image.height * scale);
+			_this.popup.drawEnabled = true;
+		}
+
+		if(!(spriteVal)){
+			spriteVal = {
+					path: worldAdapter.module.path + "/images/" + name + ".png"
+			};
+
+			worldAdapter.popupSprites[name] = spriteVal;
+		}
+
+		if(!(spriteVal.image)){
+			spriteVal.image = new Image();
+			spriteVal.image.onload = setPopup;
+
+			spriteVal.image.src = spriteVal.path;
+		}else{
+			setPopup();
+		}
+    
+	};
+
+	CharacterScripts.prototype.HidePopup = function(){
+		if(this.popup){
+			this.popup.drawEnabled = false;
 		}
 	};
 }

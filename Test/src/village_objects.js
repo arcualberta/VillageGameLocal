@@ -69,7 +69,7 @@ var Character = ArcBaseObject();
         return null;
     }
 
-    function evaluateFOV(village){
+    function evaluateFOV(village, worldAdapter){
         var nx, ny, v;
         var angle = 1.0 - Math.cos(this.fov.angle);
 
@@ -143,9 +143,9 @@ var Character = ArcBaseObject();
         var player = evaluateViewAngle(-angle, angle, nx, ny, this.location[4], this.location[5], 0, this.fov.distance, village)
 
         if(player && this.onsee){
-            this.onsee(-1, player, village);
+            this.onsee(-1, player, village, worldAdapter);
         }else if(this.onnosee){
-            this.onnosee(-1, player, village);
+            this.onnosee(-1, player, village, worldAdapter);
         }
 
         /*var players = village.players;
@@ -284,6 +284,7 @@ var Character = ArcBaseObject();
         var dist = (speed * time) / Math.sqrt((xDif * xDif) + (yDif * yDif));
         var x = Math.round(xDif * dist);
         var y = Math.round(yDif * dist);
+        var popup = null;
 
         // Set the new values
         var isChanged = true;
@@ -373,6 +374,10 @@ var Character = ArcBaseObject();
                     frame.x, frame.y, frame.width, frame.height,
                     frameCenter - frame.wHalf, frameTop,
                     this.size[0], this.size[1]);
+
+            if(this.popup && this.popup.drawEnabled){
+                this.popup.draw(displayContext, frameCenter, frameTop, width, height);
+            }
             
             // Debug features    
             if(window.debugMode){    
@@ -439,9 +444,36 @@ var Character = ArcBaseObject();
         }
 
         if(this.fov.enabled){
-            evaluateFOV.call(this, village);
+            evaluateFOV.call(this, village, worldAdapter);
         }
     };
+
+    Character.prototype.setPopup = function(image, width, height){
+        if(!(this.popup)){
+            this.popup = new PlayerPopup();
+        }
+        
+        this.popup.image = image;
+        this.popup.updateSize(width, height);
+    }
+}
+
+var PlayerPopup = ArcBaseObject();
+{
+    PlayerPopup.prototype = Object.create(ArcRenderableObject.prototype);
+    PlayerPopup.prototype.init = function(){
+        ArcRenderableObject.prototype.init.call(this, false, false);
+        this.image = null;
+    }
+
+    PlayerPopup.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        var image = this.image;
+
+        displayContext.drawImage(image,
+                    0, 0, image.width, image.height,
+                    xOffset + this.location[0], yOffset + this.location[1],
+                    this.size[0], this.size[1]);
+    }
 }
 
 // A non playable character
