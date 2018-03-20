@@ -2288,6 +2288,7 @@ this.fov.color[1] = 1.0;
 
 // Return to position
 if(this.state == &quot;onfollowing&quot;){
+this.HidePopup();
 this.state = &quot;oncooling&quot;;
 this.stats.coolDown = 10000;
 }
@@ -2295,6 +2296,7 @@ this.stats.coolDown = 10000;
     <property name="onsee">this.fov.color[0] = 1.0;
 this.fov.color[1] = 0.0;
 
+this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
 this.FollowPlayer(player);
 this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();

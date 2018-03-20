@@ -7,5 +7,11 @@
 	"title": {
 		"music": "/sound/ChinaAliveMusic.wav"
 	}
-
+	"popup_sprite": {
+		"huh": "/images/speech_bubble_1.png",
+		"question1": "/images/speech_bubble_2.png",
+		"alert1": "/images/speech_bubble_3.png",
+		"what": "/images/speech_bubble_4.png",
+		"alert2": "/images/speech_bubble_5.png"
+	}
 }
