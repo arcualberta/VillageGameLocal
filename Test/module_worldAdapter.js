@@ -79,6 +79,14 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
 
     this.config = new ArcConfig(this.module.path + "/config.json");
 
+    if(this.config.containsKey("code")){
+        codeFiles = this.config.getEntry("code");
+
+        for(var c = 0; c < codeFiles.length; ++c){
+            arcImportJavascript(this.module.path + "/" + codeFiles[c]);
+        }
+    }
+
     $(function () {
         // Add the css
         var head = document.getElementsByTagName('head')[0];

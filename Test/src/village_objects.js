@@ -490,7 +490,7 @@ NPC.STATE = [
     "path", // The character follows a given path
 ];
 NPC.prototype = Object.create(Character.prototype);
-NPC.prototype.init = function (name, type, location, size, roation, properties) { // All village objects need the construction values in this order.
+NPC.prototype.init = function (name, type, location, size, rotation, properties) { // All village objects need the construction values in this order.
     Character.prototype.init.call(this, name, name);
     this.properties = properties;
     this.setState("idle");

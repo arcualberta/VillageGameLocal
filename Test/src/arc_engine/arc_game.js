@@ -21,6 +21,13 @@ function arcGetParameter(paramName) {
     return false;
 }
 
+function arcImportJavascript(url){
+    var script = document.createElement("script"); 
+    script.src = url;
+
+    document.head.appendChild(script);
+}
+
 /**
 * The object containing settings information for game.
 * @class
@@ -83,10 +90,15 @@ var ArcConfig = ArcBaseObject();
 
         if(!loaded){
             $.ajax({
-                dataType: "json",
                 url: src,
-                data: {},
-                success: function(data){
+                method: "GET",
+                success: function(result){
+                    var data = result;
+
+                    if (typeof data === "string") {
+                        data = JSON.parse(result);
+                    }
+
                     _this.data = data;
                     _this.loaded = true;
                 },

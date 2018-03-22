@@ -2598,40 +2598,9 @@
  </layer>
  <objectgroup name="objects">
   <object id="40" name="FromSouth1" type="PlayerStart" x="621" y="833" width="14" height="16"/>
-  <object id="42" name="Guard1" type="NPC" gid="647" x="774.333" y="275" width="30" height="50">
+  <object id="42" name="Guard1" type="ImperialGuard" gid="647" x="774.333" y="275" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path1&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path1"/>
    </properties>
   </object>
   <object id="43" name="Path1" type="Path" x="816.666" y="271.333">
@@ -2681,224 +2650,34 @@ this.fov.color[3] = 0.8;
   </object>
   <object id="66" name="Door1" type="VillageObject" gid="72" x="600" y="750" width="30" height="30"/>
   <object id="67" name="Door2" type="VillageObject" gid="73" x="630" y="750" width="30" height="30"/>
-  <object id="72" name="Guard2" type="NPC" gid="647" x="623" y="205" width="30" height="50">
+  <object id="72" name="Guard2" type="ImperialGuard" gid="647" x="623" y="205" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path2&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path2"/>
    </properties>
   </object>
-  <object id="73" name="Guard3" type="NPC" gid="647" x="810" y="467" width="30" height="50">
+  <object id="73" name="Guard3" type="ImperialGuard" gid="647" x="810" y="467" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path3&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path3"/>
    </properties>
   </object>
-  <object id="74" name="Guard4" type="NPC" gid="647" x="954" y="656" width="30" height="50">
+  <object id="74" name="Guard4" type="ImperialGuard" gid="647" x="954" y="656" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path4&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path4"/>
    </properties>
   </object>
-  <object id="75" name="Guard5" type="NPC" gid="647" x="604" y="669" width="30" height="50">
+  <object id="75" name="Guard5" type="ImperialGuard" gid="647" x="604" y="669" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path5&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path5"/>
    </properties>
   </object>
-  <object id="76" name="Guard6" type="NPC" gid="647" x="443" y="650" width="30" height="50">
+  <object id="76" name="Guard6" type="ImperialGuard" gid="647" x="443" y="650" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path6&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path6"/>
    </properties>
   </object>
-  <object id="77" name="Guard7" type="NPC" gid="647" x="528" y="455" width="30" height="50">
+  <object id="77" name="Guard7" type="ImperialGuard" gid="647" x="528" y="455" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.03);
-
-if(this.stats.coolDown &lt;= 0){
-this.state = &quot;onfollowpath&quot;;
-this.HidePopup();
-}</property>
-    <property name="oninteract" value="world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);"/>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.ShowPopup(worldAdapter, &quot;question1&quot;, 2);
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.ShowPopup(worldAdapter, &quot;alert&quot; + (Math.floor((Math.random() * 2)) + 1), 2);
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
-    <property name="onstart">this.InitializePath(&quot;Path7&quot;);
-this.fov.enabled = true;
-
-this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-this.fov.color[2] = 0.0;
-this.fov.color[3] = 0.8;
-</property>
-    <property name="spritesheet" value="imperial_guard"/>
+    <property name="path" value="Path7"/>
    </properties>
   </object>
  </objectgroup>
