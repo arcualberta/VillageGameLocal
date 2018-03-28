@@ -71,21 +71,24 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
         }
     }
 
-    this.module = new VillageModule(VillageConfig.baseUrl + arcGetParameter("module"), arcGetParameter("mapname"), gameContext, mapChangeFunction, mapChangeFunction);
-    
-    this.showMessage = function(message, lineNumber, player, speaker, onComplete){
-        return messageFunction(_this.module.dialog, message, lineNumber, player, speaker, onComplete);
-    };
-
-    this.config = new ArcConfig(this.module.path + "/config.json");
+    var modulePath = VillageConfig.baseUrl + arcGetParameter("module");
+    this.config = new ArcConfig(modulePath + "/config.json");
 
     if(this.config.containsKey("code")){
         codeFiles = this.config.getEntry("code");
 
         for(var c = 0; c < codeFiles.length; ++c){
-            arcImportJavascript(this.module.path + "/" + codeFiles[c]);
+            arcImportJavascript(modulePath + "/" + codeFiles[c]);
         }
     }
+
+    $.delay(1000);
+
+    this.module = new VillageModule(modulePath, arcGetParameter("mapname"), gameContext, mapChangeFunction, mapChangeFunction);
+    
+    this.showMessage = function(message, lineNumber, player, speaker, onComplete){
+        return messageFunction(_this.module.dialog, message, lineNumber, player, speaker, onComplete);
+    };
 
     $(function () {
         // Add the css

@@ -21,8 +21,13 @@ function arcGetParameter(paramName) {
     return false;
 }
 
-function arcImportJavascript(url){
-    var script = document.createElement("script"); 
+function arcImportJavascript(url, onload){
+    var script = document.createElement("script");
+
+    if(onload){
+        script.onload = onload;
+    }
+
     script.src = url;
 
     document.head.appendChild(script);
