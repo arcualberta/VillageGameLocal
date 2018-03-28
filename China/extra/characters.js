@@ -1,3 +1,30 @@
+var StoryCharacter = ArcBaseObject();
+{
+	Object.defineProperty(ImperialGuard, 'isVillageObject', {
+	    enumerable: false,
+	    configurable: false,
+	    writable: false,
+	    value: true
+	});
+
+	StoryCharacter.prototype = Object.create(NPC.prototype);
+	StoryCharacter.prototype.init = function (name, type, location, size, rotation, properties) { // All village objects need the construction values in this order.
+		this.hasTask = properties["hasTask"] == "true";
+
+		if(hasTask){
+			this.enabledTask();
+		}
+	}
+
+	StoryCharacter.prototype.enableTask = function(){
+		this.hasTask = true;
+	}
+
+	StoryCharacter.prototype.disableTask = function(){
+		this.hasTask = false;
+	}
+}
+
 var ImperialGuard = ArcBaseObject();
 {
 	Object.defineProperty(ImperialGuard, 'isVillageObject', {

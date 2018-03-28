@@ -1169,8 +1169,9 @@
  </layer>
  <objectgroup name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="336" y="210.5" width="20" height="19"/>
-  <object id="2" name="Farmer" type="NPC" gid="647" x="1263.66" y="479.666" width="30" height="50">
+  <object id="2" name="Farmer" type="StoryCharacter" gid="647" x="1263.66" y="479.666" width="30" height="50">
    <properties>
+    <property name="hasTask" type="bool" value="true"/>
     <property name="onfarm">if(!this.lastStep[2]){
 	var farming = this.properties[&quot;farming&quot;];
 
