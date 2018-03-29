@@ -21,16 +21,18 @@ function arcGetParameter(paramName) {
     return false;
 }
 
-function arcImportJavascript(url, onload){
-    var script = document.createElement("script");
-
-    if(onload){
-        script.onload = onload;
-    }
-
-    script.src = url;
-
-    document.head.appendChild(script);
+function arcImportJavascript(url, async = true){
+    $.ajax({
+        url: url,
+        method: "GET",
+        success: function(result){
+            //eval(result);
+        },
+        error: function(e){
+            console.error("Could not load javascript.");
+        },
+        async: async
+    });
 }
 
 /**

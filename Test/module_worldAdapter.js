@@ -56,6 +56,18 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
     this.module = null;
     this.user = null;
     this.loaded = false;
+
+    var modulePath = VillageConfig.baseUrl + arcGetParameter("module");
+    this.config = new ArcConfig(modulePath + "/config.json");
+
+    if(this.config.containsKey("code")){
+        codeFiles = this.config.getEntry("code");
+
+        for(var c = 0; c < codeFiles.length; ++c){
+            arcImportJavascript(modulePath + "/" + codeFiles[c], false);
+        }
+    }
+
     function mapChangeFunction(map, playerStart) {
         this.playerStart = playerStart.splice();
 
@@ -70,19 +82,6 @@ WorldAdapter.prototype.init = function (stateResponseFunction, messageFunction, 
             stateResponseFunction(result);
         }
     }
-
-    var modulePath = VillageConfig.baseUrl + arcGetParameter("module");
-    this.config = new ArcConfig(modulePath + "/config.json");
-
-    if(this.config.containsKey("code")){
-        codeFiles = this.config.getEntry("code");
-
-        for(var c = 0; c < codeFiles.length; ++c){
-            arcImportJavascript(modulePath + "/" + codeFiles[c]);
-        }
-    }
-
-    $.delay(1000);
 
     this.module = new VillageModule(modulePath, arcGetParameter("mapname"), gameContext, mapChangeFunction, mapChangeFunction);
     

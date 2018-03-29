@@ -10,18 +10,18 @@ var StoryCharacter = ArcBaseObject();
 	StoryCharacter.prototype = Object.create(NPC.prototype);
 	StoryCharacter.prototype.init = function (name, type, location, size, rotation, properties) { // All village objects need the construction values in this order.
 		NPC.prototype.init.call(this, name, type, location, size, rotation, properties);
-		
+
 		this.stats.hasTask = false;
 		this.evaluateHasTask = false;
-		if(properties["evaluateHasTask"]){
-			this.evaluateHasTask = Function("time", "player", "world", "worldAdapter", properties["evaluateHasTask"])
+		if(properties["evaluatehastask"]){
+			this.evaluateHasTask = Function("time", "player", "world", "worldAdapter", properties["evaluatehastask"])
 		}
 	}
 
 	StoryCharacter.prototype.enableTask = function(worldAdapter){
 		this.stats.hasTask = true;
 
-		this.ShowPopup(worldAdapter, "alert_1", 2);
+		this.ShowPopup(worldAdapter, "alert1", 2);
 	}
 
 	StoryCharacter.prototype.disableTask = function(){
@@ -33,13 +33,15 @@ var StoryCharacter = ArcBaseObject();
 	StoryCharacter.prototype.tick = function(timeSinceLast, worldAdapter, village, player){
 		NPC.prototype.tick.apply(this, arguments);
 
-		if(this.evaluateHasTask){
-			var result = this.evaluateHasTask.call(this, timeSinceLast, player, village, worldAdapter);
+		if(player && this.evaluateHasTask){
+			if(this.evaluateHasTask){
+				var result = this.evaluateHasTask.call(this, timeSinceLast, player, village, worldAdapter);
+			}
 
-			if(this.stats.hasTask && !result){
+			if(result){
+				this.enableTask(worldAdapter);
+			}else{
 				this.disableTask();
-			}else if(!this.stats.hasTask && result){
-				this.enableTask();
 			}
 		}
 	}
@@ -110,3 +112,5 @@ var ImperialGuard = ArcBaseObject();
 		this.state = "onfollowing";
 	};
 }
+
+console.log("Loaded Character Library");

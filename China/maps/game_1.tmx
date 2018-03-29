@@ -1239,8 +1239,14 @@ this.waypoint[1] = this.location[5];</property>
     <property name="spritesheet" value="npc_farmer"/>
    </properties>
   </object>
-  <object id="4" name="Fisherman" type="NPC" gid="647" x="238.333" y="985.667" width="30" height="50">
+  <object id="4" name="Fisherman" type="StoryCharacter" gid="647" x="238.333" y="985.667" width="30" height="50">
    <properties>
+    <property name="evaluateHasTask">if(player.stats.hasBrush){
+	return !this.properties[&quot;taskComplete&quot;];
+}
+
+return !this.properties[&quot;taskRequested&quot;];
+</property>
     <property name="onidle" value="//TODO: Fish"/>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false; 
 this.properties[&quot;taskComplete&quot;] = false;
