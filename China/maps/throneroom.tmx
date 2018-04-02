@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" nextobjectid="48">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" infinite="0" nextobjectid="49">
  <tileset firstgid="1" source="throneroom.tsx"/>
  <tileset firstgid="443" source="throneobjects.tsx"/>
  <tileset firstgid="452" source="village_tiles.tsx"/>
@@ -16,6 +16,7 @@
  <tileset firstgid="1112" source="gold1.tsx"/>
  <tileset firstgid="1113" source="gold2.tsx"/>
  <tileset firstgid="1114" source="gold3.tsx"/>
+ <tileset firstgid="1115" source="boat.tsx"/>
  <layer name="lower" width="19" height="28">
   <data encoding="csv">
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
@@ -148,20 +149,48 @@
   <object id="33" name="Gold1" type="VillageObject" gid="1111" x="217.5" y="592.5" width="60" height="60" visible="0"/>
   <object id="34" name="Gold2" type="VillageObject" gid="1113" x="82.5" y="577.5" width="100" height="90" visible="0"/>
   <object id="35" name="Gold3" type="VillageObject" gid="1114" x="225" y="517.5" width="100" height="90" visible="0"/>
-  <object id="36" name="Gold4" type="VillageObject" gid="1112" x="292.5" y="675" width="100" height="90" visible="0"/>
+  <object id="36" name="Gold4" type="VillageObject" gid="1112" x="307.5" y="645" width="100" height="90" visible="0"/>
   <object id="4" name="ThroneEvent" type="VillageObject" gid="569" x="270" y="59" width="30" height="30" visible="0">
    <properties>
     <property name="onstart">this.triggerIsland = function(caller, player, world, worldAdapter){
 	this.removeThrone = function(caller, player, world, worldAdapter){};
 	world.getChild(&quot;throne_layer&quot;).drawEnabled = false;
 	world.getChild(&quot;throne_lower&quot;).drawEnabled = false;
-	world.objects.removeChild(&quot;Throne&quot;);
-	world.objects.removeChild(&quot;Lion_Top_Left&quot;);
-	world.objects.removeChild(&quot;Lion_Bottom_Left&quot;);
-	world.objects.removeChild(&quot;Lion_Top_Right&quot;);
-	world.objects.removeChild(&quot;Lion_Bottom_Right&quot;);
-	game.display.camera.target = world.getObject(&quot;Emperor&quot;);
-	world.getObject(&quot;Emperor&quot;).state = &quot;onleave&quot;;
+	world.getObject(&quot;Throne&quot;).drawEnabled = false;
+	world.getObject(&quot;Lion_Top_Left&quot;).drawEnabled = false;
+	world.getObject(&quot;Lion_Bottom_Left&quot;).drawEnabled = false;
+	world.getObject(&quot;Lion_Top_Right&quot;).drawEnabled = false;
+	world.getObject(&quot;Lion_Bottom_Right&quot;).drawEnabled = false;
+}
+
+this.closePortal =  function(caller, player, world, worldAdapter){
+	world.getChild(&quot;throne_layer&quot;).drawEnabled = true;
+	world.getChild(&quot;throne_lower&quot;).drawEnabled = true;
+	world.getObject(&quot;Throne&quot;).drawEnabled = true;
+	world.getObject(&quot;Lion_Top_Left&quot;).drawEnabled = true;
+	world.getObject(&quot;Lion_Bottom_Left&quot;).drawEnabled = true;
+	world.getObject(&quot;Lion_Top_Right&quot;).drawEnabled = true;
+	world.getObject(&quot;Lion_Bottom_Right&quot;).drawEnabled = true;
+}
+
+this.triggerBoat = function(caller, player, world, worldAdapter){
+	world.getObject(&quot;Boat&quot;).parameters.visible = true;
+}
+
+this.loadBoat = function(caller, player, world, worldAdapter, loadCompleted){
+	world.objects.removeChild(&quot;Guard 1&quot;);
+	world.objects.removeChild(&quot;Guard 2&quot;);
+	world.objects.removeChild(&quot;Main Guard&quot;);
+	world.getObject(&quot;Emperor&quot;).drawEnabled = false;
+	for(var i = 1; i &lt;= 4; ++i){
+		world.objects.removeChild(&quot;Gold&quot; + i);
+	}
+	loadCompleted();
+}
+
+this.rideBoat = function(caller, player, world, worldAdapter){
+	game.display.camera.target = world.getObject(&quot;Boat&quot;);
+	world.getObject(&quot;Boat&quot;).properties.isMoving = true;
 }
 
 this.triggerMoney = function(caller, player, world, worldAdaper){
@@ -196,29 +225,14 @@ this.triggerBanners = function(caller, player, world, worldAdapter){
   <object id="2" name="MainStart" type="PlayerStart" x="270" y="810" width="30" height="30"/>
   <object id="23" name="Emperor" type="NPC" gid="1099" x="270" y="540" width="30" height="50">
    <properties>
-    <property name="ongoodbye">if(!this.lastStep[2]){
-	this.stopCount++;
-}
-
-if(this.stopCount &gt; 1){
-	this.drawable = false;
-	game.display.camera.target = player.user;
-}else{
-	this.scale =  Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2)) / this.maxDist;
-	this.scale = 0.97 * this.scale + 0.03;
-	this.speed = 0.08 * this.scale + 0.02;
-	//this.scale = Math.sqrt(this.scale);
-}</property>
-    <property name="onleave">this.stopCount = 0;
-this.waypoint[0] = 564;
-this.waypoint[1] = 182;
-this.state = &quot;ongoodbye&quot;;</property>
     <property name="onstart">this.state = &quot;onwait&quot;;
 this.blockable = false;
 this.stopCount = 0;
 this.minimapColor = &quot;#FF0&quot;;
 this.maxDist = Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2));
 this.properties[&quot;currentTask&quot;] = 1;
+this.properties.loadBoat = false;
+this.properties.rideBoat = false;
 
 this.scale = 1;
 
@@ -242,8 +256,14 @@ this.triggerStoryDialog = function(player, world, worldAdapter){
 				break;
 			case 3:
 				world.getObject(&quot;ThroneEvent&quot;).triggerIsland(this, player, world, worldAdapter);	
-				return;
 				break;
+			case 4:
+				world.getObject(&quot;ThroneEvent&quot;).triggerBoat(this, player, world, worldAdapter);
+				break;
+			case 5:
+				_this.properties[&quot;currentTask&quot;]++;
+				world.getObject(&quot;ThroneEvent&quot;).loadBoat(this, player, world, worldAdapter, function(){ _this.triggerStoryDialog(player, world, worldAdapter);  } );
+				return;
 		}
 
 		_this.properties[&quot;currentTask&quot;]++;
@@ -276,6 +296,22 @@ console.log(sPath);
 				t.setBackground( worldAdapter.module.path + &quot;/tasks/island.png&quot;);
 				t.setTitle(&quot;Island&quot;);
 				break;
+			case 4:
+				var t = _this.TriggerTask('PaintBrush2', worldAdapter, taskCompleted);
+				t.setBackground( worldAdapter.module.path + &quot;/tasks/boat_outline.png&quot;);
+				t.setTitle(&quot;Boat&quot;);
+				break;
+			case 5:
+				taskCompleted(_this, player, world, worldAdapter);
+				break;
+			case 6:
+				_this.properties[&quot;currentTask&quot;]++;
+				world.getObject('Boat').properties.sinkBoat = true;
+				break;
+			case 7:
+				_this.properties[&quot;currentTask&quot;]++;
+				world.getObject('Boat').properties.isSinking = true;
+				break;
 		}
 	};
 	
@@ -299,6 +335,16 @@ this.triggerGuards = function(world, worldAdapter, player){
 	});
 }</property>
     <property name="ontalk" value="this.triggerStoryDialog(player, world, worldAdapter);"/>
+    <property name="onwait">if(this.properties.rideBoat){
+	this.properties.rideBoat = false;
+	world.getObject(&quot;ThroneEvent&quot;).rideBoat(this, player, world, worldAdapter);
+}
+
+if(this.properties.loadBoat){
+	this.properties.loadBoat = false;
+}
+
+</property>
     <property name="spritesheet" value="emperor"/>
    </properties>
   </object>
@@ -355,6 +401,40 @@ if(localPath.point &gt;= path.pointCount){
   <object id="45" name="Chair 6" type="VillageObject" gid="443" x="170" y="681" width="40" height="40"/>
   <object id="46" name="Chair 5" type="VillageObject" gid="443" x="170" y="771" width="40" height="40"/>
   <object id="47" name="Chair 4" type="VillageObject" gid="443" x="170" y="861" width="40" height="40"/>
+  <object id="48" name="Boat" type="VillageObject" gid="1115" x="247.5" y="487.5" width="70" height="112" visible="0">
+   <properties>
+    <property name="onidle">if(this.properties.isMoving){
+	var scale =  Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 240,  2)) / this.properties.maxDist;
+	scale = 0.90 * scale + 0.10;
+
+	var speed = 0.08 * scale + 0.02;
+	this.location[5] -= (speed * time);
+
+	this.updateSize(140 * scale, 224 * scale); // TODO: grab the initial scale
+
+	if(this.inLocation(564, 240, 564, 240)){
+		this.properties.isMoving = false;
+		this.properties.atIsland = true;
+	}
+}else if(this.properties.atIsland &amp;&amp; this.properties.sinkBoat){
+	this.properties.sinkBoat = false;
+	world.getObject(&quot;Emperor&quot;).triggerStoryDialog(player, world, worldAdapter);
+}else if(this.properties.isSinking){
+	this.properties.isSinking = false;
+	game.display.camera.target = player.user;
+	world.getObject(&quot;ThroneEvent&quot;).closePortal(this, player, world, worldAdapter);
+	world.getObject(&quot;Emperor&quot;).triggerStoryDialog(player, world, worldAdapter);
+}</property>
+    <property name="onstart">this.properties.speed = 2.0;
+this.properties.isMoving = false;
+this.properties.maxDist = Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 240,  2));
+this.properties.sinkBoat = false;
+this.properties.atIsland = false;
+this.properties.isSinking = false;
+this.properties.loadCount = 0;
+</property>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup name="triggers">
   <object id="24" name="StoryTrigger" type="ScriptTrigger" x="240" y="795" width="90" height="45">

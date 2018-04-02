@@ -90,7 +90,7 @@
 			line.endVelocity[1] = (line.end[1] - line.start[1]) / (line.time * display.size[1]);
 			
 			var acc = (length(line.endVelocity) - length(line.startVelocity)) / line.time;
-			console.log(acc);
+			//console.log(acc);
 			var scale = 1.0 - Math.max(0.0, Math.min(1.0, acc * 10000)); // Negative acceleration will produce the largest scale.
 			var lastScale = model.brushImage.lastScale;
 			scale = (maxSize - minSize) * scale + minSize;
