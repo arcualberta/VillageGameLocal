@@ -160,7 +160,8 @@ var CharacterScripts = new ArcBaseObject();
 
 		if(!(spriteVal)){
 			spriteVal = {
-					path: worldAdapter.module.path + "/images/" + name + ".png"
+					path: worldAdapter.module.path + "/images/" + name + ".png",
+					onloadlist: [setPopup]
 			};
 
 			worldAdapter.popupSprites[name] = spriteVal;
@@ -168,9 +169,15 @@ var CharacterScripts = new ArcBaseObject();
 
 		if(!(spriteVal.image)){
 			spriteVal.image = new Image();
-			spriteVal.image.onload = setPopup;
+			spriteVal.image.onload = function(){
+				for(var i = 0; i < spriteVal.onloadlist.length; ++i){
+					spriteVal.onloadlist[i]();
+				}
+			};
 
 			spriteVal.image.src = spriteVal.path;
+		}else if(!spriteVal.image.complete){
+			spriteVal.onloadlist.push(setPopup);
 		}else{
 			setPopup();
 		}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" infinite="0" nextobjectid="49">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" nextobjectid="51">
  <tileset firstgid="1" source="throneroom.tsx"/>
  <tileset firstgid="443" source="throneobjects.tsx"/>
  <tileset firstgid="452" source="village_tiles.tsx"/>
@@ -171,6 +171,8 @@ this.closePortal =  function(caller, player, world, worldAdapter){
 	world.getObject(&quot;Lion_Bottom_Left&quot;).drawEnabled = true;
 	world.getObject(&quot;Lion_Top_Right&quot;).drawEnabled = true;
 	world.getObject(&quot;Lion_Bottom_Right&quot;).drawEnabled = true;
+
+	world.getChild(&quot;triggers&quot;).getChild(&quot;LeaveChange1&quot;).interactEnabled = true;
 }
 
 this.triggerBoat = function(caller, player, world, worldAdapter){
@@ -178,14 +180,29 @@ this.triggerBoat = function(caller, player, world, worldAdapter){
 }
 
 this.loadBoat = function(caller, player, world, worldAdapter, loadCompleted){
-	world.objects.removeChild(&quot;Guard 1&quot;);
-	world.objects.removeChild(&quot;Guard 2&quot;);
-	world.objects.removeChild(&quot;Main Guard&quot;);
-	world.getObject(&quot;Emperor&quot;).drawEnabled = false;
+	var boat = world.getObject(&quot;Boat&quot;);
+	function loadIncrease(){
+		++boat.properties.loadCount;
+
+		if(boat.properties.loadCount == 4){
+			world.getObject(&quot;Emperor&quot;).enterBoat(loadIncrease);
+		}
+
+		if(boat.properties.loadCount == 5){
+			world.getObject(&quot;Guard 1&quot;).enterBoat(loadIncrease);
+			world.getObject(&quot;Guard 2&quot;).enterBoat(loadIncrease);
+			world.getObject(&quot;Main Guard&quot;).enterBoat(loadIncrease);
+		}
+
+		if(boat.properties.loadCount &gt;= 8){
+			loadCompleted();
+		}		
+	}
+
 	for(var i = 1; i &lt;= 4; ++i){
 		world.objects.removeChild(&quot;Gold&quot; + i);
+		 loadIncrease();
 	}
-	loadCompleted();
 }
 
 this.rideBoat = function(caller, player, world, worldAdapter){
@@ -219,7 +236,7 @@ this.triggerBanners = function(caller, player, world, worldAdapter){
   <object id="10" name="Light_Top_Left" type="VillageObject" gid="444" x="70" y="378" width="40" height="40"/>
   <object id="11" name="Light_Bottom_Right" type="VillageObject" gid="447" x="460" y="418" width="40" height="40"/>
   <object id="12" name="Light_Top_Right" type="VillageObject" gid="444" x="460" y="378" width="40" height="40"/>
-  <object id="13" name="Throne" type="VillageObject" gid="1098" x="217" y="499" width="138" height="93"/>
+  <object id="13" name="Throne" type="VillageObject" gid="1098" x="217.5" y="495" width="138" height="93"/>
   <object id="14" name="Lion_Top_Right" type="VillageObject" gid="676" x="346" y="491" width="30" height="30"/>
   <object id="15" name="Lion_Top_Left" type="VillageObject" gid="673" x="194" y="491" width="30" height="30"/>
   <object id="2" name="MainStart" type="PlayerStart" x="270" y="810" width="30" height="30"/>
@@ -229,6 +246,7 @@ this.triggerBanners = function(caller, player, world, worldAdapter){
 this.blockable = false;
 this.stopCount = 0;
 this.minimapColor = &quot;#FF0&quot;;
+
 this.maxDist = Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 182,  2));
 this.properties[&quot;currentTask&quot;] = 1;
 this.properties.loadBoat = false;
@@ -242,6 +260,26 @@ this.updateSize = function(width, height){
 	
 	ArcActor.prototype.updateSize.call(this, w, h);
 };
+
+this.enterBoat = function(loadComplete){
+	this.onenterboat = function(){
+		if(!this.lastStep[2]){
+			++this.stopCount;
+		}
+
+		if(this.stopCount &gt; 1){
+			this.state = &quot;onwait&quot;;
+			this.drawEnabled = false;
+			this.updateLocation(0, 0);
+			loadComplete();
+		}
+	}
+
+	this.waypoint[0] = this.location[0];
+	this.waypoint[1] = 925; 
+	this.stopCount = 0;
+	this.state = &quot;onenterboat&quot;;
+}
 
 this.triggerStoryDialog = function(player, world, worldAdapter){
 	var _this = this;
@@ -312,6 +350,22 @@ console.log(sPath);
 				_this.properties[&quot;currentTask&quot;]++;
 				world.getObject('Boat').properties.isSinking = true;
 				break;
+
+			case 8:
+				_this.properties[&quot;currentTask&quot;]++;
+				world.getObject('Cloud').enterStage();
+				break;
+
+			case 9:
+				_this.properties[&quot;currentTask&quot;]++;
+				world.getObject('Cloud').exitStage();
+				_this.triggerStoryDialog(player, world, worldAdapter);
+				break;
+
+			case 10:
+				player.hasControl = true;
+				break;
+				
 		}
 	};
 	
@@ -350,6 +404,25 @@ if(this.properties.loadBoat){
   </object>
   <object id="26" name="Main Guard" type="NPC" gid="1099" x="300" y="570" width="30" height="50">
    <properties>
+    <property name="onstart">this.enterBoat = function(loadComplete){
+	this.onenterboat = function(time, player, world, worldAdapter){
+		if(!this.lastStep[2]){
+			++this.stopCount;
+		}
+
+		if(this.stopCount &gt; 1){
+			this.state = &quot;onwait&quot;;
+			this.drawEnabled = false;
+			loadComplete();
+			world.objects.removeChild(&quot;Main Guard&quot;);
+		}
+	}
+
+	this.waypoint[0] = this.location[0];
+	this.waypoint[1] = 925; 
+	this.stopCount = 0;
+	this.state = &quot;onenterboat&quot;;
+}</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
@@ -374,6 +447,25 @@ if(localPath.point &gt;= path.pointCount){
 	var emperor = world.getObject(&quot;Emperor&quot;);
 	emperor.triggerStoryDialog(player, world, worldAdapter);
 }</property>
+    <property name="onstart">this.enterBoat = function(loadComplete){
+	this.onenterboat = function(time, player, world, worldAdapter){
+		if(!this.lastStep[2]){
+			++this.stopCount;
+		}
+
+		if(this.stopCount &gt; 1){
+			this.state = &quot;onwait&quot;;
+			this.drawEnabled = false;
+			loadComplete();
+			world.objects.removeChild(&quot;Guard 1&quot;);
+		}
+	}
+
+	this.waypoint[0] = this.location[0];
+	this.waypoint[1] = 925; 
+	this.stopCount = 0;
+	this.state = &quot;onenterboat&quot;;
+}</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
@@ -388,6 +480,25 @@ if(localPath.point &gt;= path.pointCount){
 	this.direction = 3;
 	this.updateAnimation();
 	this.state = &quot;onwait&quot;;	
+}</property>
+    <property name="onstart">this.enterBoat = function(loadComplete){
+	this.onenterboat = function(time, player, world, worldAdapter){
+		if(!this.lastStep[2]){
+			++this.stopCount;
+		}
+
+		if(this.stopCount &gt; 1){
+			this.state = &quot;onwait&quot;;
+			this.drawEnabled = false;
+			loadComplete();
+			world.objects.removeChild(&quot;Guard 2&quot;);
+		}
+	}
+
+	this.waypoint[0] = this.location[0];
+	this.waypoint[1] = 925; 
+	this.stopCount = 0;
+	this.state = &quot;onenterboat&quot;;
 }</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
@@ -435,6 +546,41 @@ this.properties.loadCount = 0;
 </property>
    </properties>
   </object>
+  <object id="49" name="Cloud" type="NPC" gid="1099" x="-18" y="540" width="30" height="50">
+   <properties>
+    <property name="onenterstage">if(!this.lastStep[2]){
+	++this.stopCount;
+}
+
+if(this.stopCount &gt; 1){
+	this.state = &quot;onwait&quot;;
+	world.getObject('Emperor').triggerStoryDialog(player, world, worldAdapter);
+}</property>
+    <property name="onstart">this.state = &quot;onwait&quot;;
+this.blockable = false;
+this.drawEnabled = false;
+this.stopCount = 0;
+
+this.minimapColor = &quot;#FF0&quot;;
+
+this.properties.targetLocation = [570, 1080];
+this.updateLocation(0.0, this.location[5]);
+
+this.enterStage = function(){
+	this.drawEnabled = true;
+	this.waypoint[0] = this.properties.targetLocation[0];
+	this.waypoint[1] = this.properties.targetLocation[1];
+
+	this.state = &quot;onenterstage&quot;;
+}
+
+this.exitStage = function(){
+	this.waypoint[0] = this.properties.targetLocation[0];
+	this.waypoint[1] = 3000.0;
+}</property>
+    <property name="spritesheet" value="cloud"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup name="triggers">
   <object id="24" name="StoryTrigger" type="ScriptTrigger" x="240" y="795" width="90" height="45">
@@ -450,10 +596,17 @@ game.display.camera.addAction(new ArcCameraFadeIn(3000, function(camera){
 	world.triggers.removeChild(_this.name);
 	world.getObject(&quot;Main Guard&quot;).TriggerDialog(&quot;ACT_3_BEGIN_1&quot;, worldAdapter, player, function(){
 		emperor.triggerGuards(world, worldAdapter, player);
-});;
+	});
 }, 0.0, 0.0, 0.0));</property>
     <property name="onstart">this.interactEnabled = true;
 game.display.camera.addAction(new ArcCameraFadeOut(1, function(camera){}, 0.0, 0.0, 0.0));</property>
+   </properties>
+  </object>
+  <object id="50" name="LeaveChange1" type="ChangeMapTrigger" x="193" y="811" width="192" height="37.5833">
+   <properties>
+    <property name="Map" value="game_4_2"/>
+    <property name="Start" value="MainStart"/>
+    <property name="onstart" value="this.interactEnabled = false;"/>
    </properties>
   </object>
  </objectgroup>

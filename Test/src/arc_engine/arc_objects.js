@@ -654,48 +654,50 @@ ArcWaypoint.prototype.draw = function(displayContext, xOffset, yOffset, width, h
 * @implements {ArcRenderableObject}
 */
 var ArcActor = ArcBaseObject();
-ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
-ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
-    ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
-    
-    this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
-    this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
-    this.interactRad = 8;
-    this.dynamicInteract = true;
-    this.movementVector = new Float32Array(3);
+{
+    ArcActor.prototype = Object.create(ArcRenderableObject.prototype);
+    ArcActor.prototype.init = function(tickEnabled, drawEnabled, useChildren){
+        ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
+        
+        this.tickEnabled = tickEnabled ? true : false; // This is done to handle undefined or null values
+        this.drawEnabled = drawEnabled ? true : false; // This is done to handle undefined or null values
+        this.interactRad = 8;
+        this.dynamicInteract = true;
+        this.movementVector = new Float32Array(3);
 
-    // TODO: check if objects interect through the circle.
-};
-ArcActor.prototype.setMovementVector = function(x, y){
-    let dist = Math.sqrt((x * x) + (y * y));
+        // TODO: check if objects interect through the circle.
+    };
+    ArcActor.prototype.setMovementVector = function(x, y){
+        let dist = Math.sqrt((x * x) + (y * y));
 
-    if(dist > 0){
-        this.movementVector[0] = x / dist;
-        this.movementVector[1] = y / dist;
-        this.movementVector[2] = Math.atan2(this.movementVector[1], this.movementVector[0]); // This is so we get a value between -PI and PI
-    }else{
-        this.movementVector[0] = 0.0;
-        this.movementVector[1] = 0.0;
+        if(dist > 0){
+            this.movementVector[0] = x / dist;
+            this.movementVector[1] = y / dist;
+            this.movementVector[2] = Math.atan2(this.movementVector[1], this.movementVector[0]); // This is so we get a value between -PI and PI
+        }else{
+            this.movementVector[0] = 0.0;
+            this.movementVector[1] = 0.0;
+        }
+    };
+    ArcActor.MovementAngle = {
+        QUARTER: Math.PI / 4.0,
+        HALF: Math.PI / 2.0,
+        THREE_QUARTER: (3.0 * Math.PI) / 4.0
     }
-};
-ArcActor.MovementAngle = {
-    QUARTER: Math.PI / 4.0,
-    HALF: Math.PI / 2.0,
-    THREE_QUARTER: (3.0 * Math.PI) / 4.0
+    /**
+    * @override
+    */
+    ArcActor.prototype.updateSize = function(w, h){
+        ArcRenderableObject.prototype.updateSize.apply(this, arguments);
+
+        if(this.dynamicInteract){
+            let a = this.size[2];
+            let b = this.size[3];
+
+            this.interactRad = Math.sqrt((a * a) + (b * b));
+        }
+    };
 }
-/**
-* @override
-*/
-ArcActor.prototype.updateSize = function(w, h){
-    ArcRenderableObject.prototype.updateSize.apply(this, arguments);
-
-    if(this.dynamicInteract){
-        let a = this.size[2];
-        let b = this.size[3];
-
-        this.interactRad = Math.sqrt((a * a) + (b * b));
-    }
-};
 
 
 /**
@@ -704,104 +706,106 @@ ArcActor.prototype.updateSize = function(w, h){
 * @implements {ArcActor}
 */
 var ArcCharacter = ArcBaseObject();
-ArcCharacter.prototype = Object.create(ArcActor.prototype);
-ArcCharacter.prototype.init = function(){
-    ArcActor.prototype.init.call(this, true, true);
-    this.animation = "stand_down";
-    this.frame = 0;
-    this.frameTime = 0;
-    this.spriteSheet = null;
-    this.lastCollisionBox = [0, 0, 0, 0];
-};
-/**
-* @override
-*/
-ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
-    var x = this.location[4];
-    var y = this.location[5];
-
-    if(x > right) x = right;
-    if(x < left) x = left;
-    if(y > bottom) y = bottom;
-    if(y < top) y = top;
-
-    x -= this.location[4];
-    y -= this.location[5];
-
-    return Math.sqrt((x * x) + (y * y)) < this.interactRad;
-};
-/**
-* @override
-*/
-ArcCharacter.prototype.updateSize = function(width, height){
-    if(width != this.size[0] || height != this.size[1]){
-        ArcActor.prototype.updateSize.call(this, width, height);
-    }
-};
-/**
-* @return {Array} The collision box for the character at the current location.
-*/
-ArcCharacter.prototype.collisionBox = function () {
-    // TODO: Make it based on frame size;
-    var cb = this.lastCollisionBox;
-
-    cb[0] = this.location[0] + 2;
-    cb[1] = this.location[1] + this.size[3]; // Verticle center
-    cb[2] = this.size[0] - 4;
-    cb[3] = this.size[3];
-
-    return cb;
-};
-/**
-* Calculates which frame of animation the character is in.
-* @param {Number} timeSinceLastFrame The time, in milliseconds, since the last page refresh.
-*/
-ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
-    let frames = this.spriteSheet.getAnimation(this.animation).frames;
-    let frame = frames[this.frame];
-    this.frameTime += timeSinceLastFrame;
-
-    while (this.frameTime > frame.frameTime) {
-        ++this.frame;
-        if (this.frame >= frames.length) {
-            this.frame = 0;
-        }
-
-        this.frameTime -= this.frameTime;
-        frame = frames[this.frame];
-    }
-
-    if(frame){
-        this.updateSize(frame.drawWidth, frame.drawHeight);
-    }
-};
-ArcCharacter.prototype.setAnimation = function (animationName) {
-    if (this.animation !== animationName) {
-        this.animation = animationName;
+{
+    ArcCharacter.prototype = Object.create(ArcActor.prototype);
+    ArcCharacter.prototype.init = function(){
+        ArcActor.prototype.init.call(this, true, true);
+        this.animation = "stand_down";
         this.frame = 0;
         this.frameTime = 0;
-    }
-};
-ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
-    var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
-    
-    
-    /*displayContext.drawImage(spriteSheet.image,
-            frame.x, frame.y, frame.width, frame.height,
-            this.location[0], this.location[1],
-            frame.drawWidth, frame.drawHeight);*/
+        this.spriteSheet = null;
+        this.lastCollisionBox = [0, 0, 0, 0];
+    };
+    /**
+    * @override
+    */
+    ArcCharacter.prototype.inLocation = function(left, top, right, bottom){
+        var x = this.location[4];
+        var y = this.location[5];
 
-    displayContext.drawImage(spriteSheet.image,
-            frame.x, frame.y, frame.width, frame.height,
-            this.location[0], this.location[1],
-            frame.drawWidth, frame.drawHeight);
-};
-ArcCharacter.prototype.tick = function(deltaMilliseconds){
-    this.animateFrame(deltaMilliseconds);
-    
-    ArcActor.prototype.tick.apply(this, arguments);
-};
+        if(x > right) x = right;
+        if(x < left) x = left;
+        if(y > bottom) y = bottom;
+        if(y < top) y = top;
+
+        x -= this.location[4];
+        y -= this.location[5];
+
+        return Math.sqrt((x * x) + (y * y)) < this.interactRad;
+    };
+    /**
+    * @override
+    */
+    ArcCharacter.prototype.updateSize = function(width, height){
+        if(width != this.size[0] || height != this.size[1]){
+            ArcActor.prototype.updateSize.call(this, width, height);
+        }
+    };
+    /**
+    * @return {Array} The collision box for the character at the current location.
+    */
+    ArcCharacter.prototype.collisionBox = function () {
+        // TODO: Make it based on frame size;
+        var cb = this.lastCollisionBox;
+
+        cb[0] = this.location[0] + 2;
+        cb[1] = this.location[1] + this.size[3]; // Verticle center
+        cb[2] = this.size[0] - 4;
+        cb[3] = this.size[3];
+
+        return cb;
+    };
+    /**
+    * Calculates which frame of animation the character is in.
+    * @param {Number} timeSinceLastFrame The time, in milliseconds, since the last page refresh.
+    */
+    ArcCharacter.prototype.animateFrame = function (timeSinceLastFrame) {
+        let frames = this.spriteSheet.getAnimation(this.animation).frames;
+        let frame = frames[this.frame];
+        this.frameTime += timeSinceLastFrame;
+
+        while (this.frameTime > frame.frameTime) {
+            ++this.frame;
+            if (this.frame >= frames.length) {
+                this.frame = 0;
+            }
+
+            this.frameTime -= this.frameTime;
+            frame = frames[this.frame];
+        }
+
+        if(frame){
+            this.updateSize(frame.drawWidth, frame.drawHeight);
+        }
+    };
+    ArcCharacter.prototype.setAnimation = function (animationName) {
+        if (this.animation !== animationName) {
+            this.animation = animationName;
+            this.frame = 0;
+            this.frameTime = 0;
+        }
+    };
+    ArcCharacter.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        var spriteSheet = displayContext.spriteSheets[this.spriteSheet.id];
+        var frame = spriteSheet.getAnimation(this.animation).frames[this.frame];
+        
+        
+        /*displayContext.drawImage(spriteSheet.image,
+                frame.x, frame.y, frame.width, frame.height,
+                this.location[0], this.location[1],
+                frame.drawWidth, frame.drawHeight);*/
+
+        displayContext.drawImage(spriteSheet.image,
+                frame.x, frame.y, frame.width, frame.height,
+                this.location[0], this.location[1],
+                frame.drawWidth, frame.drawHeight);
+    };
+    ArcCharacter.prototype.tick = function(deltaMilliseconds){
+        this.animateFrame(deltaMilliseconds);
+        
+        ArcActor.prototype.tick.apply(this, arguments);
+    };
+}
 
 // ARC Generate TileMap from TiledCode
 function arcGenerateFromTiledJSON(data, drawWidth, drawHeight) {

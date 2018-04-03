@@ -1,3 +1,58 @@
+
+var Crowd = ArcBaseObject();
+{
+		var m_timestamp = 0;
+		var m_popup = null;
+		var m_afterPopup = false;
+		var m_count = 0;
+		var m_waitCount = 0;
+
+		Object.defineProperty(Crowd, 'isVillageObject', {
+		    enumerable: false,
+		    configurable: false,
+		    writable: false,
+		    value: true
+		});
+
+		Crowd.prototype = Object.create(NPC.prototype);
+		Crowd.prototype.init = function (name, type, location, size, rotation, properties) { // All village objects need the construction values in this order.
+			NPC.prototype.init.call(this, name, type, location, size, rotation, properties);
+
+			this.properties.timestamp = 0;
+
+			this.animation = "stand_up"; 
+
+			++m_count;
+		}
+
+		Crowd.updatePopup = function(popup, afterPopup){
+			m_timestamp = Date.now();
+			m_popup = popup;
+			m_afterPopup = afterPopup;
+			m_waitCount = 0;
+		}
+
+		Crowd.prototype.tick = function(timeSinceLast, worldAdapter, village, player){
+			NPC.prototype.tick.apply(this, arguments);
+
+			if(this.properties.timestamp < m_timestamp){
+				this.properties.timestamp = Date.now();
+
+				if(m_popup){
+					this.ShowPopup(worldAdapter, m_popup, 2);
+				}else{
+					this.HidePopup();
+				}
+
+				++m_waitCount;
+
+				if(m_afterPopup && m_waitCount >= m_count){
+					m_afterPopup(timeSinceLast, worldAdapter, village, player);
+					m_afterPopup = null;
+				}
+			}
+		}
+}
 var StoryCharacter = ArcBaseObject();
 {
 	Object.defineProperty(StoryCharacter, 'isVillageObject', {
