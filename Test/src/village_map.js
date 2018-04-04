@@ -434,6 +434,7 @@ var VillageMap = ArcBaseObject();
         this.triggers = null;
         this.objects = null;
         this.neighbors = [null, null, null, null]; // Up, Right, Down, Left
+        this.isSuperInteract = false;
     };
     VillageMap.prototype.addPlayer = function(player){
         this.players[player.id] = player;
@@ -824,28 +825,16 @@ var VillageMap = ArcBaseObject();
                         //_this.addChild(_this.players, "players");
                     }
                 } else if(type === "properties") {
-                    /*$(this).children().each(function(){
+                    $(this).children().each(function(){
                         var name = $(this).attr("name");
                         var value = $(this).attr("value");
 
                         switch(name){
-                            case "up":
-                                _this.neighbors[0] = _this.parent.load(value, false, false);
+                            case "superInteract":
+                                _this.isSuperInteract = value == "true";
                                 break;
-
-                            case "right":
-                                _this.neighbors[1] = _this.parent.load(value, false, false);
-                                break;
-
-                            case "down":
-                                _this.neighbors[2] = _this.parent.load(value, false, false);
-                                break;
-
-                            case "left":
-                                _this.neighbors[3] = _this.parent.load(value, false, false);
-                                break
                         }
-                    })*/
+                    })
                 }
             });
 

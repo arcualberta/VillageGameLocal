@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" nextobjectid="51">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="left-down" width="19" height="28" tilewidth="30" tileheight="30" infinite="0" nextobjectid="51">
+ <properties>
+  <property name="superInteract" type="bool" value="true"/>
+ </properties>
  <tileset firstgid="1" source="throneroom.tsx"/>
  <tileset firstgid="443" source="throneobjects.tsx"/>
  <tileset firstgid="452" source="village_tiles.tsx"/>

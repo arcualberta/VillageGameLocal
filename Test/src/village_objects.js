@@ -659,7 +659,6 @@ Player.prototype.init = function (user) {
     this.stats = {
     };
     this.hasControl = true;
-    this.triggerNonControlInteract = false;
 
     user.minimapColor = "#0CF";
 };
@@ -705,6 +704,11 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
         var collisionBox = user.collisionBox();
         village.interact(collisionBox[0], collisionBox[1], collisionBox[0] + collisionBox[2], collisionBox[1] + collisionBox[3], this, village, worldAdapter);
     } else {
+        if(village.isSuperInteract){
+            var collisionBox = user.collisionBox();
+            village.interact(collisionBox[0], collisionBox[1], collisionBox[0] + collisionBox[2], collisionBox[1] + collisionBox[3], this, village, worldAdapter);
+        }
+
         if (this.action === 1) {
             this.action = 0;
             isChanged = true;
@@ -728,11 +732,6 @@ Player.prototype.tick = function (timeSinceLast, worldAdapter, village) {
             }
         });
     } else {
-        if(this.triggerNonControlInteract){
-            this.triggerNonControlInteract = false;
-            village.interact(collisionBox[0], collisionBox[1], collisionBox[0] + collisionBox[2], collisionBox[1] + collisionBox[3], this, village, worldAdapter);
-        }
-
         this.showWaypoint = false;
     }
 
