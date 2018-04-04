@@ -2820,7 +2820,7 @@
 118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,25,26,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118
 </data>
  </layer>
- <objectgroup name="objects" visible="0">
+ <objectgroup name="objects">
   <object id="59" name="MainStart" type="PlayerStart" x="622" y="148" width="14" height="16"/>
   <object id="66" name="Door1" type="VillageObject" gid="72" x="600" y="750" width="30" height="30"/>
   <object id="67" name="Door2" type="VillageObject" gid="73" x="630" y="750" width="30" height="30"/>
@@ -2934,6 +2934,7 @@ this.triggerDialog = function(player, world, worldAdapter){
   <object id="78" name="StoryTrigger" type="ScriptTrigger" x="533" y="185" width="194" height="45">
    <properties>
     <property name="oninteract">var _this = this;
+player.stop();
 player.hasControl = false;
 
 function afterQuestion(){

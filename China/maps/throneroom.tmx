@@ -585,7 +585,11 @@ this.exitStage = function(){
  <objectgroup name="triggers">
   <object id="24" name="StoryTrigger" type="ScriptTrigger" x="240" y="795" width="90" height="45">
    <properties>
-    <property name="oninteract">var _this = this;
+    <property name="oninteract">if(++this.triggeredCount &gt; 1){
+	return;
+}
+
+var _this = this;
 player.hasControl = false;
 player.stats.jailTalkback++;
 
@@ -599,7 +603,8 @@ game.display.camera.addAction(new ArcCameraFadeIn(3000, function(camera){
 	});
 }, 0.0, 0.0, 0.0));</property>
     <property name="onstart">this.interactEnabled = true;
-game.display.camera.addAction(new ArcCameraFadeOut(1, function(camera){}, 0.0, 0.0, 0.0));</property>
+game.display.camera.addAction(new ArcCameraFadeOut(1, function(camera){}, 0.0, 0.0, 0.0));
+this.triggeredCount = 0;</property>
    </properties>
   </object>
   <object id="50" name="LeaveChange1" type="ChangeMapTrigger" x="193" y="811" width="192" height="37.5833">

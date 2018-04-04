@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" infinite="0" nextobjectid="108">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="49" tilewidth="30" tileheight="30" nextobjectid="108">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2265,33 +2265,8 @@
   <object id="80" name="SpiceBag1_3" type="VillageObject" gid="401" x="1162.99" y="1216.96" width="30" height="30"/>
   <object id="81" name="SpiceBag1_4" type="VillageObject" gid="402" x="1192.97" y="1216.95" width="30" height="30"/>
   <object id="83" name="MainStart" type="PlayerStart" x="802.333" y="322" width="14" height="16"/>
-  <object id="84" name="Guard1" type="NPC" gid="647" x="494.334" y="133" width="30" height="50">
+  <object id="84" name="Guard1" type="Guard" gid="647" x="494.334" y="133" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2353,19 +2328,23 @@ this.playerCaught = function(npc, player, worldAdapter){
 	var parent = this.parameters.generated_map.parent;
 
 	var afterDialog = function(){
-		npc.TriggerDialog('CAUGHT_1', worldAdapter, player, function(){
-			parent.load(&quot;throneroom&quot;, &quot;MainStart&quot;);
-			game.display.camera.addAction(new ArcCameraMosaic(5000, function(camera){}, 0.0001, 1.0));
-			game.display.camera.addAction(new ArcCameraFadeOut(5000, function(camera){}, 0.0, 0.0, 0.0));
-		});
-		//player.hasControl = true;
+		game.display.camera.addAction(new ArcCameraFadeOut(500, function(camera){
+			game.display.camera.addAction(new ArcCameraMosaic(2, function(camera){}, 0.0001, 1.0));
+			npc.TriggerDialog('CAUGHT_1', worldAdapter, player, function(){
+				parent.load(&quot;throneroom&quot;, &quot;MainStart&quot;);
+				player.triggerNonControlInteract = true;
+			});
+		}, 0.0, 0.0, 0.0));
+
 		//game.display.camera.addAction(new ArcCameraFadeOut(5000, function(camera){}, 0.0, 0.0, 0.0));
 	};
+
 	var afterBump = function(camera){
 		//parent.load(&quot;jail&quot;, &quot;MainStart&quot;);
 		 npc.TriggerDialog('GUARD_2', worldAdapter, player,  afterDialog);		
 	};
 
+	//player.hasControl = false;
 	worldAdapter.module.stopBackgroundMusic(0);
 	audio.playSound(sound, 0);
 	game.display.camera.addAction(new ArcCameraMosaic(1000, afterBump, 1.0, 0.001));
@@ -2373,36 +2352,8 @@ this.playerCaught = function(npc, player, worldAdapter){
 </property>
    </properties>
   </object>
-  <object id="90" name="Guard2" type="NPC" gid="647" x="1185" y="72.3333" width="30" height="50">
+  <object id="90" name="Guard2" type="Guard" gid="647" x="1185" y="72.3333" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-this.displayText = &quot;TODO: cool down message&quot;;
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.displayText = &quot;TODO: See Messagee&quot;;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2411,8 +2362,9 @@ this.updateLocation(-10, -10);</property>
     <property name="spritesheet" value="guard"/>
    </properties>
   </object>
-  <object id="95" name="MarketPerson1" type="NPC" gid="647" x="1167.67" y="861.667" width="30" height="50">
+  <object id="95" name="MarketPerson1" type="StoryCharacter" gid="647" x="1167.67" y="861.667" width="30" height="50">
    <properties>
+    <property name="evaluateHasTask" value="return !this.properties[&quot;taskRequested&quot;];"/>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
 this.properties[&quot;taskComplete&quot;] = false;
 this.minimapColor = &quot;#FF0&quot;;
@@ -2442,8 +2394,9 @@ if(!this.properties[&quot;taskComplete&quot;]){
     <property name="spritesheet" value="market_npc_1"/>
    </properties>
   </object>
-  <object id="96" name="MarketPerson2" type="NPC" gid="647" x="902.333" y="1129.67" width="30" height="50">
+  <object id="96" name="MarketPerson2" type="StoryCharacter" gid="647" x="902.333" y="1129.67" width="30" height="50">
    <properties>
+    <property name="evaluateHasTask" value="return !this.properties[&quot;taskRequested&quot;];"/>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
 this.properties[&quot;taskComplete&quot;] = false;
 this.minimapColor = &quot;#FF0&quot;;
@@ -2473,8 +2426,9 @@ if(!this.properties[&quot;taskComplete&quot;]){
     <property name="spritesheet" value="market_npc_1"/>
    </properties>
   </object>
-  <object id="97" name="MarketPerson3" type="NPC" gid="647" x="870.333" y="631" width="30" height="50">
+  <object id="97" name="MarketPerson3" type="StoryCharacter" gid="647" x="870.333" y="631" width="30" height="50">
    <properties>
+    <property name="evaluateHasTask" value="return !this.properties[&quot;taskRequested&quot;];"/>
     <property name="onstart">this.properties[&quot;taskRequested&quot;] = false;
 this.properties[&quot;taskComplete&quot;] = false;
 this.minimapColor = &quot;#FF0&quot;;
@@ -2511,33 +2465,8 @@ if(!this.properties[&quot;taskComplete&quot;]){
     <property name="onstart" value="this.drawEnabled = false;"/>
    </properties>
   </object>
-  <object id="99" name="Guard3" type="NPC" gid="647" x="1765" y="937.667" width="30" height="50">
+  <object id="99" name="Guard3" type="Guard" gid="647" x="1765" y="937.667" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2546,33 +2475,8 @@ this.updateLocation(-10, -10);</property>
     <property name="spritesheet" value="guard"/>
    </properties>
   </object>
-  <object id="100" name="Guard4" type="NPC" gid="647" x="1451" y="931" width="30" height="50">
+  <object id="100" name="Guard4" type="Guard" gid="647" x="1451" y="931" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2583,33 +2487,8 @@ this.status = &quot;onhidden&quot;;</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
-  <object id="101" name="Guard5" type="NPC" gid="647" x="419" y="657" width="30" height="50">
+  <object id="101" name="Guard5" type="Guard" gid="647" x="419" y="657" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2620,33 +2499,8 @@ this.status = &quot;onhidden&quot;;</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
-  <object id="103" name="Guard6" type="NPC" gid="647" x="421" y="1255" width="30" height="50">
+  <object id="103" name="Guard6" type="Guard" gid="647" x="421" y="1255" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2657,33 +2511,8 @@ this.status = &quot;onhidden&quot;;</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
-  <object id="104" name="Guard7" type="NPC" gid="647" x="1233" y="655" width="30" height="50">
+  <object id="104" name="Guard7" type="Guard" gid="647" x="1233" y="655" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
-    <property name="onsee">this.fov.color[0] = 1.0;
-this.fov.color[1] = 0.0;
-
-this.FollowPlayer(player);
-this.state = &quot;onfollowing&quot;</property>
     <property name="onstart">this.SetupFOVCharacter();
 this.stats.caught = false;
 
@@ -2694,28 +2523,8 @@ this.status = &quot;onhidden&quot;;</property>
     <property name="spritesheet" value="imperial_guard"/>
    </properties>
   </object>
-  <object id="105" name="Guard8" type="NPC" gid="647" x="1191" y="1298" width="30" height="50">
+  <object id="105" name="Guard8" type="Guard" gid="647" x="1191" y="1298" width="30" height="50">
    <properties>
-    <property name="oncooling">this.CoolDown(time);
-this.WalkRandom(time, 100, 0.01);
-
-if(this.stats.coolDown &lt;= 0){
-this.WalkToLocation(this.stats.initialLocation[0], this.stats.initialLocation[1]);
-this.state = &quot;onwait&quot;;
-}</property>
-    <property name="oninteract">if(!this.stats.caught){
-this.stats.caught = true;
-world.getObject(&quot;CatchPlayerEvent&quot;).playerCaught(this, player, worldAdapter);
-}</property>
-    <property name="onnosee">this.fov.color[0] = 0.0;
-this.fov.color[1] = 1.0;
-
-// Return to position
-if(this.state == &quot;onfollowing&quot;){
-this.state = &quot;oncooling&quot;;
-this.stats.coolDown = 10000;
-}
-</property>
     <property name="onsee">this.fov.color[0] = 1.0;
 this.fov.color[1] = 0.0;
 
