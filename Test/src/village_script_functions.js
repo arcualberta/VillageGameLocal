@@ -15,6 +15,7 @@ var CharacterScripts = new ArcBaseObject();
 		this.AttachFunction("SetDirection");
 		this.AttachFunction("ShowPopup");
 		this.AttachFunction("HidePopup");
+		this.AttachFunction("WatchPlayer");
 	};
 	CharacterScripts.prototype.WalkRandom = function(time, amount, frequency){
 		let waypoint = this.waypoint;
@@ -117,6 +118,34 @@ var CharacterScripts = new ArcBaseObject();
 			if(this.onafterpathupdate){
 				this.onafterpathupdate(timeSinceLast, player, village, worldAdapter);
 			}
+		}
+	}
+	CharacterScripts.prototype.WatchPlayer = function(player){
+		if(player){
+			var pLoc = player.user.location;
+			var cLoc = this.location;
+			var direction = this.direction;
+			var check = cLoc[5] - pLoc[5];
+
+			if(check < 0){
+				direction = 0;
+			}else if(check > 0){
+				direction = 2;
+			}
+
+			// Calcualte the slope. This is because we are using 45 degrees as our line of sight, making the slope between 1 and -1.
+			check = check / (cLoc[4] - pLoc[4]);
+			if(check < 1.0 && check > -1.0){
+				check = (cLoc[4] - pLoc[4]);
+
+				if(check > 0){
+					direction = 1;
+				}else if(check < 0){
+					direction = 3;
+				}
+			}
+
+			this.SetDirection(direction);
 		}
 	}
 	CharacterScripts.prototype.FollowPlayer = function(player){

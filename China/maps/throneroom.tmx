@@ -366,6 +366,7 @@ console.log(sPath);
 				break;
 
 			case 10:
+				game.showHud = true;
 				player.hasControl = true;
 				break;
 				
@@ -607,7 +608,8 @@ game.display.camera.addAction(new ArcCameraFadeIn(3000, function(camera){
 }, 0.0, 0.0, 0.0));</property>
     <property name="onstart">this.interactEnabled = true;
 game.display.camera.addAction(new ArcCameraFadeOut(1, function(camera){}, 0.0, 0.0, 0.0));
-this.triggeredCount = 0;</property>
+this.triggeredCount = 0;
+game.showHud = false;</property>
    </properties>
   </object>
   <object id="50" name="LeaveChange1" type="ChangeMapTrigger" x="193" y="811" width="192" height="37.5833">

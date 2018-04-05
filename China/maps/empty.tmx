@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="left-down" width="15" height="15" tilewidth="30" tileheight="30" infinite="0" nextobjectid="4">
+ <properties>
+  <property name="superInteract" type="bool" value="true"/>
+ </properties>
+ <tileset firstgid="1" source="throneroom.tsx"/>
+ <tileset firstgid="443" name="Villager Placeholder" tilewidth="30" tileheight="50" tilecount="12" columns="3">
+  <image source="../sprites/villager1.png" width="90" height="200"/>
+  <tile id="6">
+   <properties>
+    <property name="NPC" value="Wukong"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="lower" width="15" height="15" opacity="0.38">
+  <data encoding="csv">
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253
+</data>
+ </layer>
+ <objectgroup name="objects">
+  <object id="1" name="Cloud" type="NPC" gid="443" x="210" y="240" width="30" height="50">
+   <properties>
+    <property name="onstart">this.state = &quot;onwait&quot;;
+this.blockable = false;</property>
+    <property name="spritesheet" value="cloud"/>
+   </properties>
+  </object>
+  <object id="2" name="MainStart" type="PlayerStart" x="3" y="417" width="30" height="30"/>
+ </objectgroup>
+ <objectgroup name="triggers">
+  <object id="3" name="StoryTrigger" type="ScriptTrigger" x="1" y="329" width="121" height="119">
+   <properties>
+    <property name="oninteract">if(++this.triggeredCount &gt; 1){
+	return;
+}
+
+var _this = this;
+player.hasControl = false;
+
+var cloud = world.getObject(&quot;Cloud&quot;);
+game.display.camera.target = cloud;
+
+game.display.camera.addAction(new ArcCameraFadeIn(3000, function(camera){
+	world.triggers.removeChild(_this.name);
+	world.getObject(&quot;Cloud&quot;).TriggerDialog(&quot;CLOUD_3&quot;, worldAdapter, player, function(){
+		location.reload();
+	});
+}, 0.0, 0.0, 0.0));</property>
+    <property name="onstart">this.interactEnabled = true;
+game.display.camera.addAction(new ArcCameraFadeOut(1, function(camera){}, 0.0, 0.0, 0.0));
+this.triggeredCount = 0;
+game.showHud = false;</property>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="higher" width="15" height="15">
+  <data encoding="csv">
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253,
+253,253,253,253,0,0,0,0,0,0,0,253,253,253,253,
+253,253,253,0,0,0,0,0,0,0,0,0,253,253,253,
+253,253,0,0,0,0,0,0,0,0,0,0,0,253,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
+253,253,0,0,0,0,0,0,0,0,0,0,0,253,253,
+253,253,253,0,0,0,0,0,0,0,0,0,253,253,253,
+253,253,253,253,0,0,0,0,0,0,0,253,253,253,253,
+253,253,253,253,253,253,253,253,253,253,253,253,253,253,253
+</data>
+ </layer>
+</map>

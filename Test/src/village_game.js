@@ -184,6 +184,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     ArcSettings.Current = settings;
 
     this.villageDisplay = null;
+    this.showHud = true;
 
     this.hud = new ArcRenderableObject(true, true);
 
@@ -298,7 +299,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             let size = displayAdapter.camera.dimension;
             renderable.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
 
-            if(playerLoc[4]){
+            if(__this.showHud && playerLoc[4]){
                 __this.hud.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
             }
         }

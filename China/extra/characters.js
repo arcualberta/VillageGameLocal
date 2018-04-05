@@ -35,6 +35,8 @@ var Crowd = ArcBaseObject();
 		Crowd.prototype.tick = function(timeSinceLast, worldAdapter, village, player){
 			NPC.prototype.tick.apply(this, arguments);
 
+			this.WatchPlayer(player);
+
 			if(this.properties.timestamp < m_timestamp){
 				this.properties.timestamp = Date.now();
 
@@ -72,6 +74,8 @@ var StoryCharacter = ArcBaseObject();
 		if(properties["evaluatehastask"]){
 			this.evaluateHasTask = Function("time", "player", "world", "worldAdapter", properties["evaluatehastask"])
 		}
+
+		this.stats.originalDirection = this.direction;
 	}
 
 	StoryCharacter.prototype.enableTask = function(worldAdapter){
@@ -81,6 +85,10 @@ var StoryCharacter = ArcBaseObject();
 	}
 
 	StoryCharacter.prototype.disableTask = function(){
+		if(this.stats.hasTask){
+			this.SetDirection(this.stats.originalDirection);
+		}
+
 		this.stats.hasTask = false;
 
 		this.HidePopup();
@@ -95,6 +103,7 @@ var StoryCharacter = ArcBaseObject();
 			}
 
 			if(result){
+				this.WatchPlayer(player);
 				this.enableTask(worldAdapter);
 			}else{
 				this.disableTask();
