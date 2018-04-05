@@ -1,5 +1,7 @@
 // TODO: Change to ARC Base Object
-function GameMenu(title, width, height, backgroundImageUrl, classes) {
+function GameMenu(title, width, height, backgroundImageUrl, classes, location = 0) {
+    // Location: 0 - center, 1 - top, 2 - bottom
+
     var _this = this;
     this.pauseGame = true;
 
@@ -32,9 +34,23 @@ function GameMenu(title, width, height, backgroundImageUrl, classes) {
     popup.append(this.body);
 
     this.show = function (parent) {
+        switch(location){
+            case 0:
+                popup.css("top", (parent.offsetTop + ((parent.height - height) >> 1)) + "px");
+                break;
+
+            case 1:
+                popup.css("top", (parent.offsetTop + 2) + "px");
+                break;
+
+            case 2:
+                popup.css("top", (parent.offsetTop + (parent.height - height - 10)) + "px");
+                break;
+        }
+
         // Center the popup
         popup.css("left", (parent.offsetLeft + ((parent.width - width) >> 1)) + "px");
-        popup.css("top", (parent.offsetTop + ((parent.height - height) >> 1)) + "px");
+        
 
         // Attach the node
         $(parent).parent().append(popup);
@@ -523,8 +539,8 @@ function SettingsWindow(game){
 }
 
 // Window for dialogs
-function DialogMenu(dialog, name, lineNumber, player, speaker) {
-    var menu = new GameMenu("", 500, 310);
+function DialogMenu(dialog, name, lineNumber, player, speaker, location = 0) {
+    var menu = new GameMenu("", 500, 310, false, false, location);
     var currentLine = null;
     var optionLabels = ["A) ", "B) ", "C) "];
     

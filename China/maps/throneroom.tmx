@@ -308,7 +308,7 @@ this.triggerStoryDialog = function(player, world, worldAdapter){
 		}
 
 		_this.properties[&quot;currentTask&quot;]++;
-		_this.TriggerDialog('EMPEROR_' + _this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
+		_this.TriggerDialog('EMPEROR_' + _this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask, 2, false);
 		
 	};
 	
@@ -373,7 +373,7 @@ console.log(sPath);
 		}
 	};
 	
-	this.TriggerDialog('EMPEROR_' + this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask);
+	this.TriggerDialog('EMPEROR_' + this.properties[&quot;currentTask&quot;], worldAdapter, player, openTask, 2, false);
 }
 
 this.triggerGuards = function(world, worldAdapter, player){
@@ -390,7 +390,7 @@ this.triggerGuards = function(world, worldAdapter, player){
 		
 		player.waypointLoc[0] = 570;
 		player.waypointLoc[1] = 1200;
-	});
+	}, 1, false);
 }</property>
     <property name="ontalk" value="this.triggerStoryDialog(player, world, worldAdapter);"/>
     <property name="onwait">if(this.properties.rideBoat){
@@ -603,7 +603,7 @@ game.display.camera.target = emperor;
 game.display.camera.addAction(new ArcCameraFadeIn(3000, function(camera){
 	world.triggers.removeChild(_this.name);
 	world.getObject(&quot;Main Guard&quot;).TriggerDialog(&quot;ACT_3_BEGIN_1&quot;, worldAdapter, player, function(){
-		emperor.triggerGuards(world, worldAdapter, player);
+		emperor.triggerGuards(world, worldAdapter, player, 1, false);
 	});
 }, 0.0, 0.0, 0.0));</property>
     <property name="onstart">this.interactEnabled = true;

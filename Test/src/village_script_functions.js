@@ -228,8 +228,8 @@ DialogScripts.prototype.init = function(parent){
 	this.AttachFunction("TriggerDialog");
 	this.AttachFunction("TriggerTask");
 };
-DialogScripts.prototype.TriggerDialog = function(messageKey, worldAdapter, player, onclose){
-	return worldAdapter.showMessage(messageKey, false, player, this, onclose);
+DialogScripts.prototype.TriggerDialog = function(messageKey, worldAdapter, player, onclose, location = 0, pauseGame = true){
+	return worldAdapter.showMessage(messageKey, false, player, this, onclose, location, pauseGame);
 };
 DialogScripts.prototype.TriggerTask = function(task, worldAdapter, onclose){
 	return worldAdapter.loadTask(task, worldAdapter.getTaskScript(task), onclose);

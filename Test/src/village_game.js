@@ -483,8 +483,9 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
 
             // __this.villageWorker.postMessage([WORKER_SET_WORLD, result], [result.world]);
             __this.villageDisplay.readWorldState(result);
-        }, function (dialog, name, lineNumber, player, speaker, onClose) {
-            var menu = new DialogMenu(dialog, name, lineNumber ? lineNumber : 1, player, speaker);
+        }, function (dialog, name, lineNumber, player, speaker, onClose, location, pauseGame = true) {
+            var menu = new DialogMenu(dialog, name, lineNumber ? lineNumber : 1, player, speaker, location);
+            menu.pauseGame = pauseGame;
 
             recordEvent("Dialog", "Open", name);
 
