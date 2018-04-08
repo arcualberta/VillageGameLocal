@@ -95,8 +95,8 @@ function LoginMenu(loginFunction) {
      menu.body.css("left", "35px");
      menu.body.css("bottom", "20px");*/
 
-    menu.body.append($("<h3 class='game_center passcode_title'>Passcode</h3>"));
-    menu.body.append(passField);
+    //menu.body.append($("<h3 class='game_center passcode_title'>Passcode</h3>"));
+    //menu.body.append(passField);
     menu.body.append(submit);
 
     menu.userId = null;

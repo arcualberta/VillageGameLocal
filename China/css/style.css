@@ -48,9 +48,10 @@ user-select: none; /* Standard */
 }
 
 .login_menu > .game_dialogBody > .login_button {
-    margin-right: 0;
-    height: 33px;
-    width: 158px;
+    margin-right: 12px;
+    margin-bottom: 10px;
+    height: 53;
+    width: 174px;
     background-color: transparent;
     font-size: 0;
     border: none;
