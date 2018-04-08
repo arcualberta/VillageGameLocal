@@ -25,7 +25,7 @@
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,1111,491,
 1112,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
-491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
+491,491,491,491,491,491,491,491,491,491,491,491,491,1116,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 1113,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,
 491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,491,443,
@@ -86,10 +86,10 @@
  </layer>
  <layer name="middle" width="19" height="28">
   <data encoding="csv">
-491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,491,491,
-491,491,491,491,0,0,0,254,255,256,257,258,0,0,0,0,0,491,491,
-491,491,491,491,0,0,0,280,281,282,283,284,0,0,0,0,0,0,0,
-491,491,491,491,0,0,0,306,307,308,309,310,0,0,0,0,0,0,0,
+491,491,491,491,0,0,0,0,0,0,0,0,0,0,491,491,0,491,491,
+491,491,491,491,0,0,0,254,255,256,257,258,0,491,491,491,491,491,491,
+491,491,491,491,0,0,0,280,281,282,283,284,0,491,491,491,491,0,0,
+491,491,491,491,0,0,0,306,307,308,309,310,0,491,491,491,491,0,0,
 491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 491,491,491,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -118,10 +118,10 @@
  </layer>
  <layer name="throne_layer" width="19" height="28" opacity="0.44">
   <data encoding="csv">
-253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,253,253,
-253,253,253,253,0,0,0,253,253,253,253,253,0,0,0,0,0,253,253,
-253,253,253,253,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
-253,253,253,253,0,0,0,253,253,253,253,253,0,0,0,0,0,0,0,
+253,253,253,253,0,0,0,0,0,0,0,0,0,0,253,253,0,253,253,
+253,253,253,253,0,0,0,253,253,253,253,253,0,253,253,253,253,253,253,
+253,253,253,253,0,0,0,253,253,253,253,253,0,253,253,253,253,0,0,
+253,253,253,253,0,0,0,253,253,253,253,253,0,253,253,253,253,0,0,
 253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
 253,253,253,253,0,0,0,0,0,0,0,0,0,0,0,0,0,0,253,
@@ -151,7 +151,7 @@
  <objectgroup name="objects">
   <object id="33" name="Gold1" type="VillageObject" gid="1111" x="217.5" y="592.5" width="60" height="60" visible="0"/>
   <object id="34" name="Gold2" type="VillageObject" gid="1113" x="82.5" y="577.5" width="100" height="90" visible="0"/>
-  <object id="35" name="Gold3" type="VillageObject" gid="1114" x="225" y="517.5" width="100" height="90" visible="0"/>
+  <object id="35" name="Gold3" type="VillageObject" gid="1114" x="255" y="517.5" width="100" height="90" visible="0"/>
   <object id="36" name="Gold4" type="VillageObject" gid="1112" x="307.5" y="645" width="100" height="90" visible="0"/>
   <object id="4" name="ThroneEvent" type="VillageObject" gid="569" x="270" y="59" width="30" height="30" visible="0">
    <properties>
@@ -516,7 +516,7 @@ if(localPath.point &gt;= path.pointCount){
   <object id="45" name="Chair 6" type="VillageObject" gid="443" x="170" y="681" width="40" height="40"/>
   <object id="46" name="Chair 5" type="VillageObject" gid="443" x="170" y="771" width="40" height="40"/>
   <object id="47" name="Chair 4" type="VillageObject" gid="443" x="170" y="861" width="40" height="40"/>
-  <object id="48" name="Boat" type="VillageObject" gid="1115" x="247.5" y="487.5" width="70" height="112" visible="0">
+  <object id="48" name="Boat" type="VillageObject" gid="1115" x="229.5" y="487.5" width="110" height="112" visible="0">
    <properties>
     <property name="onidle">if(this.properties.isMoving){
 	var scale =  Math.sqrt(Math.pow(this.location[4] - 564, 2) + Math.pow(this.location[5] - 240,  2)) / this.properties.maxDist;
@@ -525,11 +525,12 @@ if(localPath.point &gt;= path.pointCount){
 	var speed = 0.08 * scale + 0.02;
 	this.location[5] -= (speed * time);
 
-	this.updateSize(140 * scale, 224 * scale); // TODO: grab the initial scale
+	this.updateSize(220 * scale, 224 * scale); // TODO: grab the initial scale
 
 	if(this.inLocation(564, 240, 564, 240)){
 		this.properties.isMoving = false;
 		this.properties.atIsland = true;
+		this.tileId = 1115;
 	}
 }else if(this.properties.atIsland &amp;&amp; this.properties.sinkBoat){
 	this.properties.sinkBoat = false;
