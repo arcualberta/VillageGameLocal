@@ -15,6 +15,7 @@
 	var minSize = 0.08; // TODO: scale brush image based on the current users position and velocity
 	var medSize = 0.10;
 	var maxSize = 0.20;
+	var brushScale = 1.00;
 
 	// Private Functions
 	var distance = function(start, end){
@@ -241,6 +242,11 @@
 		drawCanvas.width = display.size[0];
 		drawCanvas.height = display.size[1];
 		drawContext = drawCanvas.getContext("2d");
+
+		brushScale = (drawCanvas.width * 500) / (drawCanvas.height * 700);
+		minSize *= brushScale;
+		medSize *= brushScale;
+		maxSize *= brushScale;
 	};
 	
 	task.draw = function(){
@@ -315,8 +321,8 @@
 	};
 
 	task.setBrushSize = function(newMinSize, newMaxSize){
-		minSize = newMinSize;
-		maxSize = newMaxSize;
+		minSize = newMinSize * brushScale;
+		maxSize = newMaxSize * brushScale;
 	}
 	
 	
