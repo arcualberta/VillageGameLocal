@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="40" height="49" tilewidth="30" tileheight="30" nextobjectid="45">
+<map version="1.0" tiledversion="1.1.4" orientation="orthogonal" renderorder="left-down" width="40" height="49" tilewidth="30" tileheight="30" infinite="0" nextobjectid="45">
  <tileset firstgid="1" name="Base Tiles" tilewidth="30" tileheight="30" tilecount="646" columns="19">
   <image source="../tiles/tileset.png" width="570" height="1024"/>
   <terraintypes>
@@ -2109,13 +2109,12 @@ if(performance &amp;&amp; performance.now){
   <object id="42" name="FromNorth1" type="PlayerStart" x="622.333" y="50.6667" width="14" height="16"/>
  </objectgroup>
  <objectgroup name="triggers">
-  <object id="31" name="CloudTrigger" type="ScriptTrigger" x="700" y="1278" width="451" height="184">
+  <object id="31" name="CloudTrigger" type="ScriptTrigger" x="690" y="1260" width="461" height="202">
    <properties>
-    <property name="oninteract">// TODO: Stop Character
-this.interactEnabled = false;
-worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
-if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
-	world.triggers.removeChild(&quot;CloudTrigger&quot;);
+    <property name="oninteract">if(player.stats &amp;&amp; player.stats.kindness &gt;= 3){
+	player.stop();
+	this.interactEnabled = false;
+	worldAdapter.module.setBackgroundMusic(this.sound, this.fade);
 	worldAdapter.showMessage(&quot;CLOUD_1&quot;, false, player, this, function(){
 		let cloud = world.getObject(&quot;Cloud&quot;);
 		let waypoint = cloud.waypoint;
@@ -2123,6 +2122,7 @@ if(player &amp;&amp; player.stats &amp;&amp; player.stats.kindness &gt;= 3){
 		waypoint[1] = 2618;
 		cloud.state = &quot;ondropbrush&quot;;
 	});
+	world.triggers.removeChild(&quot;CloudTrigger&quot;);
 }</property>
     <property name="onstart">this.interactEnabled = true;
 this.fade = 100;
