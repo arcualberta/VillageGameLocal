@@ -2895,13 +2895,8 @@ this.triggerDialog = function(player, world, worldAdapter){
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers" visible="0">
-  <object id="33" name="palaceSwitch" type="ArcBackgroundMusicTrigger" x="37.5" y="-15" width="1038.91" height="911.758">
-   <properties>
-    <property name="file" value="sound/Brittle_Rille_Reunited.mp3"/>
-   </properties>
-  </object>
-  <object id="78" name="StoryTrigger" type="ScriptTrigger" x="443" y="287" width="194" height="45">
+ <objectgroup name="triggers">
+  <object id="78" name="StoryTrigger" type="ScriptTrigger" x="37.5" y="240" width="1042.5" height="270">
    <properties>
     <property name="oninteract">var _this = this;
 player.stop();
