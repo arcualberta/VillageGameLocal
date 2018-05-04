@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <title>The Magic Paintbrush</title>
+        
+        <link rel="stylesheet" type="text/css" href="../Compiled/Resources/Styles/game_style.css">
+        
+        <script type="text/javascript" src="../Compiled/config.js"></script>
+
+        <script type="text/javascript" src="../Compiled/lib/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="../Compiled/lib/jquery.csv-0.71.min.js"></script>
+        <script type="text/javascript" src="../Compiled/lib/arcEngine.js"></script>
+        <script type="text/javascript" src="../Compiled/lib/village.js"></script>
+
+        <style>
+            #testMap > canvas {
+                width: 500px;
+                image-rendering: pixelated;
+            }
+        </style>
+
+        <script type="text/javascript">
+            (function() {
+                var old_arcGetParameter = arcGetParameter;
+                window.arcGetParameter = function(name){
+                    var val = old_arcGetParameter(name);
+
+                    if(!val){
+                        if(name == "module"){
+                            return "China";
+                        }
+
+                        if(name == "mapname"){
+                            return "game_1";
+                        }
+                    }
+
+                    return val;
+                }
+            })();
+        </script>
+    </head>
+    <body>
+        <div class="game_window">
+            <canvas id="gamePanel" width="800" height="600" role="img"></canvas>
+        </div>
+        <span id="testText"></span>
+
+        <script type="text/javascript">
+            var game;
+            
+            $(document).ready(function(){
+                var canvas = $("#gamePanel")[0];
+                if(window.innerHeight < canvas.height){
+                    canvas.height = Math.max(440, window.innerHeight);
+                    canvas.width = Math.floor(Math.min(window.innerWidth, canvas.height * (4.0/3.0)));
+                }
+
+                game = new VillageGame(canvas, "../Compiled/src", "../Compiled/Resources");
+                game.characterScreens = testSpriteList;
+                game.start();
+            });
+        </script>
+    </body>
+</html>
