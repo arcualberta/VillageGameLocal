@@ -134,7 +134,7 @@
 		model.brushSpacing = 2;
 		model.state = 0;
 	
-		model.brushUrl = resourcePath + "/tasks/Brush.png";
+		model.brushUrl = resourcePath + "/tasks/brush.png";
 		model.acceptUrl = resourcePath + "/images/accept.png";
 		model.clearUrl = resourcePath + "/images/decline.png";
 		
