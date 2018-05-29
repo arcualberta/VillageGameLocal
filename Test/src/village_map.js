@@ -1083,11 +1083,15 @@ var VillageModule = ArcBaseObject();
     VillageModule.prototype.load = function (mapName, startName = "MainStart", isCurrent = true, loadMap = false, afterLoad = defaultOnLoad) {
         var _this = this;
         var map = this.maps[mapName];
-        if (map && map !== null) {
-            afterLoad(map);
+
+        if((map = this.maps[mapName])){
+            if(map.loaded) {
+                afterLoad(map);
+            }
+            return;
         } else {
-            map = new VillageMap(this, mapName);
-            this.maps[mapName] = map;
+            this.maps[mapName] = new VillageMap(this, mapName);
+            map = this.maps[mapName];
         }
 
         if (startName && startName !== null && startName.length > 0) {
