@@ -1085,11 +1085,12 @@ var VillageModule = ArcBaseObject();
         var map = this.maps[mapName];
 
         if((map = this.maps[mapName])){
-            if(map.loaded) {
-                afterLoad(map);
+            if(!map.loaded){
+                // We are in a bad state. Ignore it at the moment
+                console.log(mapname + " still loading.");
+                return;
             }
-            return;
-        } else {
+        }else{
             this.maps[mapName] = new VillageMap(this, mapName);
             map = this.maps[mapName];
         }
