@@ -1087,7 +1087,7 @@ var VillageModule = ArcBaseObject();
         if((map = this.maps[mapName])){
             if(!map.loaded){
                 // We are in a bad state. Ignore it at the moment
-                console.log(mapname + " still loading.");
+                console.log(mapName + " still loading.");
                 return;
             }
         }else{
