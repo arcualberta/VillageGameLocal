@@ -603,7 +603,11 @@ var VillageMap = ArcBaseObject();
                         url: modulePath + "/maps/" + $tileset.attr("source"),
                         method: 'GET',
                         success: function(result){
-                            $tileset = $($.parseXML(result)).children();
+                            if(typeof(result) == "string"){
+                                $tileset = $($.parseXML(result)).children();
+                            }else{
+                                $tileset = $(result).children();
+                            }
                         },
                         async: false
                     });
