@@ -509,16 +509,17 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         __this.villageDisplay = new VillageDisplay(__this, worldAdapter, javascriptPath + "/village_worker.js", setDrawScene, __this.display.camera);
         __this.villageDisplay.resize(canvas.width, canvas.height);
 
-        // Load any needed config properties.
-        if(worldAdapter.config.containsKey("title.music")){
-            var bgMusic = new ArcSound("titleMusic", true, worldAdapter.module.path + worldAdapter.config.getEntry("title.music"));
-            worldAdapter.module.setBackgroundMusic(bgMusic, 0);
-        }
-
         // Show the login window
         var menu = new LoginMenu(worldAdapter.login, resourcesPath);
 
         menu.closeComplete = function () {
+            // Load the background music.
+            if(worldAdapter.config.containsKey("title.music")){
+                var bgMusic = new ArcSound("titleMusic", true, worldAdapter.module.path + worldAdapter.config.getEntry("title.music"));
+                worldAdapter.module.setBackgroundMusic(bgMusic, 0);
+            }
+
+            // Load the user
             userId = this.userId;
             userName = this.userName;
             worldAdapter.requestWorldState(userId);
