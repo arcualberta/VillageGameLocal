@@ -44,6 +44,7 @@ function copyFile(input, output){
 var arcEngine = new CodeSection("./Compiled/lib/arcEngine.js");
 arcEngine.AddJavascript("./Test/src/arc_engine/arc_constants.js");
 arcEngine.AddJavascript("./Test/src/arc_engine/arc_objects.js");
+arcEngine.AddJavascript("./Test/src/arc_engine/arc_components.js");
 arcEngine.AddJavascript("./Test/src/arc_engine/arc_imaging.js");
 arcEngine.AddJavascript("./Test/src/arc_engine/arc_dialog.js");
 arcEngine.AddJavascript("./Test/src/arc_engine/arc_display.js");

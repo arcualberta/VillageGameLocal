@@ -483,6 +483,7 @@ ArcRenderableObject.prototype.indexOfChild = function(name){
 
     return -1;
 };
+
 /**
 * @param {string} name The unique name of the child object
 * @return {ArcRenderableObject} The child with the specified name. If no child exists, null is returned.

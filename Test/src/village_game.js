@@ -44,7 +44,7 @@ var VillageSettings = ArcBaseObject();
 
         game.setVolume(this.audio.volume);
         game.setFrameCap(this.video.fps);
-}
+    }
 }
 
 /**
@@ -634,3 +634,81 @@ VillageGame.prototype.toggleMute = function() {
         this.setVolume(ArcSettings.Current.audio.volume);
     }
 };
+
+var VillageQuest = function(name, parameters, onUpdate, onShowText){
+    this.name = name;
+    this.params = parameters;
+    this.onUpdate = onUpdate;
+    this.onShowText = onShowText;
+}
+
+/**
+* The storage and display of the users current tasks.
+* @class
+* @implements {ArcRenderableObject}
+*/
+var VillageQuestLog = ArcBaseObject();
+{
+    VillageQuestLog.prototype = Object.create(CanvasComponent.prototype);
+
+    VillageQuestLog.prototype.init = function(){
+        CanvasComponent.prototype.init.call(this, true, true);
+
+        this.quests = [];
+        this.activeQuest = null;
+        this.targetAlpha = 0.0;
+        this.alphaSmoothing = 0.2;
+    }
+
+    VillageQuestLog.prototype.getQuest = function(name){
+        var index = this.getQuestIndex(name);
+
+        if(index >= 0){
+            return this.quests[index];
+        }
+
+        return null;
+    }
+
+    VillageQuestLog.prototype.getQuestIndex = function(name){
+        for(var i = 0; i < this.quests.length; ++i){
+            if(this.quests[i].name === name){
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    VillageQuestLog.prototype.addQuest = function(quest){
+        if(this.getQuestIndex(quest.name) < 0){
+            this.quests.push(quest);
+        }
+    }
+
+    VillageQuestLog.prototype.setActiveQuest = function(name){
+        var index = this.getQuestIndex(name);
+
+        if(index >= 0){
+            this.activeQuest = this.quests[index];
+        }else{
+            this.activeQuest = this.quests[index];
+        }
+    }
+
+    VillageQuestLog.prototype.show = function(alphaSmoothing){
+        this.targetAlpha = 1.0;
+        this.alphaSmoothing = alphaSmoothing;
+    }
+
+    VillageQuestLog.prototype.hide = function(alphaSmoothing){
+        this.targetAlpha = 0.0;
+        this.alphaSmoothing = alphaSmoothing;
+    }
+
+    VillageQuestLog.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        this.alpha = arcLerp(this.alpha, this.targetAlpha, this.alphaSmoothing); //This will produce a smooth fade in. Hewever, it is dependent on the framerate.
+
+        CanvasComponent.prototype.draw.apply(this, arguments);
+    }
+}

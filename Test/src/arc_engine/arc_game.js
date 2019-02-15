@@ -8,6 +8,27 @@ window.arcRequestAnimFrame = (function () {
             };
 })();
 
+/**
+* finds the interpolated value between the two floating point numbers
+* @param {Number} The start value
+* @param {Number} The resulting end value
+* @param {Number} The amount between 0 and 1 of the interpolation.
+*/
+function arcLerp1f(a, b, v){
+ return a + (f * (b - a));
+}
+
+function arcLerp2f(a, b, v, c){
+    if(!(c)){
+        c = a;
+    }
+
+    c[0] = arcLerp1f(a[0], b[0], v);
+    c[1] = arcLerp1f(a[0], b[0], v);
+
+    return c;
+}
+
 function arcGetParameter(paramName) {
     var pageUrl = window.location.search.substring(1);
     var pageVar = pageUrl.split('&');
