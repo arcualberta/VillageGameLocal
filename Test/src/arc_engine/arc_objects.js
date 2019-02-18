@@ -615,19 +615,24 @@ ArcRenderableObjectCollection.prototype.drawWhile = function(drawFunction){
 * @param {string} fontInfo The css style used to display the text. 
 */
 var ArcRenderableText = ArcBaseObject();
-ArcRenderableText.prototype = Object.create(ArcRenderableObject.prototype);
-ArcRenderableText.prototype.init = function(text, fontInfo){
-    ArcRenderableObject.prototype.init.call(this, false, true);
-    this.text = text;
-    this.fontInfo = fontInfo;
-    this.offset = [0, 0];
-};
-/**
-* @override
-*/
-ArcRenderableText.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-    displayContext.drawMessage(this.text, xOffset + this.offset[0], yOffset + this.offset[1], this.fontInfo);
-};
+{
+
+    ArcRenderableText.prototype = Object.create(ArcRenderableObject.prototype);
+    ArcRenderableText.prototype.init = function(text, fontInfo){
+        ArcRenderableObject.prototype.init.call(this, false, true);
+        this.text = text;
+        this.fontHeight = 12;
+        this.fontColour = "white";
+        this.fontInfo = fontInfo;
+        this.offset = [0, 0];
+    };
+    /**
+    * @override
+    */
+    ArcRenderableText.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
+        displayContext.drawMessage(this.text, xOffset + this.offset[0], yOffset + this.offset[1], this.fontInfo, this.size, this.fontColour, this.fontHeight);
+    };
+}
 
 /**
 * Character waypoints

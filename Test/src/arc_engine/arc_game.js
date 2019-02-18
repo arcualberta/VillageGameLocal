@@ -15,7 +15,7 @@ window.arcRequestAnimFrame = (function () {
 * @param {Number} The amount between 0 and 1 of the interpolation.
 */
 function arcLerp1f(a, b, v){
- return a + (f * (b - a));
+ return a + (v * (b - a));
 }
 
 function arcLerp2f(a, b, v, c){

@@ -187,6 +187,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
     this.showHud = true;
 
     this.hud = new ArcRenderableObject(true, true);
+    this.quest = new VillageQuestLog(canvas);
 
     Character.VisionCone.src = resourcesPath + "/Icons/VisionCone.png";
 
@@ -302,6 +303,8 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
             if(__this.showHud && playerLoc[4]){
                 __this.hud.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
             }
+
+            __this.quest.draw(displayAdapter, 0, 0, size[0], size[1]);
         }
 
         displayAdapter.drawToDisplay('UNKNOWN');
@@ -635,11 +638,12 @@ VillageGame.prototype.toggleMute = function() {
     }
 };
 
-var VillageQuest = function(name, parameters, onUpdate, onShowText){
+var VillageQuest = function(name, parameters, onUpdate, onGetText){
     this.name = name;
     this.params = parameters;
     this.onUpdate = onUpdate;
-    this.onShowText = onShowText;
+    this.onGetText = onGetText;
+    this.completedTime = null;
 }
 
 /**
@@ -651,13 +655,22 @@ var VillageQuestLog = ArcBaseObject();
 {
     VillageQuestLog.prototype = Object.create(CanvasComponent.prototype);
 
-    VillageQuestLog.prototype.init = function(){
+    VillageQuestLog.prototype.init = function(parent){
         CanvasComponent.prototype.init.call(this, true, true);
 
         this.quests = [];
+        this.parent = parent;
+        this.smoothing = 0.2;
+        this.showMessage = false;
         this.activeQuest = null;
-        this.targetAlpha = 0.0;
-        this.alphaSmoothing = 0.2;
+
+        this.activeQuestTextPanel = new ArcRenderableText("", "Arial");
+        this.activeQuestTextPanel.updateLocation(0, 0);
+
+        this.addChild(this.activeQuestTextPanel, "activeQuest");
+
+        this.updateLocation(0, 0);
+        this.updateSize(0, 100);
     }
 
     VillageQuestLog.prototype.getQuest = function(name){
@@ -692,22 +705,42 @@ var VillageQuestLog = ArcBaseObject();
         if(index >= 0){
             this.activeQuest = this.quests[index];
         }else{
-            this.activeQuest = this.quests[index];
+            this.activeQuest = null;
         }
     }
 
-    VillageQuestLog.prototype.show = function(alphaSmoothing){
-        this.targetAlpha = 1.0;
-        this.alphaSmoothing = alphaSmoothing;
+    VillageQuestLog.prototype.show = function(smoothing){
+        if(!(smoothing)){
+            smoothing = 0.2;
+        }
+
+        this.showMessage = true;
+        this.smoothing = smoothing;
+
     }
 
-    VillageQuestLog.prototype.hide = function(alphaSmoothing){
-        this.targetAlpha = 0.0;
-        this.alphaSmoothing = alphaSmoothing;
+    VillageQuestLog.prototype.hide = function(smoothing){
+        if(!(smoothing)){
+            smoothing = 0.2;
+        }
+
+        this.showMessage = false;
+        this.smoothing = smoothing;
     }
 
     VillageQuestLog.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-        this.alpha = arcLerp(this.alpha, this.targetAlpha, this.alphaSmoothing); //This will produce a smooth fade in. Hewever, it is dependent on the framerate.
+        var width = arcLerp1f(this.size[0], this.showMessage ? this.parent.width : 0.0, this.smoothing); //This will produce a smooth showing of the text based on the current framerate.
+
+        if(this.size[0] != width){
+            this.updateSize(width, this.size[1]);
+            this.activeQuestTextPanel.updateSize(this.size[0], this.size[1]);
+        }
+
+        if(this.activeQuest != null){
+            this.activeQuestTextPanel.text = this.activeQuest.onGetText();
+        }else{
+            this.hide(false);
+        }
 
         CanvasComponent.prototype.draw.apply(this, arguments);
     }

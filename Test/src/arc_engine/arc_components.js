@@ -9,15 +9,15 @@ var CanvasComponent = ArcBaseObject();
 	};*/
 
 	CanvasComponent.prototype.init = function(tickEnabled, drawEnabled){
-		this.alpha = 0.0;
+		this.alpha = 1.0;
 
-		ArcRenderableObject.init.call(this, tickEnabled, drawEnabled);
+		ArcRenderableObject.prototype.init.call(this, tickEnabled, drawEnabled);
 
 		//this.anchors = CanvasComponent.Anchors.NONE;
 	}
 
 	CanvasComponent.prototype.draw = function(displayContext, xOffset, yOffset, width, height){
-		if(alpha > 0.0){
+		if(this.alpha > 0.0){
 			ArcRenderableObject.prototype.draw.apply(this, arguments);
 		}
 	};

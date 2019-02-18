@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="left-down" width="60" height="34" tilewidth="30" tileheight="30" nextobjectid="48">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="left-down" width="60" height="34" tilewidth="30" tileheight="30" infinite="0" nextlayerid="6" nextobjectid="48">
  <properties>
   <property name="right" value="game_2"/>
  </properties>
@@ -1091,7 +1091,7 @@
  <tileset firstgid="659" name="brush" tilewidth="30" tileheight="30" tilecount="1" columns="1">
   <image source="../tiles/Brush.png" width="30" height="30"/>
  </tileset>
- <layer name="lower" width="60" height="34">
+ <layer id="1" name="lower" width="60" height="34">
   <data encoding="csv">
 1,2,2,1,2,1,1,1,2,1,1,3,1,2,2,3,3,2,1,2,1,2,3,1,1,1,1,1,1,1,1,1,1,2,2,2,3,2,2,1,2,2,1,1,2,1,1,1,1,2,1,1,1,1,1,1,1,1,2,2,
 1,3,3,1,1,3,2,2,2,2,1,1,1,2,3,2,2,1,1,1,1,2,3,1,3,1,1,1,1,1,1,1,1,3,2,1,1,2,3,1,1,2,2,2,1,2,2,1,2,1,2,2,2,2,2,3,3,3,2,1,
@@ -1129,7 +1129,7 @@
 1,1,210,21,21,21,21,21,21,21,21,21,21,252,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40
 </data>
  </layer>
- <layer name="middle" width="60" height="34">
+ <layer id="2" name="middle" width="60" height="34">
   <data encoding="csv">
 87,88,89,90,86,87,88,89,90,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,86,87,88,89,90,0,0,86,87,88,89,90,0,0,0,0,0,0,86,87,88,89,90,0,0,0,0,0,0,86,87,88,89,90,86,
 106,107,108,109,105,106,107,108,109,86,87,88,89,90,105,106,107,108,109,86,87,88,89,90,0,105,106,107,108,109,0,0,105,106,107,108,109,0,86,87,88,89,90,105,106,107,108,109,0,86,87,88,89,90,105,106,107,108,109,105,
@@ -1167,7 +1167,7 @@
 107,108,118,118,118,118,118,118,118,118,118,118,118,118,118,118,25,26,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,25,26,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118,118
 </data>
  </layer>
- <objectgroup name="objects">
+ <objectgroup id="3" name="objects">
   <object id="1" name="MainStart" type="PlayerStart" x="336" y="210.5" width="20" height="19"/>
   <object id="2" name="Farmer" type="StoryCharacter" gid="647" x="1263.66" y="479.666" width="30" height="50">
    <properties>
@@ -1231,6 +1231,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     this.TriggerDialog('WU_HAI_2', worldAdapter, player); 
 }else{ 
     this.TriggerDialog('WU_HAI_1', worldAdapter, player, function(){
+		game.quest.getQuest(&quot;talk_villagers&quot;).params.villagers++;
 		if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('WU_HAI_5', worldAdapter, player);
 	});
  }</property>
@@ -1275,6 +1276,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     this.TriggerDialog('GRANDPA_2', worldAdapter, player); 
 }else{ 
     this.TriggerDialog('GRANDPA_1', worldAdapter, player, function(){
+		game.quest.getQuest(&quot;talk_villagers&quot;).params.villagers++;
 		 if(player.stats[&quot;kindness&quot;] == 3) _this.TriggerDialog('GRANDPA_5', worldAdapter, player);
 	}); 
 }</property>
@@ -1324,7 +1326,7 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="triggers">
+ <objectgroup id="4" name="triggers">
   <object id="27" name="MainMusic" type="ArcBackgroundMusicTrigger" x="131.758" y="161.515" width="1541.33" height="801.333">
    <properties>
     <property name="file" value="sound/3VariationsOfPlumBlossoms.mp3"/>
@@ -1342,17 +1344,22 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
     <property name="Start" value="FromNorth2"/>
    </properties>
   </object>
-  <object id="45" name="IntroductionTrigger" type="ScriptTrigger" x="325" y="198" width="47" height="44">
+  <object id="45" name="IntroductionTrigger" type="ScriptTrigger" x="325" y="198" width="47" height="44" visible="0">
    <properties>
     <property name="oninteract">	var _this = this;
 	worldAdapter.showMessage('INTRODUCTION', false, player, this, function(){
 		world.triggers.removeChild(_this.name);
+		game.quest.addQuest(new VillageQuest(&quot;talk_villagers&quot;, { villagers: 0 },
+			null, function(){ return &quot;Talk to the villagers. &quot; + this.params.villagers + &quot;/3&quot;; }));
+		game.quest.setActiveQuest(&quot;talk_villagers&quot;);
+		game.quest.show();
+		
 	});</property>
     <property name="onstart" value="this.interactEnabled = true;"/>
    </properties>
   </object>
  </objectgroup>
- <layer name="higher" width="60" height="34" opacity="0.82">
+ <layer id="5" name="higher" width="60" height="34" opacity="0.82">
   <data encoding="csv">
 29,30,31,32,33,0,0,0,66,67,68,69,70,71,0,0,0,0,66,67,68,69,70,71,0,47,48,49,50,51,52,47,48,49,50,51,52,66,67,68,69,70,71,29,30,31,32,33,66,67,68,69,70,71,47,48,49,50,51,52,
 48,49,50,51,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,66,67,68,69,70,71,66,67,68,69,70,71,0,0,0,0,0,47,48,49,50,51,52,0,0,0,0,0,0,66,67,68,69,70,47,

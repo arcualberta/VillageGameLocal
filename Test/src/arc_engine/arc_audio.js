@@ -39,6 +39,8 @@ ArcAudioAdapter.prototype = Object.create(ArcBaseAudioAdapter.prototype);
         var context = null;
         var volume = 1.0;
 
+        var _this = this;
+
         // Define the context
         Object.defineProperty(this, "context", {
             get: function(){
@@ -47,7 +49,7 @@ ArcAudioAdapter.prototype = Object.create(ArcBaseAudioAdapter.prototype);
                         context = new AudioContext();
 
                         gainNode = context.createGain();
-                        gainNode.gain.value = volume;
+                        gainNode.gain.value = _this.volume;
                         gainNode.connect(context.destination);
                     } catch (e) {
                         throw("Web Audio API is not supported in this browser.");
@@ -65,6 +67,7 @@ ArcAudioAdapter.prototype = Object.create(ArcBaseAudioAdapter.prototype);
         });
         
         this.buffers = {};
+        this.volume = volume;
     };
     ArcAudioAdapter.prototype.setVolume = function (value) {
         this.volume = value;

@@ -366,14 +366,14 @@ var ArcCanvasAdapter = ArcBaseObject();
         this.context = context;
         this.canvas = canvas;
     };
-    ArcCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
+    ArcCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor, fontHeight) {
         var context = this.context;
 
         if (fontInfo == undefined) {
             fontInfo = this.defaultFontInfo;
         }
 
-        context.font = fontInfo.font;
+        context.font = fontHeight + "px " + fontInfo.font;
         context.textAlign = fontInfo.textAlign;
 
         if (fillRect) {
@@ -523,7 +523,53 @@ var ArcCanvasAdapter = ArcBaseObject();
 
 var ArcGLCanvasAdapter = ArcBaseObject();
 {
+    // Private static variables
+    var textTextures = {}; // This will organize text textures based on a given font.
+    var textConstants = {
+        height: 512,
+        width: 512,
+        fontHeight: 32,
+        fontWidth: 32
+    }
+
     // Private functions
+    var getTextTexture = function(gl, font){
+        var result = textTextures[font];
+        if(result){
+            return result;
+        }
+
+        //create a texture complete with ascii characters
+        result = document.createElement("canvas");
+        result.width = textConstants.width;
+        result.height = textConstants.height;
+        var context = result.getContext("2d");
+
+        context.fillStyle = "white";
+        context.font = textConstants.fontHeight + "px " + font;
+
+        var x = textConstants.fontWidth;
+        var y = textConstants.fontHeight;
+
+        for(var i = 32; i < 127; ++i){
+            if(x > textConstants.width){
+                x = textConstants.fontWidth;
+                y += textConstants.fontHeight;
+            }
+
+            context.fillText(String.fromCharCode(i), x, y);
+            x += textConstants.fontWidth;
+        }
+
+        // Load into a texture
+        result.texture = this.loadTexture(result, false);
+
+        textTextures[font] = result;
+        result.complete = true;
+
+        return result;
+    }
+
     var drawBlurred = function (gl, toDisplay, postProgram, vBuffer) {
         gl.useProgram(postProgram);
         gl.disable(gl.BLEND);
@@ -1175,18 +1221,50 @@ var ArcGLCanvasAdapter = ArcBaseObject();
 
         gl.useProgram(this.program);
     };
-    ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor) {
-        var textContext = this.textContext;
+    ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor, fontHeight) {
+        //TODO: write using tiles
+        var gl = this.context;
+        var texture = getTextTexture.call(this, gl, "Arial");
 
-        if (fontInfo == undefined) {
-            fontInfo = this.defaultFontInfo;
+        if(!(fontHeight) || fontHeight <= 0){
+            fontHeight = 12;
         }
 
-        textContext.font = fontInfo.font;
-        textContext.textAlign = fontInfo.textAlign;
-        textContext.fillStyle = fontInfo.fillStyle;
+        var xOffset = 0;
+        var yOffset = 0;
+        var texWidth = textConstants.width;
+        var texHeight = textConstants.height;
+        var texFontWidth = textConstants.fontWidth;
+        var texFontHeight = textConstants.fontHeight;
+        var index = 0;
+        var indexX = 0;
+        var indexY = 0;
 
-        textContext.fillText(message, x, y);
+        var texTilesPerLine = Math.floor(texWidth / texFontWidth);
+
+        var fontWidth = (fontHeight / texFontHeight) * texFontWidth;
+
+        for(var i = 0; i < message.length; ++i){
+            if(xOffset > fillRect[0]){
+                yOffset += fontHeight;
+                xOffset = 0;
+            }
+
+            if(yOffset > fillRect[1]){
+                return;
+            }
+
+            index = message.charCodeAt(i) - 31;
+            indexY = Math.floor(index / texTilesPerLine);
+            indexX = index - (indexY * texTilesPerLine);
+
+            this.drawImage(
+                texture,
+                indexX * texFontWidth, indexY * texFontHeight, texFontWidth, texFontHeight,
+                (xOffset * 0.8) + x, yOffset + y, fontWidth, fontHeight);
+
+            xOffset += fontWidth;
+        }
     };
     ArcGLCanvasAdapter.prototype.drawLine = function(x1, y1, x2, y2, color){
         var offset = this.camera.offset;
