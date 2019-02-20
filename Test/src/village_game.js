@@ -237,6 +237,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
         }
         
         __this.hud.tick(time, worldAdapter, worldAdapter.module.currentMap);
+        __this.quest.tick(time, worldAdapter, worldAdapter.module.currentMap);
         //drawScene();
     });
 
@@ -304,7 +305,7 @@ VillageGame.prototype.init = function (canvas, javascriptPath, resourcesPath) {
                 __this.hud.draw(displayAdapter, offsetX, offsetY, size[0], size[1]);
             }
 
-            __this.quest.draw(displayAdapter, 0, 0, size[0], size[1]);
+            __this.quest.draw(displayAdapter, 10, 10, size[0], size[1]);
         }
 
         displayAdapter.drawToDisplay('UNKNOWN');
@@ -638,11 +639,12 @@ VillageGame.prototype.toggleMute = function() {
     }
 };
 
-var VillageQuest = function(name, parameters, onUpdate, onGetText){
+var VillageQuest = function(name, parameters, onUpdate, onGetText, onCompleted){
     this.name = name;
     this.params = parameters;
     this.onUpdate = onUpdate;
     this.onGetText = onGetText;
+    this.onCompleted = onCompleted;
     this.completedTime = null;
 }
 
@@ -671,6 +673,27 @@ var VillageQuestLog = ArcBaseObject();
 
         this.updateLocation(0, 0);
         this.updateSize(0, 100);
+    }
+
+    VillageQuestLog.prototype.tick = function(deltaMilliseconds){
+        CanvasComponent.prototype.tick.apply(this, arguments);
+        var activeQuest = this.activeQuest;
+
+        if(activeQuest != null && typeof(activeQuest.onUpdate) === "function" && activeQuest.completedTime == null){
+            activeQuest.onUpdate(deltaMilliseconds);
+        }
+    }
+
+    VillageQuestLog.prototype.completed = function(name){
+        var task = this.getQuest(name);
+
+        if(task && task.completedTime == null){
+            task.completedTime = new Date();
+
+            if(typeof(task.onCompleted) === "function"){
+                task.onCompleted();
+            }
+        }
     }
 
     VillageQuestLog.prototype.getQuest = function(name){

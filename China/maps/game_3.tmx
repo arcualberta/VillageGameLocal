@@ -2123,6 +2123,9 @@ if(performance &amp;&amp; performance.now){
 		cloud.state = &quot;ondropbrush&quot;;
 	});
 	world.triggers.removeChild(&quot;CloudTrigger&quot;);
+
+	game.quest.completed(&quot;find_cloud&quot;);
+	game.quest.hide();
 }</property>
     <property name="onstart">this.interactEnabled = true;
 this.fade = 100;

@@ -546,14 +546,16 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         var context = result.getContext("2d");
 
         context.fillStyle = "white";
+        context.textBaseline = "top";
         context.font = textConstants.fontHeight + "px " + font;
 
-        var x = textConstants.fontWidth;
-        var y = textConstants.fontHeight;
+        var x = 0;
+        var y = 0;
+        var lineWidth = textConstants.width - textConstants.fontWidth;
 
         for(var i = 32; i < 127; ++i){
-            if(x > textConstants.width){
-                x = textConstants.fontWidth;
+            if(x > lineWidth){
+                x = 0;
                 y += textConstants.fontHeight;
             }
 
@@ -562,7 +564,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         }
 
         // Load into a texture
-        result.texture = this.loadTexture(result, false);
+        result.texture = this.loadTexture(result, false, true);
 
         textTextures[font] = result;
         result.complete = true;
@@ -1084,7 +1086,7 @@ var ArcGLCanvasAdapter = ArcBaseObject();
 
         this.resize(canvas.width, canvas.height);
     };
-    ArcGLCanvasAdapter.prototype.loadTexture = function (image, flipY) {
+    ArcGLCanvasAdapter.prototype.loadTexture = function (image, flipY, useLinierFiltering) {
         var gl = this.context;
         var texture = gl.createTexture();
 
@@ -1092,8 +1094,13 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        if(useLinierFiltering){
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        }else{
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        }
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -1222,7 +1229,6 @@ var ArcGLCanvasAdapter = ArcBaseObject();
         gl.useProgram(this.program);
     };
     ArcGLCanvasAdapter.prototype.drawMessage = function (message, x, y, fontInfo, fillRect, fillColor, fontHeight) {
-        //TODO: write using tiles
         var gl = this.context;
         var texture = getTextTexture.call(this, gl, "Arial");
 
@@ -1254,14 +1260,14 @@ var ArcGLCanvasAdapter = ArcBaseObject();
                 return;
             }
 
-            index = message.charCodeAt(i) - 31;
+            index = message.charCodeAt(i) - 32;
             indexY = Math.floor(index / texTilesPerLine);
             indexX = index - (indexY * texTilesPerLine);
 
             this.drawImage(
                 texture,
                 indexX * texFontWidth, indexY * texFontHeight, texFontWidth, texFontHeight,
-                (xOffset * 0.8) + x, yOffset + y, fontWidth, fontHeight);
+                (xOffset * 0.9) + x, yOffset + y, fontWidth, fontHeight);
 
             xOffset += fontWidth;
         }
