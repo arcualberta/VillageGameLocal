@@ -759,7 +759,7 @@ var VillageQuestLog = ArcBaseObject();
             this.activeQuestTextPanel.updateSize(this.size[0], this.size[1]);
         }
 
-        if(this.activeQuest != null){
+        if(this.activeQuest != null && this.showMessage){
             this.activeQuestTextPanel.text = this.activeQuest.onGetText();
         }else{
             this.hide(false);
