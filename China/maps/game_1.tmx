@@ -1212,6 +1212,8 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 	var taskCompleted = function(){
 		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('WU_HAI_4', worldAdapter, player, function(){ _this.state = &quot;onfarm&quot;; ++player.stats.kindness;});
+
+		game.quest.getQuest(&quot;help_villagers1&quot;).params.villagers++;
 	};
 	
 	var openTask = function(){
@@ -1259,6 +1261,8 @@ if(player.stats.hasBrush &amp;&amp; !this.properties[&quot;taskComplete&quot;]){
 		_this.properties[&quot;taskComplete&quot;] = true;
 		_this.TriggerDialog('GRANDPA_4', worldAdapter, player, function(){ ++player.stats.kindness; });
 		world.objects.getChild(&quot;FishNet&quot;).drawEnabled = true;
+
+		game.quest.getQuest(&quot;help_villagers1&quot;).params.villagers++;
 	};
 	
 	var openTask = function(){

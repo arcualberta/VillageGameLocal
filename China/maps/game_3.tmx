@@ -2102,7 +2102,19 @@ if(performance &amp;&amp; performance.now){
 	recordEvent(&quot;Task&quot;, &quot;Brush&quot;, &quot;Pickup&quot;, Math.floor(performance.now()));
 }else{
 	recordEvent(&quot;Task&quot;, &quot;Brush&quot;, &quot;Pickup&quot;, 0);
-}</property>
+}
+
+game.quest.addQuest(new VillageQuest(&quot;help_villagers1&quot;, { villagers: 0 },
+    function(){ 
+        if(this.params.villagers &gt;= 3)
+            game.quest.completed(&quot;help_villagers1&quot;);
+           game.quest.hide(); 
+        }, 
+    function(){ 
+        return &quot;Help the villagers. &quot; + this.params.villagers + &quot;/3&quot;; 
+    }, null));
+game.quest.setActiveQuest(&quot;help_villagers1&quot;);
+game.quest.show(); </property>
    </properties>
   </object>
   <object id="40" name="FromEast1" type="PlayerStart" x="47" y="906" width="14" height="16"/>
